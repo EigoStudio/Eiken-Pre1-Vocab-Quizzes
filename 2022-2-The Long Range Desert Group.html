@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <title>英検準1級 2022-2 The Long Range Desert Group Quiz</title>
+    <style>
+        /* --- 基本設定（画面表示用） --- */
+        body {
+            background-color: #f0f2f5;
+            font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .page {
+            background-color: white;
+            width: 95%;
+            max-width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        h1 { text-align: center; font-size: 1.5rem; margin: 0 0 20px 0; }
+        .instructions { text-align: center; font-size: 0.9rem; color: #333; margin-bottom: 15px; }
+
+        .set-container { margin-bottom: 40px; }
+        .set-title {
+            font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;
+            border-left: 5px solid #4A90E2; padding-left: 10px;
+        }
+
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        td { padding: 10px 5px; vertical-align: middle; }
+
+        .jp-column { width: 45%; font-size: 1rem; }
+        .answer-column { width: 30%; border-bottom: 2px solid #4A90E2; position: relative; }
+        .choice-column { width: 25%; text-align: right; }
+
+        .drop-zone, .choice-slot {
+            width: 100%; min-height: 45px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+        }
+        .choice-slot { border: 1px dashed #ccc; border-radius: 5px; background-color: #fcfcfc; }
+
+        .word-chip {
+            /* 合字(fiなど)の防止と読みやすさの調整 */
+            font-variant-ligatures: none;
+            letter-spacing: 0.05em;
+            
+            padding: 6px 10px;
+            background-color: #fff;
+            border: 1px solid #4A90E2;
+            border-radius: 6px;
+            cursor: grab;
+            user-select: none;
+            font-family: "Chalkboard SE", "Chalkboard", "Comic Neue", "Comic Sans MS", cursive, sans-serif;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #333;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            touch-action: none;
+            white-space: nowrap;
+            display: inline-block;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .word-chip.selected {
+            background-color: #ffeb3b;
+            border-color: #fbc02d;
+        }
+
+        .dragging { opacity: 0.8; transform: scale(1.1); z-index: 1000 !important; }
+
+        .result-mark { position: absolute; right: -25px; top: 12px; font-weight: bold; font-size: 1.4rem; }
+        .correct { color: #28a745; }
+        .incorrect { color: #dc3545; }
+
+        .controls { margin-bottom: 15px; display: flex; gap: 10px; }
+        button {
+            padding: 10px 15px; font-size: 0.9rem; cursor: pointer;
+            border: none; border-radius: 6px; color: white; font-weight: bold;
+        }
+        .reset-btn { background-color: #4A90E2; }
+        .check-btn { background-color: #28a745; }
+
+        /* --- PDF・印刷用設定 --- */
+        @media print {
+            @page { margin: 15mm; }
+            body { background: white; padding: 0; }
+            .page { box-shadow: none; width: 100%; padding: 0; min-height: auto; }
+            .controls, .instructions, .set-title, .result-mark { display: none !important; }
+            h1 { font-size: 18pt; margin-bottom: 40px; }
+            .set-container { margin-bottom: 50px; page-break-inside: avoid; border: none; padding: 0; }
+            td { padding: 12px 2px; }
+            .jp-column { font-size: 12pt; color: black !important; }
+            .answer-column { border-bottom: 1px solid #000 !important; }
+            .word-chip { 
+                border: none !important; padding: 0 !important; font-size: 12pt;
+                background: transparent !important; color: black !important;
+                box-shadow: none !important;
+            }
+            .choice-slot, .drop-zone { border: none !important; height: auto !important; min-height: auto !important; }
+            .drop-zone { visibility: hidden; }
+            * { color: black !important; border-color: black !important; }
+        }
+
+        @media (max-width: 600px) {
+            .jp-column { width: 40%; font-size: 0.85rem; }
+            .word-chip { font-size: 0.85rem; padding: 4px 6px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <button class="reset-btn" onclick="renderAll()">リセット / シャッフル</button>
+    <button class="check-btn" onclick="checkAnswers()">答え合わせ</button>
+</div>
+
+<div class="page">
+    <h1>"The Long Range Desert Group" Vocabulary Quiz</h1>
+    <p class="instructions">単語をドラッグまたはタップして、正しい意味の場所に並べましょう。</p>
+    <div id="sets-root"></div>
+</div>
+
+<script>
+const data = {
+    sets: [
+        {
+            title: "Verbs (動詞)",
+            items: [
+                { jp: "避ける、回避する", en: "avoid" }, { jp: "観察する、遵守する", en: "observe" },
+                { jp: "追跡する", en: "track" }, { jp: "主張する、言い張る", en: "insist" },
+                { jp: "パラシュートで降下する", en: "parachute" }, { jp: "成し遂げる、完遂する", en: "accomplish" },
+                { jp: "組み合わせる", en: "combine" }
+            ]
+        },
+        {
+            title: "Nouns Part 1 (名詞 1)",
+            items: [
+                { jp: "戦闘、戦い", en: "battle" }, { jp: "発見、検知", en: "detection" },
+                { jp: "地形、地勢", en: "terrain" }, { jp: "物資、補給品", en: "supplies" },
+                { jp: "作戦、運用", en: "operation" }, { jp: "陸軍将校", en: "army officer" },
+                { jp: "戦略的な機会", en: "strategic opportunity" }, { jp: "部隊、単位", en: "unit" },
+                { jp: "情報収集", en: "intelligence gathering" }, { jp: "粘り強さ、持続性", en: "persistence" },
+                { jp: "当初、始まり", en: "outset" }, { jp: "区別、卓越", en: "distinction" }
+            ]
+        },
+        {
+            title: "Nouns Part 2 (名詞 2)",
+            items: [
+                { jp: "機転、工夫する能力", en: "resourcefulness" }, { jp: "精神力、不屈の精神", en: "mental toughness" },
+                { jp: "弾薬", en: "ammunition" }, { jp: "兵器類", en: "weaponry" },
+                { jp: "飛行場", en: "airfield" }, { jp: "燃料集積所、貯蔵庫", en: "fuel depot" },
+                { jp: "死傷者、犠牲者", en: "casualty" }, { jp: "救出ミッション", en: "rescue mission" },
+                { jp: "キャンペーン、軍事行動", en: "campaign" }, { jp: "転換点、節目", en: "turning point" },
+                { jp: "軍司令官、指揮官", en: "army commander" }, { jp: "予算", en: "budget" }
+            ]
+        },
+        {
+            title: "Adjectives & Adverbs (形容詞・副詞)",
+            items: [
+                { jp: "ひどく、厳しく", en: "severely" }, { jp: "過酷な、厳しい", en: "harsh" },
+                { jp: "確信している", en: "convinced" }, { jp: "動力化した、自動車化した", en: "motorized" },
+                { jp: "可動式の、移動しやすい", en: "mobile" }, { jp: "非常に貴重な", en: "invaluable" },
+                { jp: "型破りな、伝統によらない", en: "unconventional" }, { jp: "勇敢に", en: "bravely" },
+                { jp: "意欲的な、動機づけられた", en: "motivated" }, { jp: "油断のない、警告", en: "alert" },
+                { jp: "備わっている、装備した", en: "equipped" }, { jp: "広範囲な", en: "extensive" },
+                { jp: "厳重に守られた", en: "heavily defended" }, { jp: "決定的な、極めて重要な", en: "crucial" }
+            ]
+        },
+        {
+            title: "Phrases & Prepositions (句・前置詞)",
+            items: [
+                { jp: "広がる、分散する", en: "spread out" }, { jp: "名前で呼び合う仲で", en: "on first-name terms" },
+                { jp: "長期間にわたって", en: "for extended periods" }, { jp: "〜の範囲にわたって", en: "over a range of" },
+                { jp: "地雷を設置する", en: "plant a mine" }, { jp: "攻撃を開始する", en: "launch an attack" },
+                { jp: "〜を回避する、動き回る", en: "get around ..." }, { jp: "〜に貢献する、寄与する", en: "contribute to" },
+                { jp: "〜を必要として", en: "in need of" }, { jp: "定期的に、日常的に", en: "on a regular basis" }
+            ]
+        }
+    ]
+};
+
+let selectedChip = null;
+
+function shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function renderAll() {
+    const root = document.getElementById('sets-root');
+    root.innerHTML = '';
+    selectedChip = null;
+
+    data.sets.forEach((set, setIdx) => {
+        const shuffledJp = shuffle(set.items);
+        const shuffledEn = shuffle(set.items.map(item => item.en));
+
+        const setDiv = document.createElement('div');
+        setDiv.className = 'set-container';
+        setDiv.innerHTML = `<div class="set-title">${set.title}</div>`;
+
+        const table = document.createElement('table');
+        shuffledJp.forEach((item, i) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="jp-column">${item.jp}</td>
+                <td class="answer-column" data-correct="${item.en}">
+                    <div class="drop-zone" onclick="handleZoneClick(event)" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                    <span class="result-mark"></span>
+                </td>
+                <td class="choice-column">
+                    <div class="choice-slot" onclick="handleZoneClick(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <div class="word-chip" draggable="true" onclick="handleChipClick(event)" 
+                             ondragstart="drag(event)" id="word-${setIdx}-${i}"
+                             ontouchstart="handleTouchStart(event)" 
+                             ontouchmove="handleTouchMove(event)" 
+                             ontouchend="handleTouchEnd(event)">
+                            ${shuffledEn[i]}
+                        </div>
+                    </div>
+                </td>
+            `;
+            table.appendChild(tr);
+        });
+        setDiv.appendChild(table);
+        root.appendChild(setDiv);
+    });
+}
+
+let touchOffsetX = 0;
+let touchOffsetY = 0;
+
+function handleTouchStart(e) {
+    const chip = e.currentTarget;
+    const touch = e.touches[0];
+    const rect = chip.getBoundingClientRect();
+    touchOffsetX = touch.clientX - rect.left;
+    touchOffsetY = touch.clientY - rect.top;
+    chip.classList.add('dragging');
+    if (selectedChip) selectedChip.classList.remove('selected');
+    selectedChip = chip;
+}
+
+function handleTouchMove(e) {
+    const chip = e.currentTarget;
+    const touch = e.touches[0];
+    e.preventDefault();
+    chip.style.position = 'fixed';
+    chip.style.left = (touch.clientX - touchOffsetX) + 'px';
+    chip.style.top = (touch.clientY - touchOffsetY) + 'px';
+}
+
+function handleTouchEnd(e) {
+    const chip = e.currentTarget;
+    chip.classList.remove('dragging');
+    chip.style.position = ''; chip.style.left = ''; chip.style.top = '';
+    const touch = e.changedTouches[0];
+    const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+    const zone = dropTarget ? dropTarget.closest('.drop-zone, .choice-slot') : null;
+    if (zone) moveElement(chip, zone);
+    selectedChip = null;
+}
+
+function handleChipClick(e) {
+    e.stopPropagation();
+    const chip = e.currentTarget;
+    if (selectedChip === chip) {
+        chip.classList.remove('selected');
+        selectedChip = null;
+    } else {
+        if (selectedChip) selectedChip.classList.remove('selected');
+        selectedChip = chip;
+        chip.classList.add('selected');
+    }
+}
+
+function handleZoneClick(e) {
+    const targetZone = e.currentTarget;
+    if (selectedChip && !selectedChip.classList.contains('dragging')) {
+        moveElement(selectedChip, targetZone);
+        selectedChip.classList.remove('selected');
+        selectedChip = null;
+    }
+}
+
+function moveElement(draggedEl, target) {
+    if (target.children.length === 0) {
+        target.appendChild(draggedEl);
+    } else {
+        const currentInTarget = target.children[0];
+        const originParent = draggedEl.parentNode;
+        originParent.appendChild(currentInTarget);
+        target.appendChild(draggedEl);
+    }
+}
+
+function allowDrop(e) { e.preventDefault(); }
+function drag(e) { 
+    e.dataTransfer.setData("text", e.target.id); 
+    if(selectedChip) { selectedChip.classList.remove('selected'); selectedChip = null; }
+}
+function drop(e) {
+    e.preventDefault();
+    const id = e.dataTransfer.getData("text");
+    const draggedEl = document.getElementById(id);
+    const target = e.target.closest('.drop-zone, .choice-slot');
+    if (target && draggedEl) moveElement(draggedEl, target);
+}
+
+function checkAnswers() {
+    document.querySelectorAll('.answer-column').forEach(col => {
+        const correctEn = col.getAttribute('data-correct').trim();
+        const droppedWord = col.querySelector('.word-chip');
+        const mark = col.querySelector('.result-mark');
+        if (droppedWord) {
+            const userAns = droppedWord.textContent.trim();
+            mark.textContent = (userAns === correctEn) ? "○" : "×";
+            mark.className = "result-mark " + (userAns === correctEn ? "correct" : "incorrect");
+        } else { mark.textContent = ""; }
+    });
+}
+
+renderAll();
+</script>
+
+</body>
+</html>
