@@ -6,7 +6,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <title>2025-2 "Rocket Science" Quiz</title>
     <style>
-        /* --- 基本設定（画面表示用：ブラウザで見るときのサイズ） --- */
+        /* --- 基本設定（PC・タブレット表示用） --- */
         body {
             background-color: #f0f2f5;
             font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
@@ -20,7 +20,7 @@
         .page {
             background-color: white;
             width: 98%;
-            max-width: 1000px; /* ブラウザで見やすい幅に調整 */
+            max-width: 1000px;
             min-height: 297mm;
             padding: 15mm;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -40,7 +40,6 @@
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         td { padding: 12px 5px; vertical-align: middle; }
 
-        /* 画面では日本語をしっかり読めるサイズに */
         .jp-column { width: 45%; font-size: 1.1rem; line-height: 1.4; color: #333; }
         .answer-column { width: 25%; border-bottom: 2px solid #4A90E2; position: relative; }
         .choice-column { width: 30%; text-align: right; }
@@ -60,7 +59,7 @@
             cursor: grab;
             user-select: none;
             font-family: "Chalkboard SE", "Chalkboard", "Comic Neue", "Comic Sans MS", cursive, sans-serif;
-            font-size: 1.1rem; /* 画面では大きめに */
+            font-size: 1.1rem;
             font-weight: bold;
             color: #333;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
@@ -82,34 +81,46 @@
         .reset-btn { background-color: #4A90E2; }
         .check-btn { background-color: #28a745; }
 
-        /* --- 印刷用設定（ここからがプリント時の魔法） --- */
+        /* --- スマホ専用設定（画面幅600px以下の場合） --- */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .page { padding: 10px; }
+            h1 { font-size: 1.3rem; }
+            .instructions { font-size: 0.85rem; }
+            .set-title { font-size: 1rem; margin-bottom: 10px; }
+            
+            td { padding: 8px 3px; }
+            .jp-column { width: 42%; font-size: 0.9rem; }
+            .answer-column { width: 28%; }
+            .choice-column { width: 30%; }
+
+            .word-chip {
+                padding: 4px 6px;
+                font-size: 0.85rem; /* スマホでは字を小さく */
+                border-width: 1px;
+                border-radius: 4px;
+            }
+            .drop-zone, .choice-slot { min-height: 40px; }
+            .result-mark { right: -18px; font-size: 1.2rem; top: 6px; }
+            button { padding: 10px 12px; font-size: 0.85rem; }
+        }
+
+        /* --- 印刷用設定 --- */
         @media print {
             @page { size: A4; margin: 8mm; }
             body { background: white; padding: 0; }
-            .page { 
-                box-shadow: none; width: 100%; max-width: 100%; padding: 0; 
-                min-height: auto; border: none;
-            }
+            .page { box-shadow: none; width: 100%; max-width: 100%; padding: 0; min-height: auto; }
             .controls, .instructions, .set-title, .result-mark { display: none !important; }
-            
             h1 { font-size: 16pt; margin-bottom: 30px; }
             .set-container { margin-bottom: 25px; page-break-inside: avoid; }
-            
-            /* 印刷時の文字と間隔をギュッと詰める */
             td { padding: 5px 2px; }
             .jp-column { font-size: 10pt; width: 42%; line-height: 1.1; }
             .answer-column { border-bottom: 1px solid #000 !important; width: 20%; }
             .choice-column { width: 38%; text-align: left; padding-left: 15px; } 
-
             .word-chip { 
-                border: none !important; 
-                padding: 0 !important; 
-                font-size: 10.5pt; /* 紙面で収まりやすいサイズ */
-                background: transparent !important; 
-                color: black !important;
-                box-shadow: none !important;
-                white-space: normal; /* 紙面では折り返しを許可してはみ出し防止 */
-                font-weight: normal;
+                border: none !important; padding: 0 !important; font-size: 10.5pt;
+                background: transparent !important; color: black !important;
+                box-shadow: none !important; white-space: normal; font-weight: normal;
             }
             .choice-slot { border: none !important; background: none !important; height: auto !important; min-height: auto !important; }
             .drop-zone { visibility: hidden; }
@@ -131,7 +142,6 @@
 </div>
 
 <script>
-// (データ部分とスクリプト部分は変更なし)
 const data = {
     sets: [
         {
