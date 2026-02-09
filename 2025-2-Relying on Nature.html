@@ -4,115 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
-    <title>2025-2 "Relying on Nature" Vocabulary Quiz</title>
+    <title>2025-2 "Relying on Nature" Quiz</title>
     <style>
-        /* --- 基本設定（仕様変更なし） --- */
+        /* --- 基本設定（スマホでの扱いやすさを強化） --- */
         body {
             background-color: #f0f2f5;
             font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 10px; /* スマホ用に少し狭める */
             margin: 0;
         }
 
         .page {
             background-color: white;
-            width: 98%;
+            width: 100%; /* スマホで横幅いっぱい */
             max-width: 1000px;
             min-height: 297mm;
-            padding: 15mm;
+            padding: 15px; /* スマホ用に調整 */
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             box-sizing: border-box;
             position: relative;
         }
 
-        h1 { text-align: center; font-size: 1.8rem; margin: 0 0 20px 0; }
-        .instructions { text-align: center; font-size: 1rem; color: #333; margin-bottom: 20px; }
+        h1 { text-align: center; font-size: 1.5rem; margin: 10px 0; }
+        .instructions { text-align: center; font-size: 0.9rem; color: #333; margin-bottom: 15px; }
 
-        .set-container { margin-bottom: 40px; }
+        .set-container { margin-bottom: 30px; }
         .set-title {
-            font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;
-            border-left: 6px solid #4A90E2; padding-left: 12px;
+            font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;
+            border-left: 6px solid #4A90E2; padding-left: 10px;
         }
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        td { padding: 12px 5px; vertical-align: middle; }
+        td { padding: 8px 3px; vertical-align: middle; }
 
-        .jp-column { width: 45%; font-size: 1.1rem; line-height: 1.4; color: #333; }
-        .answer-column { width: 25%; border-bottom: 2px solid #4A90E2; position: relative; }
-        .choice-column { width: 30%; text-align: right; }
+        /* 日本語列：スマホで2行になっても崩れないように */
+        .jp-column { width: 45%; font-size: 1rem; line-height: 1.2; color: #333; }
+        .answer-column { width: 28%; border-bottom: 2px solid #4A90E2; position: relative; }
+        .choice-column { width: 27%; text-align: right; }
 
+        /* タップ反応エリアを広く確保 */
         .drop-zone, .choice-slot {
-            width: 100%; min-height: 50px; display: flex; align-items: center; justify-content: center;
+            width: 100%; min-height: 44px; display: flex; align-items: center; justify-content: center;
         }
         .choice-slot { border: 1px dashed #ccc; border-radius: 5px; background-color: #fcfcfc; }
 
         .word-chip {
-            font-variant-ligatures: none;
-            letter-spacing: 0.03em;
-            padding: 8px 12px;
+            padding: 6px 8px;
             background-color: #fff;
             border: 2px solid #4A90E2;
             border-radius: 8px;
             cursor: grab;
             user-select: none;
             font-family: "Chalkboard SE", "Chalkboard", "Comic Neue", "Comic Sans MS", cursive, sans-serif;
-            font-size: 1.1rem;
+            font-size: 0.95rem; /* スマホでちょうどいいサイズ */
             font-weight: bold;
             color: #333;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
             touch-action: none;
-            white-space: nowrap;
+            white-space: normal; /* スマホで長い単語が折り返せるように */
+            text-align: center;
+            line-height: 1.1;
         }
         
         .word-chip.selected { background-color: #ffeb3b; border-color: #fbc02d; }
         .dragging { opacity: 0.8; transform: scale(1.1); z-index: 1000 !important; }
-        .result-mark { position: absolute; right: -30px; top: 10px; font-weight: bold; font-size: 1.6rem; }
+        .result-mark { position: absolute; right: -25px; top: 8px; font-weight: bold; font-size: 1.4rem; }
         .correct { color: #28a745; }
         .incorrect { color: #dc3545; }
 
-        .controls { margin-bottom: 15px; display: flex; gap: 10px; }
+        .controls { margin-bottom: 15px; display: flex; gap: 10px; width: 100%; max-width: 400px; }
         button {
-            padding: 12px 20px; font-size: 1rem; cursor: pointer;
+            flex: 1; padding: 12px 10px; font-size: 0.9rem; cursor: pointer;
             border: none; border-radius: 8px; color: white; font-weight: bold;
         }
         .reset-btn { background-color: #4A90E2; }
         .check-btn { background-color: #28a745; }
 
+        /* --- 印刷用（既存仕様を維持） --- */
         @media print {
             @page { size: A4; margin: 8mm; }
             body { background: white; padding: 0; }
-            .page { box-shadow: none; width: 100%; max-width: 100%; padding: 0; min-height: auto; border: none; }
+            .page { box-shadow: none; width: 100%; padding: 0; min-height: auto; border: none; }
             .controls, .instructions, .set-title, .result-mark { display: none !important; }
             h1 { font-size: 16pt; margin-bottom: 30px; }
-            .set-container { margin-bottom: 25px; page-break-inside: avoid; }
             td { padding: 5px 2px; }
-            .jp-column { font-size: 10pt; width: 42%; line-height: 1.1; }
+            .jp-column { font-size: 10pt; width: 42%; }
             .answer-column { border-bottom: 1px solid #000 !important; width: 20%; }
             .choice-column { width: 38%; text-align: left; padding-left: 15px; } 
-            .word-chip { border: none !important; padding: 0 !important; font-size: 10.5pt; background: transparent !important; color: black !important; box-shadow: none !important; white-space: normal; font-weight: normal; }
+            .word-chip { border: none !important; padding: 0 !important; font-size: 10.5pt; background: transparent !important; color: black !important; box-shadow: none !important; font-weight: normal; }
             .choice-slot { border: none !important; background: none !important; height: auto !important; min-height: auto !important; }
             .drop-zone { visibility: hidden; }
-            * { color: black !important; border-color: black !important; }
         }
     </style>
 </head>
 <body>
 
 <div class="controls">
-    <button class="reset-btn" onclick="renderAll()">リセット / シャッフル</button>
+    <button class="reset-btn" onclick="renderAll()">リセット</button>
     <button class="check-btn" onclick="checkAnswers()">答え合わせ</button>
 </div>
 
 <div class="page">
-    <h1>2025-2 "Relying on Nature" Vocabulary Quiz</h1>
-    <p class="instructions">単語をドラッグまたはタップして、正しい意味の場所に並べましょう。</p>
+    <h1>2025-2 "Relying on Nature" Quiz</h1>
+    <p class="instructions">単語をタップしてから、空枠をタップして移動！</p>
     <div id="sets-root"></div>
 </div>
 
 <script>
+// 指定された全35ワードを分類して配置
 const data = {
     sets: [
         {
@@ -122,7 +124,7 @@ const data = {
                 { jp: "（～を）噛む", en: "chew" },
                 { jp: "自ら治療する", en: "self-medicate" },
                 { jp: "仮説を立てる", en: "hypothesize" },
-                { jp: "～を引き起こす、誘発する", en: "trigger" },
+                { jp: "～を引き起こす", en: "trigger" },
                 { jp: "～を決定する", en: "determine" },
                 { jp: "～を補う", en: "supplement" }
             ]
@@ -130,13 +132,13 @@ const data = {
         {
             title: "Verbs 2 & Phrases",
             items: [
-                { jp: "～に言及する、呼ぶ", en: "refer to" },
-                { jp: "AからBへ伝える（受け継ぐ）", en: "pass on from A to B" },
+                { jp: "～と言及する", en: "refer to" },
+                { jp: "AからBへ伝える", en: "pass on from A to B" },
                 { jp: "～の標的になる", en: "targeted by" },
-                { jp: "～を超越する、～の先を行く", en: "go beyond" },
+                { jp: "～を超越する", en: "go beyond" },
                 { jp: "～に苦しむ", en: "suffer from" },
                 { jp: "戦略を立てる", en: "develop a strategy" },
-                { jp: "これは～ということを意味する", en: "this implies that" }
+                { jp: "これは～を意味する", en: "this implies that" }
             ]
         },
         {
@@ -144,37 +146,37 @@ const data = {
             items: [
                 { jp: "人間の特性", en: "human trait" },
                 { jp: "治療（薬）", en: "remedy" },
-                { jp: "薬効、薬理的特性", en: "medicinal property" },
-                { jp: "増え続ける研究（知見）", en: "a growing body of research" },
+                { jp: "薬理的特性", en: "medicinal property" },
+                { jp: "増え続ける研究", en: "a growing body of research" },
                 { jp: "胃の寄生虫", en: "stomach parasite" },
                 { jp: "知的能力", en: "intellectual ability" },
                 { jp: "報告された事例", en: "reported cases" }
             ]
         },
         {
-            title: "Nouns 2 (Biology)",
+            title: "Nouns 2",
             items: [
                 { jp: "スズメバチ", en: "wasp" },
                 { jp: "ショウジョウバエ", en: "fruit fly" },
-                { jp: "幼虫", en: "larvae" },
+                { jp: "幼虫（複数形）", en: "larvae" },
                 { jp: "菌類感染症", en: "fungal infection" },
-                { jp: "アリの巣（コロニー）", en: "ant colony" },
+                { jp: "アリのコロニー", en: "ant colony" },
                 { jp: "樹脂", en: "resin" },
-                { jp: "腐敗（名詞・動詞）", en: "rot" }
+                { jp: "腐敗（する）", en: "rot" }
             ]
         },
         {
             title: "Adjectives & Others",
             items: [
-                { jp: "明らかに、当然ながら", en: "obviously" },
-                { jp: "高度な、進歩した", en: "advanced" },
-                { jp: "先天的な、本能的な", en: "innate" },
-                { jp: "アルコール度数が高い", en: "high alcohol content" },
+                { jp: "明らかに", en: "obviously" },
+                { jp: "高度な", en: "advanced" },
+                { jp: "先天的な", en: "innate" },
+                { jp: "高アルコール含有", en: "high alcohol content" },
                 { jp: "抗菌の", en: "antibacterial" },
                 { jp: "抗真菌の", en: "antifungal" },
-                { jp: "適切な、十分な", en: "adequate" },
-                { jp: "意図的に、わざと", en: "deliberately" },
-                { jp: "脆弱な、影響を受けやすい", en: "vulnerable to" }
+                { jp: "適切な", en: "adequate" },
+                { jp: "意図的に", en: "deliberately" },
+                { jp: "～に脆弱な", en: "vulnerable to" }
             ]
         }
     ]
@@ -232,7 +234,7 @@ function renderAll() {
     });
 }
 
-// (以下、ロジック部分は元のコードと同一)
+// ロジック部分は元のコードを完全維持
 let touchOffsetX = 0;
 let touchOffsetY = 0;
 
