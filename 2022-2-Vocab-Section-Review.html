@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2022-2 Eiken Pre-1 Vocab Master 100</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --primary-navy: #1a2a6c;
+            --accent-blue: #5da9e9;
+            --text-dark: #2c3e50;
+            --gray-light: #dcdde1;
+            --white: #ffffff;
+            --error-red: #e84118;
+            --success-green: #4cd137;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 700px;
+            width: 90%;
+            margin: 20px 0;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 0.9rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .word-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0 30px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--bg-color);
+        }
+
+        .word-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-navy);
+        }
+
+        .speaker-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--accent-blue);
+            transition: transform 0.1s;
+        }
+
+        .speaker-btn:active { transform: scale(1.2); }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid var(--accent-blue);
+            padding: 20px 10px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--base-font);
+            color: var(--primary-navy);
+        }
+
+        .choice-btn:hover { background-color: #f0f7ff; transform: translateY(-2px); }
+        .choice-btn.wrong { background-color: #fab1a0; border-color: var(--error-red); color: var(--error-red); animation: shake 0.3s; }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        .score-num { font-size: 3.5rem; color: var(--primary-navy); font-weight: bold; }
+        .mistake-list { text-align: left; background: #fff5f5; padding: 15px; border-radius: 10px; margin-top: 20px; max-height: 250px; overflow-y: auto; border: 1px solid #ffcdd2; }
+        .mistake-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #ffebee; }
+        .action-btn { background-color: var(--primary-navy); color: white; border: none; padding: 15px 40px; border-radius: 40px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; width: 100%; font-family: var(--base-font); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2022-2 準1級 語彙完全制覇 100問</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 100</div>
+    <div class="word-area">
+        <div class="word-display" id="word-text">Loading...</div>
+        <button class="speaker-btn" onclick="speakWord()">🔊</button>
+    </div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.2em; font-weight: bold;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>トレーニング終了！</h2>
+    <div>一度で正解：<span class="score-num" id="final-score">0</span> / <span id="total-questions-display">100</span>問</div>
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<script>
+const vocabList = [
+    // の全選択肢100語を収録
+    {w:"reckon", a:"〜と推測する", c:["〜を拒絶する", "〜を任命する", "〜を許可する"]},
+    {w:"thaw", a:"溶ける・解凍する", c:["蒸発する", "凝固する", "燃焼する"]},
+    {w:"stray", a:"迷い込む", c:["留まる", "到着する", "接近する"]},
+    {w:"shatter", a:"粉砕する", c:["修理する", "磨く", "組み立てる"]},
+    {w:"remodel", a:"作り直す・リフォームする", c:["破壊する", "放置する", "模倣する"]},
+    {w:"stumble", a:"つまずく", c:["滑走する", "跳躍する", "疾走する"]},
+    {w:"overlap", a:"重なり合う", c:["分離する", "縮小する", "消失する"]},
+    {w:"instill", a:"徐々に覚え込ませる", c:["除去する", "忘却する", "拒絶する"]},
+    {w:"detectable", a:"検出可能な", c:["隠された", "複雑な", "貴重な"]},
+    {w:"earnest", a:"真面目な", c:["軽薄な", "臆病な", "残酷な"]},
+    {w:"cumulative", a:"累積的な", c:["一時的な", "減少する", "断続的な"]},
+    {w:"underlying", a:"根本的な", c:["表面的な", "些細な", "魅力的な"]},
+    {w:"bureau", a:"局・事務局", c:["工場", "市場", "劇場"]},
+    {w:"nuisance", a:"厄介なもの", c:["宝物", "奇跡", "報酬"]},
+    {w:"sequel", a:"続編", c:["前兆", "原作", "抜粋"]},
+    {w:"metaphor", a:"隠喩", c:["事実", "誇張", "矛盾"]},
+    {w:"saturated", a:"浸った・飽和した", c:["乾燥した", "汚れた", "壊れた"]},
+    {w:"flattered", a:"お世辞を言われた", c:["侮辱された", "驚かされた", "叱られた"]},
+    {w:"ingested", a:"摂取した", c:["排出した", "保存した", "準備した"]},
+    {w:"ridiculed", a:"あざ笑われた", c:["尊敬された", "励まされた", "無視された"]},
+    {w:"mortal", a:"死ぬ運命の", c:["永遠の", "勇敢な", "活発な"]},
+    {w:"bashful", a:"内気な", c:["厚かましい", "冷淡な", "陽気な"]},
+    {w:"pious", a:"敬虔な", c:["不道徳な", "傲慢な", "怠惰な"]},
+    {w:"concise", a:"簡潔な", c:["冗長な", "複雑な", "曖昧な"]},
+    {w:"jumble", a:"寄せ集め・混線", c:["秩序", "欠陥", "傑作"]},
+    {w:"relic", a:"遺物・名残", c:["新製品", "偽造品", "付属品"]},
+    {w:"fraud", a:"詐欺", c:["正直", "慈善", "契約"]},
+    {w:"treaty", a:"条約", c:["反乱", "訴訟", "演説"]},
+    {w:"sparkled", a:"輝いた", c:["曇った", "震えた", "叫んだ"]},
+    {w:"leered", a:"卑しく見た", c:["尊敬した", "瞬きした", "睨みつけた"]},
+    {w:"disproved", a:"反証した", c:["証明した", "誇張した", "無視した"]},
+    {w:"growled", a:"うなった", c:["囁いた", "笑った", "歌った"]},
+    {w:"gravitate", a:"引き寄せられる", c:["反発する", "漂う", "逃亡する"]},
+    {w:"detach", a:"切り離す", c:["結合する", "拡張する", "保持する"]},
+    {w:"uphold", a:"維持する・支持する", c:["廃止する", "妨害する", "批判する"]},
+    {w:"eradicate", a:"根絶する", c:["育成する", "保護する", "拡散する"]},
+    {w:"gloomy", a:"陰気な", c:["晴れやかな", "穏やかな", "活気ある"]},
+    {w:"compulsory", a:"義務的な", c:["自発的な", "臨時的な", "特権的な"]},
+    {w:"reminiscent", a:"思い出させる", c:["忘れがたい", "無関係な", "予言的な"]},
+    {w:"muddled", a:"混乱した", c:["明快な", "穏やかな", "頑固な"]},
+    {w:"division", a:"分割・部門", c:["結合", "拡大", "競争"]},
+    {w:"appliance", a:"器具", c:["燃料", "資源", "衣服"]},
+    {w:"imposition", a:"負担・課すこと", c:["報酬", "許可", "辞退"]},
+    {w:"longitude", a:"経度", c:["緯度", "高度", "密度"]},
+    {w:"merged", a:"合併した", c:["分裂した", "破産した", "設立した"]},
+    {w:"posed", a:"（問題を）引き起こした", c:["解決した", "回避した", "無視した"]},
+    {w:"conformed", a:"従った", c:["反抗した", "変革した", "拒絶した"]},
+    {w:"flocked", a:"群がった", c:["散らばった", "出発した", "隠れた"]},
+    {w:"dehydrated", a:"脱水状態の", c:["潤った", "疲弊した", "興奮した"]},
+    {w:"eternal", a:"永遠の", c:["一時的な", "過去の", "頻繁な"]},
+    {w:"punctuated", a:"中断された", c:["継続された", "開始された", "完成された"]},
+    {w:"cautious", a:"慎重な", c:["無謀な", "臆病な", "寛大な"]},
+    {w:"momentary", a:"束の間の", c:["永続的な", "周期的な", "頻繁な"]},
+    {w:"miniature", a:"小型模型の", c:["巨大な", "本物の", "古代の"]},
+    {w:"disobedient", a:"従順でない", c:["忠実な", "賢明な", "控えめな"]},
+    {w:"invincible", a:"無敵の", c:["脆弱な", "勇敢な", "有名な"]},
+    {w:"bystanders", a:"傍観者", c:["当事者", "指導者", "犠牲者"]},
+    {w:"reformers", a:"改革者", c:["保守主義者", "独裁者", "犯罪者"]},
+    {w:"mourners", a:"参列者・嘆く人", c:["祝賀者", "観客", "労働者"]},
+    {w:"pioneers", a:"先駆者", c:["追従者", "侵入者", "裏切り者"]},
+    {w:"irrigate", a:"灌漑する", c:["乾燥させる", "汚染する", "収穫する"]},
+    {w:"harmonize", a:"調和させる", c:["衝突させる", "孤立させる", "批判する"]},
+    {w:"outpace", a:"追い越す", c:["遅れる", "同行する", "停止する"]},
+    {w:"overthrow", a:"転覆させる", c:["設立する", "支援する", "妥協する"]},
+    {w:"scrub", a:"磨く", c:["汚す", "撫でる", "破壊する"]},
+    {w:"enchant", a:"魅了する", c:["嫌悪させる", "混乱させる", "警告する"]},
+    {w:"prune", a:"剪定する・取り除く", c:["植える", "肥料をやる", "放置する"]},
+    {w:"evaluate", a:"評価する", c:["無視する", "推測する", "批判する"]},
+    {w:"matrimony", a:"結婚", c:["離婚", "独身", "葬儀"]},
+    {w:"federation", a:"連盟", c:["同盟", "支店", "委員"]},
+    {w:"horizon", a:"地平線", c:["垂直線", "境界線", "航路"]},
+    {w:"correspondence", a:"通信・文通", c:["会話", "沈黙", "出版"]},
+    {w:"disclosure", a:"公開・暴露", c:["隠蔽", "許可", "宣伝"]},
+    {w:"admittance", a:"入場許可", c:["追放", "辞退", "制限"]},
+    {w:"attainment", a:"達成", c:["失敗", "追求", "中断"]},
+    {w:"anarchy", a:"無秩序", c:["秩序", "独裁", "法律"]},
+    {w:"stationary", a:"静止した", c:["移動する", "迅速な", "安定した"]},
+    {w:"candid", a:"率直な", c:["不誠実な", "謙虚な", "社交的な"]},
+    {w:"edible", a:"食べられる", c:["有毒な", "高価な", "腐った"]},
+    {w:"hideous", a:"ひどく醜い", c:["美しい", "巨大な", "奇妙な"]},
+    {w:"treacherous", a:"裏切りの・危険な", c:["忠実な", "勇敢な", "安全な"]},
+    {w:"momentous", a:"重大な", c:["些細な", "伝統的な", "緊急の"]},
+    {w:"flirtatious", a:"浮ついた", c:["真面目な", "献身的な", "冷淡な"]},
+    {w:"notorious", a:"悪名高い", c:["高名な", "謙虚な", "匿名の"]},
+    {w:"paid off", a:"実を結んだ・報われた", c:["失敗した", "中断した", "延期した"]},
+    {w:"wrote back", a:"返事を書いた", c:["無視した", "電話した", "投稿した"]},
+    {w:"chopped up", a:"切り刻んだ", c:["組み立てた", "混ぜ合わせた", "放置した"]},
+    {w:"made over", a:"作り直した", c:["破壊した", "模倣した", "放置した"]},
+    {w:"fill in", a:"記入する", c:["消去する", "提出する", "印刷する"]},
+    {w:"duck out", a:"こっそり逃げる", c:["立ち向かう", "参加する", "降参する"]},
+    {w:"catch on", a:"理解する", c:["誤解する", "忘れる", "無視する"]},
+    {w:"give up", a:"諦める", c:["続ける", "挑戦する", "成功する"]},
+    {w:"falls on", a:"（責任などが）かかる", c:["軽減される", "転嫁される", "回避される"]},
+    {w:"squares with", a:"一致する", c:["矛盾する", "衝突する", "協力する"]},
+    {w:"drops by", a:"立ち寄る", c:["通り過ぎる", "滞在する", "出発する"]},
+    {w:"stacks up", a:"匹敵する", c:["劣る", "卓越する", "変化する"]},
+    {w:"tuck away", a:"隠しておく", c:["展示する", "廃棄する", "利用する"]},
+    {w:"latch onto", a:"執着する", c:["手放す", "無視する", "反対する"]},
+    {w:"cover up", a:"隠蔽する", c:["公開する", "謝罪する", "調査する"]},
+    {w:"doze off", a:"居眠りする", c:["目覚める", "集中する", "働く"]}
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function loadQuestion() {
+    const current = vocabList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${vocabList.length}`;
+    document.getElementById('word-text').textContent = current.w;
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+
+    // 自動読み上げ
+    setTimeout(speakWord, 300);
+}
+
+function speakWord() {
+    const word = vocabList[currentIndex].w;
+    const uttr = new SpeechSynthesisUtterance(word);
+    uttr.lang = 'en-US';
+    
+    // アメリカ人の声を探す
+    const voices = speechSynthesis.getVoices();
+    const usVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || 
+                    voices.find(v => v.lang === 'en-US');
+    if (usVoice) uttr.voice = usVoice;
+
+    speechSynthesis.speak(uttr);
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Excellent!";
+        }
+        setTimeout(() => {
+            currentIndex++;
+            if (currentIndex < vocabList.length) loadQuestion();
+            else showResult();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({w: vocabList[currentIndex].w, a: vocabList[currentIndex].a});
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+    document.getElementById('total-questions-display').textContent = vocabList.length;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.w}</strong>
+                <span>${m.a}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("2022-2 【英検準1級】語彙トレーニング(100問)結果報告");
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習リスト:\n" + mistakes.map(m => `・${m.w} (${m.a})`).join("\n")
+        : "\n\n完璧です！";
+    const body = encodeURIComponent(`Tamaki先生へ\n\n結果: ${vocabList.length}問中 ${firstTryCorrectCount} 問正解。${mistakeText}`);
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+// 声のリストがロードされるまで待機
+window.speechSynthesis.onvoiceschanged = () => {};
+window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
