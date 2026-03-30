@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2025-1 2B "Gladiator Equality" Vocabulary Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --primary-navy: #2c3e50;
+            --accent-orange: #e67e22;
+            --text-dark: #34495e;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 700px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .word-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-navy);
+            margin: 10px 0 30px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--bg-color);
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 18px 10px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ffebee;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2025-1 2B "Gladiator Equality" Vocabulary Quiz</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 32</div>
+    <div class="word-display" id="word-text">Loading...</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 32問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<script>
+const vocabList = [
+    {w:"public arenas", a:"公共の競技場", c:["公立の広場","政府の議事堂","市営の劇場"]},
+    {w:"iconic", a:"象徴的な", c:["空想的な","皮肉な","論理的な"]},
+    {w:"ancient", a:"古代の", c:["現代の","未来の","近所の"]},
+    {w:"historical records", a:"歴史的記録", c:["歴史的背景","時代劇","過去の記憶"]},
+    {w:"pre-Roman", a:"ローマ以前の", c:["古代ローマの","ローマに従う","ローマ周辺の"]},
+    {w:"gladiator", a:"剣闘士", c:["騎士","独裁者","哲学者"]},
+    {w:"adopt", a:"採用する・取り入れる", c:["適応する","拒絶する","変更する"]},
+    {w:"unlike", a:"〜と違って", c:["〜と同じように","〜を除いて","〜にもかかわらず"]},
+    {w:"uncommon", a:"珍しい", c:["平凡な","有害な","不公平な"]},
+    {w:"admit defeat", a:"敗北を認める", c:["勝利を確信する","降伏を命じる","敵を許す"]},
+    {w:"whether ... or", a:"〜かそれとも...か", c:["〜の結果として","〜に関わらず","〜と同時に"]},
+    {w:"sponsor", a:"後援者・主催者", c:["審判","観客","競争相手"]},
+    {w:"fee", a:"料金・謝礼", c:["罰金","給与","借金"]},
+    {w:"rarely", a:"めったに〜ない", c:["頻繁に","たまに","常に"]},
+    {w:"at a time when", a:"〜である時に", c:["〜の代わりに","〜の結果","〜する直前に"]},
+    {w:"undergo", a:"（変化などを）経験する・経る", c:["耐える","無視する","改善する"]},
+    {w:"republic", a:"共和国", c:["帝国","君主制","植民地"]},
+    {w:"empire", a:"帝国", c:["議会","都市国家","王国"]},
+    {w:"novelty", a:"新しさ・目新しさ", c:["伝統","退屈","複雑さ"]},
+    {w:"excitement", a:"興奮", c:["安心","絶望","好奇心"]},
+    {w:"as with", a:"〜と同様に", c:["〜の結果として","〜に反して","〜のために"]},
+    {w:"slave", a:"奴隷", c:["貴族","兵士","雇い主"]},
+    {w:"as a form of", a:"〜の一形態として", c:["〜を理由に","〜の代わりに","〜の目的で"]},
+    {w:"escape from", a:"〜から逃れる", c:["〜へ避難する","〜を無視する","〜に直面する"]},
+    {w:"male-dominated society", a:"男性中心の社会", c:["男女平等な社会","伝統的な社会","近代的な社会"]},
+    {w:"fame", a:"名声", c:["不名誉","富","運命"]},
+    {w:"despite this", a:"これにもかかわらず", c:["これに加えて","それゆえに","同様に"]},
+    {w:"similarly", a:"同様に", c:["それどころか","ついに","具体的には"]},
+    {w:"in fact", a:"実際に・実は", c:["結局","おそらく","一方で"]},
+    {w:"therefore", a:"それゆえに", c:["しかしながら","さらに","たとえば"]},
+    {w:"ban", a:"禁止する", c:["許可する","勧める","延期する"]},
+    {w:"prohibit", a:"禁止する・妨げる", c:["奨励する","要求する","保護する"]}
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function loadQuestion() {
+    const current = vocabList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${vocabList.length}`;
+    document.getElementById('word-text').textContent = current.w;
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            if (currentIndex < vocabList.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({w: vocabList[currentIndex].w, a: vocabList[currentIndex].a});
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.w}</strong>
+                <span>${m.a}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【英検準1級】Gladiator Equality 語彙復習結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習リスト:\n" + mistakes.map(m => `・${m.w} (${m.a})`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n読解問題「Gladiator Equality」の語彙復習（32問）を完了しました。\n\n結果: ${vocabList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して定着させます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
