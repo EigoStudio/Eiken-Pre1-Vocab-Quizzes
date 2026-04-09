@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2025-1 3B "The Science of Revenge" Vocabulary Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --primary-navy: #2c3e50;
+            --accent-orange: #e67e22;
+            --text-dark: #34495e;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 700px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .word-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-navy);
+            margin: 10px 0 30px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--bg-color);
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 18px 10px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ffebee;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2025-1 3B "The Science of Revenge" Vocabulary Quiz</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 51</div>
+    <div class="word-display" id="word-text">Loading...</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 51問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<script>
+const vocabList = [
+    {w:"revenge", a:"復讐", c:["和解","謝罪","称賛"]},
+    {w:"phenomenon", a:"現象", c:["理論","法律","発明"]},
+    {w:"around the globe", a:"世界中で", c:["過去に","宇宙で","球体の周りに"]},
+    {w:"instinct", a:"本能", c:["教育","技術","記憶"]},
+    {w:"psychological theory", a:"心理学の理論", c:["生物学的データ","歴史的事実","数学的公式"]},
+    {w:"of the past", a:"過去の", c:["将来の","現代の","永遠の"]},
+    {w:"buildup", a:"蓄積", c:["減少","爆発","消失"]},
+    {w:"rage", a:"激怒", c:["喜び","悲しみ","驚き"]},
+    {w:"hatred", a:"憎しみ", c:["愛情","友情","同情"]},
+    {w:"feel victimized", a:"被害者だと感じる", c:["加害者だと思う","自信に満ちる","感謝する"]},
+    {w:"steam engine", a:"蒸気機関", c:["電気モーター","内燃機関","水車"]},
+    {w:"aggressive acts", a:"攻撃的な行為", c:["協力的な態度","平和的な解決","受動的な反応"]},
+    {w:"attempt", a:"試みる", c:["諦める","成功させる","避ける"]},
+    {w:"get even", a:"仕返しをする", c:["借金を返す","公平に分ける","許す"]},
+    {w:"evolution", a:"進化", c:["退化","停滞","創造"]},
+    {w:"play a part", a:"役割を果たす", c:["邪魔をする","無視する","主役になる"]},
+    {w:"bring about", a:"引き起こす", c:["中止させる","延期する","片付ける"]},
+    {w:"tendency", a:"傾向", c:["例外","規則","拒絶"]},
+    {w:"close relatives", a:"近縁種", c:["遠い親戚","他人","敵対者"]},
+    {w:"retaliate", a:"報復する", c:["降伏する","謝罪する","協力する"]},
+    {w:"biological mechanism", a:"生物学的なメカニズム", c:["社会的なルール","心理的なトリック","物理的な衝撃"]},
+    {w:"at work", a:"作用して", c:["休憩中で","故障して","隠されて"]},
+    {w:"in ancient times", a:"古代に", c:["最近","将来","中世に"]},
+    {w:"murder", a:"殺人", c:["救出","逮捕","教育"]},
+    {w:"theft", a:"窃盗", c:["寄付","売買","紛失"]},
+    {w:"discourage", a:"思いとどまらせる", c:["奨励する","期待する","驚かせる"]},
+    {w:"drive", a:"衝動", c:["ブレーキ","停止","無関心"]},
+    {w:"enact", a:"実行する", c:["計画する","中止する","想像する"]},
+    {w:"survival", a:"生存", c:["絶滅","誕生","進化"]},
+    {w:"shape", a:"形作る", c:["破壊する","模倣する","無視する"]},
+    {w:"enforce laws", a:"法律を執行する", c:["法律を廃止する","法律を作る","法律を学ぶ"]},
+    {w:"tribal people", a:"部族の人々", c:["都会の人々","役人","学者"]},
+    {w:"justice system", a:"司法制度", c:["教育制度","経済システム","医療体制"]},
+    {w:"settings", a:"環境・場所", c:["設定時間","道具","背景知識"]},
+    {w:"sophisticated", a:"洗練された", c:["単純な","古い","乱雑な"]},
+    {w:"law enforcement system", a:"法執行システム", c:["立法機関","司法試験","防犯カメラ"]},
+    {w:"suffer from", a:"〜に苦しむ", c:["〜を楽しむ","〜を避ける","〜を克服する"]},
+    {w:"great degree of", a:"かなりの程度の", c:["わずかな","平均的な","過剰な"]},
+    {w:"origins", a:"起源", c:["結果","目的地","最新モデル"]},
+    {w:"come at", a:"〜を伴う", c:["〜に到着する","〜を攻撃する","〜から離れる"]},
+    {w:"imprisonment", a:"投獄", c:["釈放","昇進","追放"]},
+    {w:"loss of life", a:"命を失うこと", c:["誕生","怪我","長寿"]},
+    {w:"behavior", a:"行動", c:["思考","外見","名前"]},
+    {w:"tolerated", a:"許容される", c:["禁止される","推奨される","無視される"]},
+    {w:"aware of", a:"〜を意識している", c:["〜を忘れている","〜を恐れている","〜を好んでいる"]},
+    {w:"put in effort", a:"努力する", c:["サボる","結果を待つ","反対する"]},
+    {w:"resent", a:"憤慨する", c:["感謝する","期待する","同情する"]},
+    {w:"motivation", a:"動機付け", c:["怠慢","結果","障害"]},
+    {w:"reinforce", a:"強化する", c:["弱める","削除する","変更する"]},
+    {w:"wronged person", a:"不当な扱いを受けた人", c:["犯人","目撃者","裁判官"]},
+    {w:"come about", a:"起こる・生じる", c:["終わる","隠れる","去る"]}
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function loadQuestion() {
+    if (currentIndex >= vocabList.length) {
+        showResult();
+        return;
+    }
+    const current = vocabList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${vocabList.length}`;
+    document.getElementById('word-text').textContent = current.w;
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({w: vocabList[currentIndex].w, a: vocabList[currentIndex].a});
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.w}</strong>
+                <span>${m.a}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【英検準1級】The Science of Revenge 語彙復習結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習リスト:\n" + mistakes.map(m => `・${m.w} (${m.a})`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n読解問題「The Science of Revenge」の語彙復習（51問）を完了しました。\n\n結果: ${vocabList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して定着させます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
