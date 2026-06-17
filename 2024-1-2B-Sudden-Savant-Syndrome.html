@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2024-1 2B - Sudden Savant Syndrome</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --primary-navy: #1e3799;
+            --accent-blue: #4a69bd;
+            --text-dark: #2f3542;
+            --gray-light: #f1f2f6;
+            --white: #ffffff;
+            --error-red: #eb2f06;
+            --success-green: #10ac84;
+            --choice-bg: #ffffff;
+            --choice-border: #ced6e0;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 20px 0;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: left;
+        }
+
+        .progress-bar {
+            font-size: 0.9rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+        }
+
+        .question-title {
+            font-size: 1.15rem;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary-navy);
+            padding-left: 10px;
+        }
+
+        .sentence-display {
+            background-color: var(--gray-light);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            word-break: break-word;
+        }
+
+        .audio-btn-inline {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            background: var(--choice-bg);
+            border: 2px solid var(--choice-border);
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--base-font);
+            color: var(--text-dark);
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            background-color: #f7f9fa;
+            border-color: var(--accent-blue);
+        }
+
+        .choice-btn.correct {
+            background-color: #e3fcef;
+            border-color: var(--success-green);
+            color: var(--success-green);
+        }
+
+        .choice-btn.wrong {
+            background-color: #ffebe6;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback-success {
+            background-color: #e3fcef;
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
+        }
+
+        .feedback-error {
+            background-color: #ffebe6;
+            color: var(--error-red);
+            border: 1px solid var(--error-red);
+        }
+
+        .nav-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            font-family: var(--base-font);
+            display: none;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .score-num { font-size: 3.5rem; color: var(--primary-navy); font-weight: bold; }
+        .mistake-list { text-align: left; background: #fff5f5; padding: 15px; border-radius: 10px; margin-top: 20px; max-height: 300px; overflow-y: auto; border: 1px solid #ffcdd2; }
+        .mistake-item { padding: 10px 0; border-bottom: 1px solid #ffebee; line-height: 1.5; }
+        .mistake-item:last-child { border-bottom: none; }
+        .action-btn { background-color: var(--primary-navy); color: white; border: none; padding: 15px 40px; border-radius: 40px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; font-family: var(--base-font); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-1 2B - Sudden Savant Syndrome</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 16</div>
+    
+    <div class="question-block">
+        <div class="question-title" id="question-text">Loading...</div>
+        <div class="sentence-display" id="sentence-area" style="display:none;"></div>
+        <div class="choices-grid" id="choices-container"></div>
+    </div>
+
+    <div class="feedback-box" id="feedback-area"></div>
+    <button class="nav-btn" id="next-btn" onclick="nextQuestion()">次の問題へ ▶</button>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>アクティビティ終了！</h2>
+    <div style="font-size:1.2rem; margin: 20px 0;">一度で正解できた問題：<span class="score-num" id="final-score">0</span> / 16問</div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px; text-align:left;">復習が必要なポイント</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+    
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<script>
+const quizList = [
+    {
+        type: "predict",
+        q: "【文章の展開を予測する】<br>本文の冒頭近くに次の表現があります。'Until recently（最近まで）' で文が始まっている場合、この後にどのような展開（論理構成）が続くと予測するのが最も適切ですか？",
+        sentence: "Until recently, scientists thought savant syndrome...",
+        audioText: "Until recently, scientists thought savant syndrome",
+        correct: "The previous belief of scientists has changed or been proven wrong now.（科学者たちのこれまでの認識が、現在は変わったか、あるいは間違っていたと証明される展開）",
+        choices: [
+            "Scientists will continue to believe the same theory in the future.（科学者たちは将来も同じ理論を信じ続けるという展開）",
+            "The previous belief of scientists has changed or been proven wrong now.（科学者たちのこれまでの認識が、現在は変わったか、あるいは間違っていたと証明される展開）",
+            "No new discoveries have been made about savant syndrome since then.（それ以来、サヴァン症候群についての新しい発見は一切なされていないという展開）",
+            "Scientists have stopped researching savant syndrome entirely.（科学者たちはサヴァン症候群の研究を完全にやめてしまったという展開）"
+        ],
+        explanation: "「Until recently（最近まで）」というシグナル表現は、「昔はこう思われていたが、今は新しい事実が判明して常識が変わった」という『過去と現在の対比・変化』を後ろに導く強力なキーワードです。"
+    },
+    {
+        type: "vocab",
+        q: "【同義語を選ぼう】<br>下線部 'exceptional' の、この文脈における意味として最も近いものを1つ選んでください。",
+        sentence: "Savant syndrome is a rare medical condition in which people have <u>exceptional</u> skills in areas like music, art, or mathematics.",
+        audioText: "Savant syndrome is a rare medical condition in which people have exceptional skills in areas like music, art, or mathematics.",
+        correct: "outstanding",
+        choices: [
+            "ordinary",
+            "temporary",
+            "outstanding",
+            "beautiful"
+        ],
+        explanation: "exceptional は「並外れて優れた、非常に優秀な」という意味です。サヴァン症候群の人が持つ驚異的な能力を指しているため、outstanding（傑出した）が同義語として最も適切です。"
+    },
+    {
+        type: "vocab",
+        q: "【和訳を選ぼう】<br>フレーズ 'rare medical condition' の日本語訳として最も適切なものを1つ選んでください。",
+        sentence: "Savant syndrome is a <u>rare medical condition</u>...",
+        audioText: "Savant syndrome is a rare medical condition",
+        correct: "珍しい症状",
+        choices: [
+            "珍しい症状",
+            "深刻な怪我",
+            "科学的な発見",
+            "一般的な体質"
+        ],
+        explanation: "rare（珍しい、稀な）、medical（医療の、医学的な）、condition（状態、病状）が組み合わさった表現で、「珍しい症状」という意味になります。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：衝動に駆られる】<br>「彼女は突然、芸術を創作したいという衝動に駆られた」という意味になるように、空欄に入る最も適切な動詞を選んでください。",
+        sentence: "Though she had never taken a class or had any previous experience, she suddenly ( &nbsp; &nbsp; &nbsp; &nbsp; ) an urge to create art.",
+        audioText: "Though she had never taken a class or had any previous experience, she suddenly blank an urge to create art.",
+        correct: "felt",
+        choices: ["felt", "ignored", "needed", "found"],
+        explanation: "feel an urge to 〜 で「〜したい衝動に駆られる（衝動を感じる）」という非常に重要で相性の良いコロケーション（決まり文句）です。過去の出来事なので felt になります。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：習得したスキル】<br>「彼女の新たに習得したスキル」という意味になるように、空欄に入れるのに最も適切な単語を選んでください。",
+        sentence: "Her newly ( &nbsp; &nbsp; &nbsp; &nbsp; ) skills allowed her to draw realistic pictures.",
+        audioText: "Her newly blank skills allowed her to draw realistic pictures.",
+        correct: "acquired",
+        choices: ["acquired", "extraordinary", "balanced", "ignored"],
+        explanation: "acquire は「（努力や後天的なプロセスによって）習得する、身につける」という意味の重要動詞です。newly acquired skills で「新しく身につけたスキル」となります。"
+    },
+    {
+        type: "vocab",
+        q: "【和訳を選ぼう】<br>文中で使われている 'ignoring' の意味として最も適切なものを1つ選んでください。選択肢のニュアンスに注意しましょう。",
+        sentence: "...reportedly, the woman felt the need to draw and paint for hours, <u>ignoring</u> other aspects of her life.",
+        audioText: "reportedly, the woman felt the need to draw and paint for hours, ignoring other aspects of her life.",
+        correct: "〜を無視して（省みずに）",
+        choices: [
+            "〜を楽しんで（満喫して）",
+            "〜を改善して（整えて）",
+            "〜を無視して（省みずに）",
+            "〜を優先して（重んじて）"
+        ],
+        explanation: "ignore は「〜を無視する、見落とす、省みない」という意味の動詞です。絵を描くことに没頭するあまり、他の日常生活をないがしろにしている様子を表しています。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：生活の側面】<br>「彼女の生活の他の側面を無視して」という意味になるように、空欄に適切な名詞を選んでください。",
+        sentence: "...ignoring other ( &nbsp; &nbsp; &nbsp; &nbsp; ) of her life.",
+        audioText: "ignoring other blank of her life.",
+        correct: "aspects",
+        choices: ["aspects", "details", "skills", "balances"],
+        explanation: "aspects of one's life で「生活の側面（仕事、家庭、趣味など様々な要素のこと）」を意味します。ここでは複数形で aspects となります。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：動詞の選択】<br>「彼女はその病気（症状）と共に生活していけるように、バランスを取る（見つける）ために努力しなければならなかった」という意味になるよう、空欄に適切な動詞を入れてください。",
+        sentence: "She had to work hard to ( &nbsp; &nbsp; &nbsp; &nbsp; ) a balance that allowed her to live with her condition.",
+        audioText: "She had to work hard to blank a balance that allowed her to live with her condition.",
+        correct: "find",
+        choices: ["find", "lose", "make", "act"],
+        explanation: "「バランスを取る、調和を見出す」は英語で find a balance という動詞 find を使った強い結びつき（コロケーション）を持っています。しっかり覚えておきたいフレーズです。"
+    },
+    {
+        type: "vocab",
+        q: "【単語の意味を考えよう】<br>フレーズ 'This overpowering need' の中で使われている単語 **'overpowering'** の、ここでの意味として最も適切なものを1つ選んでください。",
+        sentence: "This <u>overpowering</u> need by people with sudden savant syndrome to act on their extraordinary skills...",
+        audioText: "This overpowering need by people with sudden savant syndrome to act on their extraordinary skills",
+        correct: "圧倒的な（抵抗できないほど強い）",
+        choices: [
+            "圧倒的な（抵抗できないほど強い）",
+            "一時的な（すぐに消えてしまう）",
+            "些細な（大したことのない）",
+            "専門的な（高度に訓練された）"
+        ],
+        explanation: "overpower（〜を圧倒する、ねじ伏せる）という動詞の形容詞形で、overpowering need は「自分の意志では抑えきれないような、抗えないほど強力な欲求（衝動）」を表します。"
+    },
+    {
+        type: "vocab",
+        q: "【和訳を選ぼう】<br>下線部のフレーズ 'act on' の、ここでの意味として最も適切なものを1つ選んでください。",
+        sentence: "This overpowering need by people with sudden savant syndrome to <u>act on</u> their extraordinary skills...",
+        audioText: "This overpowering need by people with sudden savant syndrome to act on their extraordinary skills",
+        correct: "〜に基づいて行動する",
+        choices: [
+            "〜を隠そうとする",
+            "〜に基づいて行動する",
+            "〜をあきらめる",
+            "〜を自慢する"
+        ],
+        explanation: "act on 〜 は「（内なる衝動、命令、アドバイス、知識など）に従って動く、〜に基づいて行動を起こす」という意味の重要な熟語表現です。"
+    },
+    {
+        type: "vocab",
+        q: "【単語の意味を考えよう】<br>フレーズ 'extraordinary skills' の中で使われている単語 **'extraordinary'** の意味として最も適切なものを1つ選んでください。",
+        sentence: "...to act on their <u>extraordinary</u> skills is just one of the many aspects...",
+        audioText: "to act on their extraordinary skills is just one of the many aspects",
+        correct: "並外れた（普通とは格段に違う）",
+        choices: [
+            "基礎的な（誰もが最初に学ぶ）",
+            "平均的な（世間一般によくある）",
+            "並外れた（普通とは格段に違う）",
+            "芸術的な（美を追求した）"
+        ],
+        explanation: "ordinary（普通の）の頭に extra-（〜を超えた）が付いた語で、「普通の枠をはるかに超えた、並外れた、非凡な」という意味になります。第1段落の exceptional の言い換えです。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：前置詞の語法】<br>「この症候群は、彼らを他の人たちとは異なる存在にしている（他と区別している）」という意味になるように、空欄に最も適切な前置詞を入れてください。",
+        sentence: "This syndrome makes them unique ( &nbsp; &nbsp; &nbsp; &nbsp; ) others.",
+        audioText: "This syndrome makes them unique blank others.",
+        correct: "from",
+        choices: ["from", "to", "for", "with"],
+        explanation: "「〜とは違って独特である、〜と異なる」という違いの基準を示すとき、unique は前置詞 from と非常に相性が良く、unique from others という形で使われます。"
+    },
+    {
+        type: "dm",
+        q: "【論理結合語（ディスコースマーカー）の選択】<br>文脈から判断して、空欄に最も適切な接続表現を選んでください。",
+        sentence: "Sudden savant syndrome can appear after a serious head injury. ( &nbsp; &nbsp; &nbsp; &nbsp; ), a person might suddenly become an expert in mathematics after an accident.",
+        audioText: "Sudden savant syndrome can appear after a serious head injury. Blank, a person might suddenly become an expert in mathematics after an accident.",
+        correct: "For instance",
+        choices: ["In short", "On the other hand", "For instance", "In the same way"],
+        explanation: "「深刻な頭部の怪我の後に発症することがある」という一般的な説明の後に、「事故の後に突然数学の専門家になる」という【具体的な一例】を導入しているため、For instance が正解です。"
+    },
+    {
+        type: "dm",
+        q: "【論理結合語（ディスコースマーカー）の選択】<br>文脈から判断して、空欄に最も適切な接続表現を選んでください。",
+        sentence: "Some people are born with amazing musical talents. ( &nbsp; &nbsp; &nbsp; &nbsp; ), sudden savants acquire their extraordinary skills out of nowhere later in life.",
+        audioText: "Some people are born with amazing musical talents. Blank, sudden savants acquire their extraordinary skills out of nowhere later in life.",
+        correct: "On the other hand",
+        choices: ["In short", "On the other hand", "For instance", "In the same way"],
+        explanation: "「生まれつき（born with）」素晴らしい才能を持つ人と、「人生の後半で突然（later in life）」スキルを習得するサヴァンを【対比】させているため、On the other hand が適切です。"
+    },
+    {
+        type: "dm",
+        q: "【論理結合語（ディスコースマーカー）の選択】<br>文脈から判断して、空欄に最も適切な接続表現を選んでください。",
+        sentence: "After the head injury, the woman suddenly gained an extraordinary talent for painting. ( &nbsp; &nbsp; &nbsp; &nbsp; ), a man who had never studied advanced math became a calculating genius overnight.",
+        audioText: "After the head injury, the woman suddenly gained an extraordinary talent for painting. Blank, a man who had never studied advanced math became a calculating genius overnight.",
+        correct: "In the same way",
+        choices: ["In short", "On the other hand", "For instance", "In the same way"],
+        explanation: "「頭の怪我のあとに女性が絵の才能に目覚めた」というエピソードに対して、「高等数学を学んだことのない男性が一晩で計算の天才になった」という【同様の不思議な現象・共通のパターン】を並列しているため、In the same way が最も適切です。"
+    },
+    {
+        type: "dm",
+        q: "【論理結合語（ディスコースマーカー）の選択】<br>文脈から判断して、空欄に最も適切な接続表現を選んでください。",
+        sentence: "The woman spent all her time painting, ignoring her family and chores. ( &nbsp; &nbsp; &nbsp; &nbsp; ), her new skill completely took over her daily life.",
+        audioText: "The woman spent all her time painting, ignoring her family and chores. Blank, her new skill completely took over her daily life.",
+        correct: "In short",
+        choices: ["In short", "On the other hand", "For instance", "In the same way"],
+        explanation: "家事や家族を無視して絵ばかり描いていたという具体的な状況を、後半の文で「要するに、新しいスキルが彼女の日常生活を完全に支配した（乗っ取った）」と【要約・換言】しているため、In short が最適です。"
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function speakText() {
+    const qData = quizList[currentIndex];
+    if (!qData.audioText) return;
+    
+    speechSynthesis.cancel();
+    
+    const uttr = new SpeechSynthesisUtterance(qData.audioText);
+    uttr.lang = 'en-US';
+    uttr.rate = 0.85; 
+    speechSynthesis.speak(uttr);
+}
+
+function loadQuestion() {
+    const current = quizList[currentIndex];
+    
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('question-text').innerHTML = current.q;
+    
+    const sentenceArea = document.getElementById('sentence-area');
+    if (current.sentence) {
+        sentenceArea.innerHTML = current.sentence + ` <button class="audio-btn-inline" onclick="speakText()" title="英文音声を聞く">🔊</button>`;
+        sentenceArea.style.display = 'block';
+    } else {
+        sentenceArea.style.display = 'none';
+    }
+    
+    const feedbackArea = document.getElementById('feedback-area');
+    feedbackArea.style.display = 'none';
+    feedbackArea.className = 'feedback-box';
+    
+    document.getElementById('next-btn').style.display = 'none';
+    
+    isFirstTry = true;
+
+    let choices = [...current.choices];
+    if (current.type !== "dm") {
+        choices.sort(() => Math.random() - 0.5);
+    }
+
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = choice;
+        btn.onclick = () => checkAnswer(choice, current.correct, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    const current = quizList[currentIndex];
+    const feedbackArea = document.getElementById('feedback-area');
+    
+    if (feedbackArea.style.display === 'block' && feedbackArea.classList.contains('feedback-success')) {
+        return;
+    }
+
+    if (selected.trim() === correct.trim()) {
+        btn.classList.add('correct');
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            feedbackArea.className = 'feedback-box feedback-success';
+            feedbackArea.innerHTML = `✨ 正解！ Excellent!<br><span style="font-weight:normal; font-size:0.95rem;">${current.explanation}</span>`;
+        } else {
+            feedbackArea.className = 'feedback-box feedback-success';
+            feedbackArea.innerHTML = `👍 正解です！<br><span style="font-weight:normal; font-size:0.95rem;">${current.explanation}</span>`;
+        }
+        feedbackArea.style.display = 'block';
+        document.getElementById('next-btn').style.display = 'block';
+        
+        const buttons = document.querySelectorAll('.choice-btn');
+        buttons.forEach(b => {
+            if (b !== btn) b.style.opacity = '0.6';
+        });
+    } else {
+        if (isFirstTry) {
+            let cleanQTitle = current.q.split('<br>')[0];
+            mistakes.push({
+                q: cleanQTitle,
+                sentence: current.sentence,
+                correct: current.correct
+            });
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        feedbackArea.className = 'feedback-box feedback-error';
+        feedbackArea.innerHTML = `❌ Try again! もう一度考えてみましょう。`;
+        feedbackArea.style.display = 'block';
+    }
+}
+
+function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < quizList.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <span style="color: var(--error-red); font-weight: bold;">【対象】</span> ${m.q}<br>
+                <span style="color: #555; font-size: 0.95rem;">対象文：${m.sentence}</span><br>
+                <span style="color: var(--success-green); font-weight: bold;">【覚えるべき正解】</span> ${m.correct}
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【英検準1級】Sudden Savant Syndrome アクティビティ結果報告");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習・間違えたポイント:\n" + mistakes.map(m => `・${m.q} -> 正解: ${m.correct}`).join("\n")
+        : "\n\n素晴らしいです！すべての問題を一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n英検準1級長文「Sudden Savant Syndrome」のアクティビティを完了しました。\n\n結果: 16問中 ${firstTryCorrectCount} 問を一度で正解しました。${mistakeText}\n\nしっかり復習して長文の読解力を高めていきます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
