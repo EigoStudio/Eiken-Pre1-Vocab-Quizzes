@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2024-1 3A "Wolf Packs" Vocabulary Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --primary-navy: #1a2a6c;
+            --accent-orange: #f39c12;
+            --text-dark: #2c3e50;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 700px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .word-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-navy);
+            margin: 10px 0 30px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--bg-color);
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 18px 10px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ffebee;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-1 3A "Wolf Packs" Vocabulary Quiz</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 35</div>
+    <div class="word-display" id="word-text">Loading...</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 35問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<script>
+const vocabList = [
+    {w:"aggressive", a:"攻撃的な", c:["穏やかな","従順な","知性的な"]},
+    {w:"alpha male", a:"ボスの雄", c:["はぐれの雄","最年少の雄","子供の雄"]},
+    {w:"dominate", a:"支配する", c:["服従する","保護する","歓迎する"]},
+    {w:"power struggle", a:"権力闘争", c:["協力関係","平和交渉","集団行動"]},
+    {w:"myth", a:"作り話", c:["新発見","目撃談","歴史書"]},
+    {w:"arise", a:"生じる", c:["消え去る","低下する","解決する"]},
+    {w:"captive", a:"飼育下の", c:["野生の","凶暴な","絶滅の"]},
+    {w:"made up of", a:"〜で構成される", c:["〜を破壊する","〜から逃亡する","〜を歓迎する"]},
+    {w:"be forced to", a:"〜することを強いられる", c:["〜することを拒まれる","〜することを許される","〜することを望まれる"]},
+    {w:"related", a:"血縁関係のある", c:["敵対関係のある","協力関係のある","上下関係のある"]},
+    {w:"result in", a:"〜という結果になる", c:["〜を妨げることになる","〜から始まることになる","〜を避けることになる"]},
+    {w:"dissimilar", a:"似ていない", c:["親しみやすい","珍しい","変わらない"]},
+    {w:"assume", a:"思い込む", c:["実証する","調査する","否定する"]},
+    {w:"observation", a:"観察", c:["実験","想像","錯覚"]},
+    {w:"all but", a:"〜を除くすべて", c:["〜を含むすべて","〜の一部分だけ","〜のせいにする"]},
+    {w:"rather than", a:"〜ではなく", c:["〜に加えて","〜のあとに","〜のせいで"]},
+    {w:"submit to", a:"〜に服従する", c:["〜に命令する","〜を保護する","〜を威嚇する"]},
+    {w:"social structure", a:"社会構造", c:["自然環境","生活習慣","行動範囲"]},
+    {w:"flexible", a:"柔軟な", c:["厳格な","複雑な","危険な"]},
+    {w:"significant", a:"重大な", c:["些細な","一時的な","好ましい"]},
+    {w:"conflict", a:"衝突", c:["調和","合意","団結"]},
+    {w:"dissatisfied", a:"不満を抱いた", c:["満足した","興奮した","退屈した"]},
+    {w:"parasite", a:"寄生虫", c:["捕食者","草食獣","保護鳥"]},
+    {w:"fascinated", a:"魅了された", c:["失望した","恐怖した","退屈した"]},
+    {w:"captured", a:"捕獲された", c:["放流された","迷子になった","飼い慣らされた"]},
+    {w:"behavior", a:"行動", c:["外見","思考","本能"]},
+    {w:"demonstrate", a:"示す", c:["隠す","試す","省く"]},
+    {w:"concept", a:"概念", c:["実体","錯覚","偏見"]},
+    {w:"end up", a:"結局〜になる", c:["最初に〜する","途中で〜を辞める","あえて〜を試みる"]},
+    {w:"tend to", a:"〜する傾向がある", c:["〜するのを嫌がる","決して〜しない","〜するのを忘れる"]},
+    {w:"give orders", a:"命令を下す", c:["指示を仰ぐ","意見を求める","謝罪をする"]},
+    {w:"offspring", a:"子孫", c:["祖先","獲物","天敵"]},
+    {w:"power structure", a:"権力構造", c:["家族構成","肉体構造","自然環境"]},
+    {w:"dramatically", a:"劇的に", c:["徐々に","わずかに","偶然に"]},
+    {w:"fatal", a:"致命的な", c:["軽微な","一時的な","好転的な"]}
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function loadQuestion() {
+    if (currentIndex >= vocabList.length) {
+        showResult();
+        return;
+    }
+    const current = vocabList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${vocabList.length}`;
+    document.getElementById('word-text').textContent = current.w;
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({w: vocabList[currentIndex].w, a: vocabList[currentIndex].a});
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.w}</strong>
+                <span>${m.a}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【英検準1級】Wolf Packs 語彙復習結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習リスト:\n" + mistakes.map(m => `・${m.w} (${m.a})`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n読解問題「Wolf Packs」の語彙復習（35問）を完了しました。\n\n結果: ${vocabList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して定着させます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
