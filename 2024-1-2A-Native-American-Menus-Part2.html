@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2024-1 2A - Native American Menus</title>
+    <style>
+        :root {
+            --bg-color: #f0f7f4;
+            --primary-navy: #2c3e50;
+            --accent-blue: #3498db;
+            --text-dark: #2c3e50;
+            --gray-light: #ecf0f1;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --choice-bg: #ffffff;
+            --choice-border: #bdc3c7;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 20px 0;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: left;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+        }
+
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--accent-blue);
+            padding-left: 10px;
+        }
+
+        .sentence-display {
+            background-color: var(--gray-light);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            word-break: break-word;
+        }
+
+        .audio-btn-inline {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            background: var(--choice-bg);
+            border: 2px solid var(--choice-border);
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--base-font);
+            color: var(--text-dark);
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            background-color: #f7f9fa;
+            border-color: var(--accent-blue);
+        }
+
+        .choice-btn.correct {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+            color: var(--success-green);
+        }
+
+        .choice-btn.wrong {
+            background-color: #ffebee;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback-success {
+            background-color: #e8f5e9;
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
+        }
+
+        .feedback-error {
+            background-color: #ffebee;
+            color: var(--error-red);
+            border: 1px solid var(--error-red);
+        }
+
+        .nav-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            font-family: var(--base-font);
+            display: none;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .score-num { font-size: 3.5rem; color: var(--accent-blue); font-weight: bold; }
+        .mistake-list { text-align: left; background: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; max-height: 350px; overflow-y: auto; border: 1px solid #ddd; }
+        .mistake-item { padding: 12px 0; border-bottom: 1px solid #eee; line-height: 1.5; }
+        .mistake-item:last-child { border-bottom: none; }
+        .action-btn { background-color: var(--accent-blue); color: white; border: none; padding: 15px 40px; border-radius: 40px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; font-family: var(--base-font); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-1 2A - Native American Menus</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 16</div>
+    
+    <div class="question-block">
+        <div class="question-title" id="question-text">Loading...</div>
+        <div class="sentence-display" id="sentence-area" style="display:none;"></div>
+        <div class="choices-grid" id="choices-container"></div>
+    </div>
+
+    <div class="feedback-box" id="feedback-area"></div>
+    <button class="nav-btn" id="next-btn" onclick="nextQuestion()">次の問題へ ▶</button>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>Activity Completed!</h2>
+    <div style="font-size:1.2rem; margin: 20px 0;">1回目で正解できた数：<span class="score-num" id="final-score">0</span> / 16問</div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px; text-align:left;">復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+    
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #7f8c8d;" onclick="location.reload()">最初からやり直す</button>
+</div>
+
+<script>
+const quizList = [
+    {
+        type: "predict",
+        q: "【文章の展開を予測する】<br>本文の冒頭近くに 'Before Europeans settled in North America（ヨーロッパ人が北米に定住する前は）' とあります。この後、ヨーロッパ人が到来した後にどのような変化が起きたか（過去とその後の対比）が続くと予測するのが最も適切です。この文脈に合う展開を選んでください。",
+        sentence: "Before Europeans settled in North America, indigenous people had inhabited the region for thousands of years.",
+        audioText: "Before Europeans settled in North America, indigenous people had inhabited the region for thousands of years.",
+        correct: "The traditional lifestyle and diet of indigenous people changed significantly after European contact.",
+        choices: [
+            "Indigenous people immediately adopted European technologies without any conflict.",
+            "The traditional lifestyle and diet of indigenous people changed significantly after European contact.",
+            "Europeans completely adapted to the native lifestyle without changing anything.",
+            "No historical records remain regarding what happened after Europeans arrived."
+        ],
+        explanation: "「Before 〜（〜の前は）」という表現は、その後に続く「変化」や「対比」を予感させます。ヨーロッパ人が来る前と来た後での、先住民の暮らしや食文化の大きな変化へと話が展開していきます。"
+    },
+    {
+        type: "vocab",
+        q: "【単語の意味：settle】<br>下線部 'settled' の、この文脈における意味として最も適切なものを1つ選んでください。",
+        sentence: "Before Europeans <u>settled</u> in North America...",
+        audioText: "Before Europeans settled in North America",
+        correct: "定住した（移住してそこに住み着いた）",
+        choices: [
+            "定住した（移住してそこに住み着いた）",
+            "旅行した（一時的に訪れた）",
+            "戦った（土地をめぐって争った）",
+            "調査した（未開の地を調べた）"
+        ],
+        explanation: "settle は「（新しい土地に）定住する、移住する」という意味の重要な動詞です。"
+    },
+    {
+        type: "vocab",
+        q: "【同義語を選ぼう：indigenous】<br>下線部 'indigenous' の意味として最も近いものを1つ選んでください。",
+        sentence: "...<u>indigenous</u> people had inhabited the region for thousands of years.",
+        audioText: "indigenous people had inhabited the region for thousands of years.",
+        correct: "native",
+        choices: [
+            "foreign",
+            "modern",
+            "native",
+            "wealthy"
+        ],
+        explanation: "indigenous は「（ある土地に）固有の、原産の、先住の」という意味です。英検準1級の超重要単語で、native（土地生まれの、先住の）が最も近いです。"
+    },
+    {
+        type: "vocab",
+        q: "【単語の意味：inhabit】<br>下線部 'inhabited' の、この文脈における意味として最も適切なものを1つ選んでください。",
+        sentence: "...indigenous people had <u>inhabited</u> the region for thousands of years.",
+        audioText: "indigenous people had inhabited the region for thousands of years.",
+        correct: "〜に居住していた",
+        choices: [
+            "〜を訪問していた",
+            "〜に居住していた",
+            "〜を支配していた",
+            "〜を破壊していた"
+        ],
+        explanation: "inhabit は「（特定の場所・地域に）に住む、生息する、居住する」という意味の他動詞です。live in 〜 と同じような意味合いを持ちます。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：生活の糧にする】<br>「彼らはしばしばその土地の自然の恵みを生活の糧にしていた（土地に依存して暮らしていた）」という意味になるよう、空欄に入る適切な動詞を選んでください。",
+        sentence: "They often ( &nbsp; &nbsp; &nbsp; &nbsp; ) off the land, eating the animals they hunted.",
+        audioText: "They often blank off the land, eating the animals they hunted.",
+        correct: "lived",
+        choices: ["lived", "took", "kept", "brought"],
+        explanation: "live off the land / live off nature で「土地の自然の恵みを頼りに暮らす、自給自足の生活をする」という非常に重要な表現です。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：英検過去問(19)類題】<br>文脈から判断して、空欄に最も適切なフレーズを選んでください。「季節ごとに異なる食べ物で食生活が構成されていた。例えば、夏には魚を釣り、秋には野生の米を収穫し…」という具体例につながる内容です。",
+        sentence: "Many of these groups ( &nbsp; &nbsp; &nbsp; &nbsp; ). In each season, their diet would consist of different foods.",
+        audioText: "Many of these groups blank. In each season, their diet would consist of different foods.",
+        correct: "traveled throughout the year",
+        choices: [
+            "struggled to find enough food",
+            "traveled throughout the year",
+            "traded with each other",
+            "formed larger communities"
+        ],
+        explanation: "季節ごとに異なる食料を求めて移動していた（夏は釣り、秋は収穫など）という具体例が続いているため、「1年中旅をしていた（移動していた）」という意味の traveled throughout the year が正解です（本試験第19問の正解選択肢と同内容です）。"
+    },
+    {
+        type: "vocab",
+        q: "【フレーズの意味：consist of】<br>下線部 'consist of' の日本語訳として最も適切なものを1つ選んでください。",
+        sentence: "...their diet would <u>consist of</u> different foods.",
+        audioText: "their diet would consist of different foods.",
+        correct: "〜で構成されている",
+        choices: [
+            "〜を必要とする",
+            "〜を避ける",
+            "〜で構成されている",
+            "〜を台無しにする"
+        ],
+        explanation: "consist of 〜 は「〜から成る、〜で構成されている」という意味の重要熟語です。主語の食生活（diet）が何で成り立っているかを表しています。"
+    },
+    {
+        type: "vocab",
+        q: "【同義語を選ぼう：cuisine】<br>下線部 'cuisine' の、この文脈における意味として最も近いものを1つ選んでください。",
+        sentence: "Now, there is an interest in bringing back Native American <u>cuisine</u>.",
+        audioText: "Now, there is an interest in bringing back Native American cuisine.",
+        correct: "food culture / cooking style",
+        choices: [
+            "language",
+            "clothing style",
+            "food culture / cooking style",
+            "religious ceremony"
+        ],
+        explanation: "cuisine は「（独特の、または特定の地域・民族の）料理、料理法、食文化」を意味する名詞です。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：英検過去問(20)類題】<br>文脈から判断して、空欄に最も適切なフレーズを選んでください。直後に「先住民グループは将来の世代に彼らの歴史を失わないよう伝統を引き継ごうと切望している」とあります。",
+        sentence: "Now, there is ( &nbsp; &nbsp; &nbsp; &nbsp; ) Native American cuisine. Indigenous groups are eager to pass on the traditions...",
+        audioText: "Now, there is blank Native American cuisine. Indigenous groups are eager to pass on the traditions...",
+        correct: "an interest in bringing back",
+        choices: [
+            "concern about health issues with",
+            "much less knowledge about",
+            "an interest in bringing back",
+            "a movement to create new"
+        ],
+        explanation: "失われつつあった食文化や伝統を次の世代に残そうとしているという前後の流れから、「先住民料理を復活させることへの関心」が高まっているとするのが自然です（本試験第20問の正解選択肢と同内容です）。"
+    },
+    {
+        type: "vocab",
+        q: "【重要フレーズ：eager to】<br>下線部 'are eager to' の意味として最も適切なものを1つ選んでください。",
+        sentence: "Indigenous groups <u>are eager to</u> pass on the traditions of their ancestors...",
+        audioText: "Indigenous groups are eager to pass on the traditions of their ancestors",
+        correct: "〜することに熱心である（しきりに〜したがっている）",
+        choices: [
+            "〜することを恐れている",
+            "〜することに熱心である（しきりに〜したがっている）",
+            "〜することを拒否している",
+            "〜することを忘れがちである"
+        ],
+        explanation: "be eager to do は「しきりに〜したがる、〜することに熱心である、切望している」という意味の超重要熟語です。"
+    },
+    {
+        type: "vocab",
+        q: "【単語の意味：ancestors】<br>下線部 'ancestors' の日本語訳として最も適切なものを1つ選んでください。",
+        sentence: "...pass on the traditions of their <u>ancestors</u> to future generations...",
+        audioText: "pass on the traditions of their ancestors to future generations",
+        correct: "先祖・祖先",
+        choices: [
+            "先祖・祖先",
+            "指導者・リーダー",
+            "子供・子孫",
+            "ヨーロッパの入植者"
+        ],
+        explanation: "ancestor は「先祖、祖先」という意味の名詞です。対義語は descendant（子孫）や、文中にある future generations（将来の世代）になります。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：ルーツに戻る】<br>「彼らは自分たちのルーツ（根源）に戻り、より多くの先住民の食べ物を食事に取り入れている」という意味になるよう、空欄に適切な名詞を入れてください。",
+        sentence: "They are going back to their ( &nbsp; &nbsp; &nbsp; &nbsp; ) and including more indigenous foods in their diets.",
+        audioText: "They are going back to their blank and including more indigenous foods in their diets.",
+        correct: "roots",
+        choices: ["roots", "lands", "secrets", "masters"],
+        explanation: "go back to one's roots で「自分のルーツ（根源・祖先の地・文化的背景）に立ち返る」という非常によく使われるフレーズです。"
+    },
+    {
+        type: "dm",
+        q: "【論理結合語（ディスコースマーカー）の選択①】<br>文脈から判断して、空欄に最も適切な接続表現を選んでください。前文で『レストランの開設、ポッドキャストやSNSでのシェフの特集、料理本の人気』など社会的な流行が挙げられ、その後に『多くの先住民の個人や家族が伝統を祝い、食生活に取り入れている』という**【さらに、その上】**という追加の情報を述べています。",
+        sentence: "Cookbooks featuring recipes using traditional ingredients are becoming more popular. ( &nbsp; &nbsp; &nbsp; &nbsp; ), many Native American individuals and families are choosing to celebrate their heritage.",
+        audioText: "Cookbooks featuring recipes using traditional ingredients are becoming more popular. Blank, many Native American individuals and families are choosing to celebrate their heritage.",
+        correct: "What is more",
+        choices: ["What is more", "Surprisingly", "Despite this", "Otherwise"],
+        explanation: "社会全体でのトレンド（レストランや本）に加えて、「さらに、個人や家族のレベルでも」という追加の情報を順接で導いているため、英検本試験(21)の正解でもある **What is more（さらに、その上）** が最も適切です。"
+    },
+    {
+        type: "dm",
+        q: "【論理結合語（ディスコースマーカー）の選択②】<br>文脈から判断して、空欄に最も適切な接続表現を選んでください。多くの食文化が一度は完全に失われかけたというマイナスの背景に対し、『驚いたことに、最新の料理本が今や大ベストセラーになっている』という**【驚き・意外な事実】**を強調する展開です。",
+        sentence: "Over time, much of Native American food culture was lost. ( &nbsp; &nbsp; &nbsp; &nbsp; ), a traditional cookbook written by an indigenous chef has recently become a nationwide bestseller.",
+        audioText: "Over time, much of Native American food culture was lost. Blank, a traditional cookbook written by an indigenous chef has recently become a nationwide bestseller.",
+        correct: "Surprisingly",
+        choices: ["What is more", "Surprisingly", "Despite this", "Otherwise"],
+        explanation: "一度失われかけたという事実から予測される結果に反して、現在大ヒットしているという「驚くべき事実」を導くため、**Surprisingly（驚いたことに）** が最適です。"
+    },
+    {
+        type: "dm",
+        q: "【論理結合語（ディスコースマーカー）の選択③】<br>文脈から判断して、空欄に最も適切な接続表現を選んでください。ヨーロッパの入植者によって独自の生き方や食文化が壊されてしまったという強い困難・障壁があるにもかかわらず、『これにもかかわらず、先住民たちは強い意志で自分たちのアイデンティティを守り抜いた』という**【譲歩・逆接】**の展開です。",
+        sentence: "European settlers established a different way of life and restricted native farming. ( &nbsp; &nbsp; &nbsp; &nbsp; ), indigenous groups managed to keep their core culinary traditions alive in secret.",
+        audioText: "European settlers established a different way of life and restricted native farming. Blank, indigenous groups managed to keep their core culinary traditions alive in secret.",
+        correct: "Despite this",
+        choices: ["What is more", "Surprisingly", "Despite this", "Otherwise"],
+        explanation: "前に述べられた困難な状況（ヨーロッパ入植者による制限）があるにもかかわらず、伝統を守り抜いたという「逆接・譲歩」の関係なので、**Despite this（これにもかかわらず、それにもかかわらず）** が正解です。"
+    },
+    {
+        type: "dm",
+        q: "【論理結合語（ディスコースマーカー）の選択④】<br>文脈から判断して、空欄に最も適切な接続表現を選んでください。「若い世代は先祖の料理の技術を今すぐ学ぶ必要がある。**【さもないと】**、これらの貴重な歴史や伝統は永遠に消え去ってしまうだろう」という、条件を満たさない場合の悪い結果を導く展開です。",
+        sentence: "The younger generation must learn the traditional cooking techniques from their elders now. ( &nbsp; &nbsp; &nbsp; &nbsp; ), these valuable cultural practices will disappear forever.",
+        audioText: "The younger generation must learn the traditional cooking techniques from their elders now. Blank, these valuable cultural practices will disappear forever.",
+        correct: "Otherwise",
+        choices: ["What is more", "Surprisingly", "Despite this", "Otherwise"],
+        explanation: "「もしそうしなければ、さもないと」という仮定・条件の否定を後ろに続ける論理マーカーなので、**Otherwise（さもないと、そうでなければ）** が最も適切です。"
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function speakText() {
+    const qData = quizList[currentIndex];
+    if (!qData.audioText) return;
+    
+    speechSynthesis.cancel();
+    const uttr = new SpeechSynthesisUtterance(qData.audioText);
+    uttr.lang = 'en-US';
+    uttr.rate = 0.9; 
+    speechSynthesis.speak(uttr);
+}
+
+function loadQuestion() {
+    const current = quizList[currentIndex];
+    
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('question-text').innerHTML = current.q;
+    
+    const sentenceArea = document.getElementById('sentence-area');
+    if (current.sentence) {
+        sentenceArea.innerHTML = current.sentence + ` <button class="audio-btn-inline" onclick="speakText()" title="Listen to text">🔊</button>`;
+        sentenceArea.style.display = 'block';
+    } else {
+        sentenceArea.style.display = 'none';
+    }
+    
+    const feedbackArea = document.getElementById('feedback-area');
+    feedbackArea.style.display = 'none';
+    feedbackArea.className = 'feedback-box';
+    
+    document.getElementById('next-btn').style.display = 'none';
+    isFirstTry = true;
+
+    let choices = [...current.choices];
+    if (current.type !== "dm") {
+        choices.sort(() => Math.random() - 0.5);
+    }
+
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = choice;
+        btn.onclick = () => checkAnswer(choice, current.correct, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    const current = quizList[currentIndex];
+    const feedbackArea = document.getElementById('feedback-area');
+    
+    if (feedbackArea.style.display === 'block' && feedbackArea.classList.contains('feedback-success')) return;
+
+    if (selected.trim() === correct.trim()) {
+        btn.classList.add('correct');
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            feedbackArea.className = 'feedback-box feedback-success';
+            feedbackArea.innerHTML = `✨ 正解！<br><span style="font-weight:normal; font-size:0.95rem;">${current.explanation}</span>`;
+        } else {
+            feedbackArea.className = 'feedback-box feedback-success';
+            feedbackArea.innerHTML = `👍 正解です！<br><span style="font-weight:normal; font-size:0.95rem;">${current.explanation}</span>`;
+        }
+        feedbackArea.style.display = 'block';
+        document.getElementById('next-btn').style.display = 'block';
+        
+        const buttons = document.querySelectorAll('.choice-btn');
+        buttons.forEach(b => { if (b !== btn) b.style.opacity = '0.6'; });
+    } else {
+        if (isFirstTry) {
+            let cleanQTitle = current.q.split('<br>')[0];
+            mistakes.push({
+                q: cleanQTitle,
+                sentence: current.sentence,
+                correct: current.correct
+            });
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        feedbackArea.className = 'feedback-box feedback-error';
+        feedbackArea.innerHTML = `❌ もう一度考えてみましょう！`;
+        feedbackArea.style.display = 'block';
+    }
+}
+
+function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < quizList.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.q}</strong><br>
+                <span style="color:#666; font-size:0.9rem;">文：${m.sentence}</span><br>
+                <span style="color:var(--success-green);">覚えるべき正解：${m.correct}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【英検準1級】Native American Menus クイズ結果報告");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■復習が必要な箇所:\n" + mistakes.map(m => `・${m.q} -> 正解: ${m.correct}`).join("\n")
+        : "\n\nパーフェクトです！すべての問題を一発で正解しました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n英検準1級長文「Native American Menus」の学習クイズを完了しました。\n\n【結果】\n16問中 ${firstTryCorrectCount} 問を一度で正解できました。${mistakeText}\n\n重要語彙と論理展開のパターンをしっかり復習して、本番に備えます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
