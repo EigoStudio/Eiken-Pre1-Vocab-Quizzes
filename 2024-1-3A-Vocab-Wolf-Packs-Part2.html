@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2024-1 3A - Wolf Packs Grammar & Vocabulary Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f5f7fa;
+            --primary-navy: #1a2a6c;
+            --accent-blue: #00a8ff;
+            --text-dark: #2c3e50;
+            --gray-light: #f1f2f6;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --choice-bg: #ffffff;
+            --choice-border: #cbd5e1;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 20px 0;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: left;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+        }
+
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--accent-blue);
+            padding-left: 10px;
+        }
+
+        .sentence-display {
+            background-color: var(--gray-light);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            word-break: break-word;
+        }
+
+        .audio-btn-inline {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            background: var(--choice-bg);
+            border: 2px solid var(--choice-border);
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--base-font);
+            color: var(--text-dark);
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            background-color: #f8fafc;
+            border-color: var(--accent-blue);
+        }
+
+        .choice-btn.correct {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+            color: var(--success-green);
+        }
+
+        .choice-btn.wrong {
+            background-color: #ffebee;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback-success {
+            background-color: #e8f5e9;
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
+        }
+
+        .feedback-error {
+            background-color: #ffebee;
+            color: var(--error-red);
+            border: 1px solid var(--error-red);
+        }
+
+        .nav-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            font-family: var(--base-font);
+            display: none;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .score-num { font-size: 3.5rem; color: var(--accent-blue); font-weight: bold; }
+        .mistake-list { text-align: left; background: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; max-height: 350px; overflow-y: auto; border: 1px solid #ddd; }
+        .mistake-item { padding: 12px 0; border-bottom: 1px solid #eee; line-height: 1.5; }
+        .mistake-item:last-child { border-bottom: none; }
+        .action-btn { background-color: var(--accent-blue); color: white; border: none; padding: 15px 40px; border-radius: 40px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; font-family: var(--base-font); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-1 3A - Wolf Packs Activity</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 19</div>
+    
+    <div class="question-block">
+        <div class="question-title" id="question-text">Loading...</div>
+        <div class="sentence-display" id="sentence-area" style="display:none;"></div>
+        <div class="choices-grid" id="choices-container"></div>
+    </div>
+
+    <div class="feedback-box" id="feedback-area"></div>
+    <button class="nav-btn" id="next-btn" onclick="nextQuestion()">次の問題へ ▶</button>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>Activity Completed!</h2>
+    <div style="font-size:1.2rem; margin: 20px 0;">1回目で正解できた数：<span class="score-num" id="final-score">0</span> / <span id="total-score-count">19</span>問</div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px; text-align:left;">復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+    
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #7f8c8d;" onclick="location.reload()">最初からやり直す</button>
+</div>
+
+<script>
+const quizList = [
+    {
+        type: "vocab",
+        q: "【空欄補充：語彙】<br>文脈に合う最も適切な形容詞を選んでください。「世間に広く行き渡っている考え（通説）」という意味になります。",
+        sentence: "There is a ( &nbsp; &nbsp; &nbsp; &nbsp; ) idea that wild packs of wolves are led by an aggressive leader...",
+        audioText: "There is a widespread idea that wild packs of wolves are led by an aggressive leader",
+        correct: "widespread",
+        choices: ["widespread", "superficial", "temporary", "preliminary"],
+        explanation: "widespreadは「広く行き渡った」という意味の形容詞です。多くの人が誤って信じている通説を表現しています。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：熟語】<br>文脈に合う最も適切な熟語を選んでください。主語が「this（単数）」である点に注目しましょう。「激しい権力闘争という結果を招く」という意味になります。",
+        sentence: "...and that this ( &nbsp; &nbsp; &nbsp; &nbsp; ) violent power struggles when other members of the group challenge the alpha male.",
+        audioText: "and that this results in violent power struggles when other members of the group challenge the alpha male.",
+        correct: "results in",
+        choices: ["results in", "results from", "calls off", "gives up"],
+        explanation: "result in 〜 で「結果として〜をもたらす、〜に終わる」という重要な因果関係を表す熟語です。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：構文】<br>「しかしながら、〜ということが（研究などで）判行した」という意味の、形式主語 It を使った重要な構文を選んでください。",
+        sentence: "( &nbsp; &nbsp; &nbsp; &nbsp; ), however, that this idea may largely be a myth.",
+        audioText: "It turns out, however, that this idea may largely be a myth.",
+        correct: "It turns out",
+        choices: ["It turns out", "It makes sense", "It takes place", "It goes on"],
+        explanation: "It turns out that 〜 で「〜ということが判明する、結局〜だと分かる」という頻出の構文です。"
+    },
+    {
+        type: "grammar",
+        q: "【分詞の後置修飾：受動】<br>「〜することを強いられている」という、現在進行中の受動のニュアンスで直前の名詞（adult wolves）を後ろから修飾する最も適切な形を選んでください。",
+        sentence: "Captive packs are usually made up of adult wolves ( &nbsp; &nbsp; &nbsp; &nbsp; ) together even though they did not grow up with each other...",
+        audioText: "Captive packs are usually made up of adult wolves being forced to live together even though they did not grow up with each other",
+        correct: "being forced to live",
+        choices: ["being forced to live", "forcing to live", "to force living", "forced to living"],
+        explanation: "「being + 過去分詞」の形で直前の名詞を修飾し、「（人間の手によって無理やり）一緒に生活することを強いられている狼たち」という意味を構成します。"
+    },
+    {
+        type: "grammar",
+        q: "【関係代名詞の非制限用法】<br>文脈に合う最も適切な関係詞フレーズを選んでください。前文全体の内容を理由として受け、「（それが原因で）〜である理由だ」という意味になります。",
+        sentence: "Captive packs are usually made up of adult wolves being forced to live together even though they did not grow up with each other and are not related, ( &nbsp; &nbsp; &nbsp; &nbsp; ) it is common for power struggles in such packs to result in violence.",
+        audioText: "Captive packs are usually made up of adult wolves being forced to live together even though they did not grow up with each other and are not related, which is why it is common for power struggles in such packs to result in violence.",
+        correct: "which is why",
+        choices: ["which is why", "that is because", "what is like", "who is for"],
+        explanation: "コンマの後ろに「which is why 〜」を続けることで、「そういうわけで〜、それが〜である理由だ」という、前の文全体を先行詞とする関係代名詞の継続用法を作ります。"
+    },
+    {
+        type: "grammar",
+        q: "【重要構文：too ... to ...】<br>「あまりにも〜なので〜できない（仮定できない）」という、否定のニュアンスを正しく表現しているものを選んでください。",
+        sentence: "Research has now found, though, that captive and wild wolves are ( &nbsp; &nbsp; &nbsp; &nbsp; ) that the behaviors of one resemble those of the other.",
+        audioText: "Research has now found, though, that captive and wild wolves are too dissimilar to assume that the behaviors of one resemble those of the other.",
+        correct: "too dissimilar to assume",
+        choices: ["too dissimilar to assume", "so dissimilar as assuming", "very dissimilar to assume", "dissimilar enough to assume"],
+        explanation: "「too + 形容詞 + to 不定詞」で「あまりに性質が異なっているので、同じように行動すると思い込むことはできない」という論理になります。"
+    },
+    {
+        type: "fill",
+        q: "【接続詞の選択：対比】<br>野生の群れ（人間の家族のよう）と、飼育下の群れ（刑務所のよう）の異なる特徴を「〜の一方で」と対比させる最も適切な接続詞を選んでください。",
+        sentence: "...a wild wolf pack operates much like a multigenerational human family, ( &nbsp; &nbsp; &nbsp; &nbsp; ) a captive pack has more in common behaviorally with humans in prisons...",
+        audioText: "a wild wolf pack operates much like a multigenerational human family, while a captive pack has more in common behaviorally with humans in prisons",
+        correct: "while",
+        choices: ["while", "since", "unless", "despite"],
+        explanation: "while は「〜する一方で」という、2つの事柄を対比・比較する際に非常に重宝される接続詞です。"
+    },
+    {
+        type: "grammar",
+        q: "【主語の識別】<br>この文の『真の主語（動詞 made の主格となる名詞）』はどれでしょうか。修飾語句（studying...）に惑わされないように選んでください。",
+        sentence: "( &nbsp; &nbsp; &nbsp; &nbsp; ) studying wild wolves in the 1980s and 1990s made some interesting observations.",
+        audioText: "Biologists studying wild wolves in the 1980s and 1990s made some interesting observations.",
+        correct: "Biologists",
+        choices: ["Biologists", "Wild wolves", "The 1980s", "Observations"],
+        explanation: "「1980年代と1990年代に野生の狼を研究していた【生物学者たち】が、興味深い観察を行った」となるため、文全体の主語は Biologists です。"
+    },
+    {
+        type: "grammar",
+        q: "【分詞の後置修飾：能動】<br>「〜から構成されている（オオカミのペア）」という意味で、直前の名詞（a pair of wolves）を後ろから修飾する形を選んでください。この動詞は自動詞です。",
+        sentence: "They found that a pair of wolves ( &nbsp; &nbsp; &nbsp; &nbsp; ) of an older adult male and a female wolf generally acted as the leaders...",
+        audioText: "They found that a pair of wolves consisting of an older adult male and a female wolf generally acted as the leaders",
+        correct: "consisting",
+        choices: ["consisting", "consisted", "consists", "consist"],
+        explanation: "consist は自動詞なので受動態（過去分詞）での修飾はできません。常に「consisting of 〜」の形で後ろから名詞を修飾します。"
+    },
+    {
+        type: "grammar",
+        q: "【分詞の後置修飾：受動】<br>「〜によって構成された（群れ）」という意味で、直前の名詞（a pack）を後ろから修飾する最も適切な過去分詞を選んでください。",
+        sentence: "...generally acted as the leaders of a pack ( &nbsp; &nbsp; &nbsp; &nbsp; ) of their offspring and other adult wolves without partners.",
+        audioText: "generally acted as the leaders of a pack composed of their offspring and other adult wolves without partners.",
+        correct: "composed",
+        choices: ["composed", "composing", "composes", "compose"],
+        explanation: "be composed of 〜（〜で構成されている）という受動の表現から、過去分詞の composed が後ろから a pack を修飾します。"
+    },
+    {
+        type: "vocab",
+        q: "【空欄補充：重要表現】<br>「〜を除くすべて」という意味を持つ、英検準1級必須の除外表現を選んでください。",
+        sentence: "All wolves in the pack follow the lead male's decisions, and ( &nbsp; &nbsp; &nbsp; &nbsp; ) the lead male also submit to the lead female.",
+        audioText: "All wolves in the pack follow the lead male's decisions, and all but the lead male also submit to the lead female.",
+        correct: "all but",
+        choices: ["all but", "none other than", "anything but", "nothing short of"],
+        explanation: "all but ＋ 名詞 で「〜を除く全員・すべて」という意味になります。「ボスの雄を除く全員がボスの雌にも従う」となります。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充：対比表現】<br>「暴力『ではなく』、コミュニケーションによって」という、AとBを比較して一方を否定・選択する定番の表現を選んでください。",
+        sentence: "This system appears to be fully accepted by most wild wolves and is usually enforced by communication ( &nbsp; &nbsp; &nbsp; &nbsp; ) violence.",
+        audioText: "This system appears to be fully accepted by most wild wolves and is usually enforced by communication rather than violence.",
+        correct: "rather than",
+        choices: ["rather than", "other than", "as for", "prior to"],
+        explanation: "A rather than B で「BよりはむしろA、BではなくA」という意味になり、手段の対比を綺麗に表せます。"
+    },
+    {
+        type: "dm",
+        q: "【ディスコースマーカーの選択】<br>「例えば、食べ物が見つかりにくいとき…」という、直前の「社会構造は柔軟である」という抽象論に対する『具体例』を導くマーカーを選んでください。",
+        sentence: "The social structure is also flexible -- ( &nbsp; &nbsp; &nbsp; &nbsp; ), when food is hard to find, the wolf leaders often ensure that the pack's youngest are fed first.",
+        audioText: "The social structure is also flexible -- for example, when food is hard to find, the wolf leaders often ensure that the pack's youngest are fed first.",
+        correct: "for example",
+        choices: ["for example", "in contrast", "therefore", "in addition"],
+        explanation: "具体的な状況（食料不足のとき）を挙げて柔軟性の例を説明しているため、for example（例えば）が正解です。"
+    },
+    {
+        type: "grammar",
+        q: "【間接疑問文を導く関係詞】<br>「これらのリーダーがどのように行動するかを示す」という意味になるよう、act similarly を修飾・連動して方法を導く疑問詞を選んでください。",
+        sentence: "Such behavior demonstrates ( &nbsp; &nbsp; &nbsp; &nbsp; ) these leaders act similarly to the human parents of a large family.",
+        audioText: "Such behavior demonstrates how these leaders act similarly to the human parents of a large family.",
+        correct: "how",
+        choices: ["how", "what", "which", "whether"],
+        explanation: "demonstrates how S V 〜 で「どのようにSがVするかを示す」という意味になり、リーダーたちの振る舞い方を説明します。"
+    },
+    {
+        type: "fill",
+        q: "【前置詞の選択】<br>「（3つ以上の複数の）メンバーの間で」という、集団の内部を表すのに最も適切な前置詞を選んでください。",
+        sentence: "When a significant conflict does occur ( &nbsp; &nbsp; &nbsp; &nbsp; ) the members, dissatisfied wolves may leave the pack.",
+        audioText: "When a significant conflict does occur among the members, dissatisfied wolves may leave the pack.",
+        correct: "among",
+        choices: ["among", "between", "through", "against"],
+        explanation: "複数のメンバーに囲まれた中での対立を表すため、3人（つ）以上の中に使われる among が適切です（2者間なら between）。"
+    },
+    {
+        type: "fill",
+        q: "【接続詞の選択：対比】<br>「ある狼は別の群れに保護を求める一方で、一部の狼は…」という、別々の行動をとるオオカミたちの対比を表す接続詞を選んでください。",
+        sentence: "These wolves often seek out protection in a different pack, ( &nbsp; &nbsp; &nbsp; &nbsp; ) some start their own pack after finding a mate.",
+        audioText: "These wolves often seek out protection in a different pack, while some start their own pack after finding a mate.",
+        correct: "while",
+        choices: ["while", "because", "unless", "provided"],
+        explanation: "ここでも「〜する一方で」という対比の while が使われており、2つの異なる狼の選択を対照的に述べています。"
+    },
+    {
+        type: "vocab",
+        q: "【空欄補充：重要熟語】<br>「共通点がある」という意味を形成する、英検準1級・ライティングでも超重要な定番フレーズを選んでください。",
+        sentence: "In 2022, researchers discovered that wild wolves that had started their own pack often had ( &nbsp; &nbsp; &nbsp; &nbsp; ): many of them were carrying a particular parasite...",
+        audioText: "In 2022, researchers discovered that wild wolves that had started their own pack often had something in common:",
+        correct: "something in common",
+        choices: ["something in common", "nothing to lose", "anything in return", "everything in order"],
+        explanation: "have something in common で「共通点がある、共通のものを持っている」という非常に重要な熟語です。"
+    },
+    {
+        type: "grammar",
+        q: "【関係代名詞の非制限用法】<br>文脈に合う最も適切な関係代名詞を選んでください。先行詞を修飾して「そしてそれらの行動が〜」と説明を続けます。",
+        sentence: "This parasite appears to make the wolves more likely to take bolder and riskier actions, ( &nbsp; &nbsp; &nbsp; &nbsp; ) can aid their survival in some situations.",
+        audioText: "This parasite appears to make the wolves more likely to take bolder and riskier actions, which can aid their survival in some situations.",
+        correct: "which",
+        choices: ["which", "that", "who", "what"],
+        explanation: "関係代名詞の非制限用法（継続用法）では that を使用することができないため、物（行動）を先行詞とする場合は主格の which が正解となります。"
+    },
+    {
+        type: "grammar",
+        q: "【不定詞の受動態】<br>「〜され続けている（魅了され続けている）」という、動詞 continue の後ろに続く「受動のニュアンスを持った不定詞」の正しい形を選んでください。",
+        sentence: "Scientists continue ( &nbsp; &nbsp; &nbsp; &nbsp; ) by the social relationships of wild wolves and their packs.",
+        audioText: "Scientists continue to be fascinated by the social relationships of wild wolves and their packs.",
+        correct: "to be fascinated",
+        choices: ["to be fascinated", "to fascinate", "being fascinating", "to have fascinated"],
+        explanation: "continue to be ＋ 過去分詞 で「〜され続ける」という意味になります。科学者たちが「魅了されている状態」が続くことを示します。"
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function speakText() {
+    const qData = quizList[currentIndex];
+    if (!qData.audioText) return;
+    
+    speechSynthesis.cancel();
+    const uttr = new SpeechSynthesisUtterance(qData.audioText);
+    uttr.lang = 'en-US';
+    uttr.rate = 0.9; 
+    speechSynthesis.speak(uttr);
+}
+
+function loadQuestion() {
+    const current = quizList[currentIndex];
+    
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('question-text').innerHTML = current.q;
+    
+    const sentenceArea = document.getElementById('sentence-area');
+    if (current.sentence) {
+        sentenceArea.innerHTML = current.sentence + ` <button class="audio-btn-inline" onclick="speakText()" title="Listen to text">🔊</button>`;
+        sentenceArea.style.display = 'block';
+    } else {
+        sentenceArea.style.display = 'none';
+    }
+    
+    const feedbackArea = document.getElementById('feedback-area');
+    feedbackArea.style.display = 'none';
+    feedbackArea.className = 'feedback-box';
+    
+    document.getElementById('next-btn').style.display = 'none';
+    isFirstTry = true;
+
+    let choices = [...current.choices];
+    // dm（論理マーカー）だけ順序を揃え、それ以外の問題は完全にランダムシャッフル
+    if (current.type !== "dm") {
+        choices.sort(() => Math.random() - 0.5);
+    }
+
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = choice;
+        btn.onclick = () => checkAnswer(choice, current.correct, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    const current = quizList[currentIndex];
+    const feedbackArea = document.getElementById('feedback-area');
+    
+    if (feedbackArea.style.display === 'block' && feedbackArea.classList.contains('feedback-success')) return;
+
+    if (selected.trim() === correct.trim()) {
+        btn.classList.add('correct');
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            feedbackArea.className = 'feedback-box feedback-success';
+            feedbackArea.innerHTML = `✨ 正解！<br><span style="font-weight:normal; font-size:0.95rem;">${current.explanation}</span>`;
+        } else {
+            feedbackArea.className = 'feedback-box feedback-success';
+            feedbackArea.innerHTML = `👍 正解です！<br><span style="font-weight:normal; font-size:0.95rem;">${current.explanation}</span>`;
+        }
+        feedbackArea.style.display = 'block';
+        document.getElementById('next-btn').style.display = 'block';
+        
+        const buttons = document.querySelectorAll('.choice-btn');
+        buttons.forEach(b => { if (b !== btn) b.style.opacity = '0.6'; });
+    } else {
+        if (isFirstTry) {
+            let cleanQTitle = current.q.split('<br>')[0];
+            mistakes.push({
+                q: cleanQTitle,
+                sentence: current.sentence,
+                correct: current.correct
+            });
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        feedbackArea.className = 'feedback-box feedback-error';
+        feedbackArea.innerHTML = `❌ もう一度考えてみましょう！`;
+        feedbackArea.style.display = 'block';
+    }
+}
+
+function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < quizList.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+    document.getElementById('total-score-count').textContent = quizList.length;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.q}</strong><br>
+                <span style="color:#666; font-size:0.9rem;">対象の英文：${m.sentence}</span><br>
+                <span style="color:var(--success-green);">覚えるべき正解：${m.correct}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【英検準1級】Wolf Packs 文法・語彙アクティビティ結果報告");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■復習が必要な箇所:\n" + mistakes.map(m => `・${m.q} -> 正解: ${m.correct}`).join("\n")
+        : "\n\nパーフェクトです！すべての文法・語彙問題を一発で正解しました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n英検準1級長文「Wolf Packs」の文法・語彙アクティビティ（${quizList.length}問）を完了しました。\n\n【結果】\n${quizList.length}問中 ${firstTryCorrectCount} 問を一度で正解できました。${mistakeText}\n\n長文の精読に直結する重要な修飾関係や構文をしっかり身につけます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+// 動的にプログレスバーなどの全設問数を初期設定
+window.onload = () => {
+    document.getElementById('progress').textContent = `1 / ${quizList.length}`;
+    loadQuestion();
+};
+</script>
+
+</body>
+</html>
