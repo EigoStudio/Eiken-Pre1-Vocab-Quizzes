@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2024-2 3A - Liberty Ships Grammar & Vocabulary Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f5f7fa;
+            --primary-navy: #1a2a6c;
+            --accent-blue: #00a8ff;
+            --text-dark: #2c3e50;
+            --gray-light: #f1f2f6;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --choice-bg: #ffffff;
+            --choice-border: #cbd5e1;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 20px 0;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: left;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+        }
+
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--accent-blue);
+            padding-left: 10px;
+        }
+
+        .sentence-display {
+            background-color: var(--gray-light);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            word-break: break-word;
+        }
+
+        .audio-btn-inline {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        /* ヒント表示用エリア */
+        .hint-container {
+            margin-bottom: 15px;
+        }
+
+        .hint-btn {
+            background-color: #f1f2f6;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hint-btn:hover {
+            background-color: #e2e8f0;
+            color: var(--primary-navy);
+        }
+
+        .hint-box {
+            display: none;
+            background-color: #fffef0;
+            border: 1px dashed #f1c40f;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-top: 8px;
+            color: #7f8c8d;
+        }
+
+        .choices-grid {
+            display: grid;
+            /* デフォルトは縦2列（左右に2個ずつ） */
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* 画面幅が500px以下のスマホサイズになったら縦1列にする */
+        @media (max-width: 500px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+        .choice-btn {
+            background: var(--choice-bg);
+            border: 2px solid var(--choice-border);
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--base-font);
+            color: var(--text-dark);
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            background-color: #f8fafc;
+            border-color: var(--accent-blue);
+        }
+
+        .choice-btn.correct {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+            color: var(--success-green);
+        }
+
+        .choice-btn.wrong {
+            background-color: #ffebee;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback-success {
+            background-color: #e8f5e9;
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
+        }
+
+        .feedback-error {
+            background-color: #ffebee;
+            color: var(--error-red);
+            border: 1px solid var(--error-red);
+        }
+
+        .nav-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            font-family: var(--base-font);
+            display: none;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .score-num { font-size: 3.5rem; color: var(--accent-blue); font-weight: bold; }
+        .mistake-list { text-align: left; background: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; max-height: 350px; overflow-y: auto; border: 1px solid #ddd; }
+        .mistake-item { padding: 12px 0; border-bottom: 1px solid #eee; line-height: 1.5; }
+        .mistake-item:last-child { border-bottom: none; }
+        .action-btn { background-color: var(--accent-blue); color: white; border: none; padding: 15px 40px; border-radius: 40px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; font-family: var(--base-font); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-2 3A - Liberty Ships</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 9</div>
+    
+    <div class="question-block">
+        <div class="question-title" id="question-text">Loading...</div>
+        <div class="sentence-display" id="sentence-area" style="display:none;"></div>
+        
+        <!-- ヒント切り替え用コンテナ -->
+        <div class="hint-container">
+            <button class="hint-btn" id="hint-toggle-btn" onclick="toggleHint()">💡 日本語ヒントを見る</button>
+            <div class="hint-box" id="hint-box"></div>
+        </div>
+
+        <div class="choices-grid" id="choices-container"></div>
+    </div>
+
+    <div class="feedback-box" id="feedback-area"></div>
+    <button class="nav-btn" id="next-btn" onclick="nextQuestion()">次の問題へ ▶</button>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>Activity Completed!</h2>
+    <div style="font-size:1.2rem; margin: 20px 0;">1回目で正解できた数：<span class="score-num" id="final-score">0</span> / <span id="total-score-count">9</span>問</div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px; text-align:left;">復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+    
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #7f8c8d;" onclick="location.reload()">最初からやり直す</button>
+</div>
+
+<script>
+const quizList = [
+    {
+        type: "fill",
+        q: "【空欄補充】文脈に合う最も適切な表現を選んでください。",
+        sentence: "( &nbsp; &nbsp; &nbsp; &nbsp; ) steel, foodstuffs, and other essential goods, the United States provided a lifeline.",
+        audioText: "In the form of steel, foodstuffs, and other essential goods, the United States provided a lifeline.",
+        hint: "「〜という形で（鋼鉄や食料、その他の必需品という形で…）」という意味になります。",
+        correct: "In the form of",
+        choices: ["In the form of", "In light of", "In spite of", "Regardless of"],
+        explanation: "In the form of 〜 で「〜の形で、〜として」という意味になります。物資そのものが援助の具体的な手段であることを示します。"
+    },
+    {
+        type: "vocab",
+        q: "【空欄補充】文脈に合う最も適切な動詞を選んでください。",
+        sentence: "After the United States officially joined the Allied war effort, the expansion of material support... ( &nbsp; &nbsp; &nbsp; &nbsp; ) a massive boost in cargo shipping.",
+        audioText: "the expansion of material support necessitated a massive boost in cargo shipping.",
+        hint: "「〜を必要とする、余儀なくさせる（物資援助の拡大が、貨物輸送の劇的な増加を必要とした）」という意味になります。",
+        correct: "necessitated",
+        choices: ["necessitated", "postponed", "diminished", "contradicted"],
+        explanation: "necessitate は「〜を必要とする、必然的に〜を伴う」という意味の動詞です。公式に参戦したことで貨物輸送の最大化が「不可避になった」という文脈に合致します。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充】文脈に合う最も適切な前置詞句を選んでください。",
+        sentence: "( &nbsp; &nbsp; &nbsp; &nbsp; ) technological improvements, crossing the often-rough Atlantic had generally become a less dangerous prospect...",
+        audioText: "Thanks to technological improvements, crossing the often-rough Atlantic had generally become a less dangerous prospect.",
+        hint: "「〜のおかげで（技術改良のおかげで、荒れ狂う大西洋の横断は以前ほど危険ではなくなった）」という肯定的な理由を表します。",
+        correct: "Thanks to",
+        choices: ["Thanks to", "In addition to", "Prior to", "Except for"],
+        explanation: "Thanks to 〜 で「〜のおかげで」という意味になります。技術革新（レーダーや船体改良など）が航海の安全に好影響を与えた関係を示します。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充】文脈に合う最も適切な譲歩を表す前置詞を選んでください。",
+        sentence: "( &nbsp; &nbsp; &nbsp; &nbsp; ) such tragic losses, most Liberty ships operated throughout the war.",
+        audioText: "Despite such tragic losses, most Liberty ships operated throughout the war.",
+        hint: "「〜にもかかわらず（こうした悲劇的な損失にもかかわらず、大半のリバティ船は戦争中ずっと運用された）」という意味になります。",
+        correct: "Despite",
+        choices: ["Despite", "Because of", "Provided that", "Instead of"],
+        explanation: "Despite は「〜にもかかわらず」という意味の前置詞（同義語：in spite of）です。「船が沈没するなどの被害があった」というマイナス事実と、「運用が継続された」という事実を対比させます。"
+    },
+    {
+        type: "fill",
+        q: "【空欄補充】文脈に合う最も適切な慣用表現を選んでください。",
+        sentence: "Some people argue that the role these and other ships played in helping to turn the war ( &nbsp; &nbsp; &nbsp; &nbsp; ) should not be underestimated.",
+        audioText: "helping to turn the war in the Allies' favor should not be underestimated.",
+        hint: "「連合国側に有利に（戦況を連合国側に有利に好転させるのを助けた役割）」という意味のフレーズです。",
+        correct: "in the Allies' favor",
+        choices: ["in the Allies' favor", "against the Allies' will", "in the axis' interest", "at the Allies' expense"],
+        explanation: "in one's favor で「〜に有利に、〜の都合のよいように」という意味になります。戦況の流れ（turn the war）を「連合国側の優勢（Allies' favor）」に傾けたことを指します。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う適切なつなぎ言葉を選んでください。",
+        sentence: "Many expected the Liberty ships to be easy targets for submarines. ( &nbsp; &nbsp; &nbsp; &nbsp; ), they proved surprisingly resilient.",
+        audioText: "Many expected the Liberty ships to be easy targets for submarines. On the contrary, they proved surprisingly resilient.",
+        hint: "「それどころか／それとは反対に（簡単の標的になると思われていたが、それどころか驚くほど頑丈だと判明した）」という意味になります。",
+        correct: "On the contrary",
+        choices: ["On the contrary", "Subsequently", "Moreover", "In exchange"], // 統一
+        explanation: "On the contrary は「それどころか」という意味で、直前のマイナスな予想を強く否定し、逆の強みをアピールします。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う適切なつなぎ言葉を選んでください。",
+        sentence: "A hull crack was discovered during a routine inspection. ( &nbsp; &nbsp; &nbsp; &nbsp; ), the entire fleet underwent reinforcement.",
+        audioText: "A hull crack was discovered during a routine inspection. Subsequently, the entire fleet underwent reinforcement.",
+        hint: "「その後、続いて（定期点検で船体の亀裂が発見され、その後に全艦隊が補強工事を受けることになった）」という時間的順序を表します。",
+        correct: "Subsequently",
+        choices: ["On the contrary", "Subsequently", "Moreover", "In exchange"], // 統一
+        explanation: "Subsequently は「その後に、続いて、次に」という意味の副詞です。一つの出来事がトリガーとなり、次のアクションへ移る流れを示します。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う適切なつなぎ言葉を選んでください。",
+        sentence: "The ships supported the war effort directly. ( &nbsp; &nbsp; &nbsp; &nbsp; ), the employment at shipyards boosted the local economies.",
+        audioText: "The ships supported the war effort directly. Moreover, the employment at shipyards boosted the local economies.",
+        hint: "「さらに、その上（船は直接戦争を支援しただけでなく、さらに造船所での雇用が地域経済を潤した）」という追加メリットを示します。",
+        correct: "Moreover",
+        choices: ["On the contrary", "Subsequently", "Moreover", "In exchange"], // 統一
+        explanation: "Moreover は「さらに、加えて、その上」という意味です。直接的な軍事貢献に加え、地域経済へのプラス影響というもう一つの利点を追加しています。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う適切なつなぎ言葉を選んでください。",
+        sentence: "The US provided materials to Great Britain. ( &nbsp; &nbsp; &nbsp; &nbsp; ), the British military shared intelligence on German locations.",
+        audioText: "The US provided materials to Great Britain. In exchange, the British military shared intelligence on German locations.",
+        hint: "「それと引き換えに、お返しに（米国はイギリスに物資を提供し、それと引き換えにイギリス軍はドイツの位置情報を共有した）」という相互関係を表します。",
+        correct: "In exchange",
+        choices: ["On the contrary", "Subsequently", "Moreover", "In exchange"], // 統一
+        explanation: "In exchange は「引き換えに、交換に」という意味です。お互いに提供し合うギブ・アンド・テイクの関係を表します。"
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function speakText() {
+    const qData = quizList[currentIndex];
+    if (!qData.audioText) return;
+    speechSynthesis.cancel();
+    const uttr = new SpeechSynthesisUtterance(qData.audioText);
+    uttr.lang = 'en-US';
+    uttr.rate = 0.9; 
+    speechSynthesis.speak(uttr);
+}
+
+// ヒント表示のトグル切り替え
+function toggleHint() {
+    const hintBox = document.getElementById('hint-box');
+    const hintBtn = document.getElementById('hint-toggle-btn');
+    
+    if (hintBox.style.display === 'none' || hintBox.style.display === '') {
+        hintBox.style.display = 'block';
+        hintBtn.textContent = '🙈 ヒントを隠す';
+    } else {
+        hintBox.style.display = 'none';
+        hintBtn.textContent = '💡 日本語ヒントを見る';
+    }
+}
+
+function loadQuestion() {
+    const current = quizList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('question-text').innerHTML = current.q;
+    
+    // 英文エリアの設定
+    const sentenceArea = document.getElementById('sentence-area');
+    if (current.sentence) {
+        sentenceArea.innerHTML = current.sentence + ` <button class="audio-btn-inline" onclick="speakText()" title="Listen to text">🔊</button>`;
+        sentenceArea.style.display = 'block';
+    } else {
+        sentenceArea.style.display = 'none';
+    }
+
+    // ヒントエリアの初期化
+    const hintBox = document.getElementById('hint-box');
+    const hintBtn = document.getElementById('hint-toggle-btn');
+    hintBox.textContent = current.hint || "ヒントはありません。";
+    hintBox.style.display = 'none'; // 新しい問題では初期状態は「隠す」
+    hintBtn.textContent = '💡 日本語ヒントを見る';
+    
+    // フィードバックエリアの初期化
+    const feedbackArea = document.getElementById('feedback-area');
+    feedbackArea.style.display = 'none';
+    feedbackArea.className = 'feedback-box';
+    
+    document.getElementById('next-btn').style.display = 'none';
+    isFirstTry = true;
+    
+    let choices = [...current.choices];
+    // dm（論理マーカー）以外は選択肢をシャッフル
+    if (current.type !== "dm") { 
+        choices.sort(() => Math.random() - 0.5); 
+    }
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = choice;
+        btn.onclick = () => checkAnswer(choice, current.correct, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    const current = quizList[currentIndex];
+    const feedbackArea = document.getElementById('feedback-area');
+    
+    if (feedbackArea.style.display === 'block' && feedbackArea.classList.contains('feedback-success')) return;
+    
+    if (selected.trim() === correct.trim()) {
+        btn.classList.add('correct');
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            feedbackArea.className = 'feedback-box feedback-success';
+            feedbackArea.innerHTML = `✨ 正解！<br><span style="font-weight:normal; font-size:0.95rem;">${current.explanation}</span>`;
+        } else {
+            feedbackArea.className = 'feedback-box feedback-success';
+            feedbackArea.innerHTML = `👍 正解です！<br><span style="font-weight:normal; font-size:0.95rem;">${current.explanation}</span>`;
+        }
+        feedbackArea.style.display = 'block';
+        document.getElementById('next-btn').style.display = 'block';
+        
+        // 他の選択肢を少し薄くする
+        const buttons = document.querySelectorAll('.choice-btn');
+        buttons.forEach(b => { if (b !== btn) b.style.opacity = '0.6'; });
+    } else {
+        if (isFirstTry) {
+            let cleanQTitle = current.q.split('<br>')[0];
+            mistakes.push({q: cleanQTitle, sentence: current.sentence, correct: current.correct});
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        feedbackArea.className = 'feedback-box feedback-error';
+        feedbackArea.innerHTML = `❌ もう一度考えてみましょう！`;
+        feedbackArea.style.display = 'block';
+    }
+}
+
+function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < quizList.length) { 
+        loadQuestion(); 
+    } else { 
+        showResult(); 
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+    document.getElementById('total-score-count').textContent = quizList.length;
+    
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.q}</strong><br>
+                <span style="color:#666; font-size:0.9rem;">対象の英文：${m.sentence}</span><br>
+                <span style="color:var(--success-green); font-weight:bold;">正解：${m.correct}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【英検準1級】Liberty Ships 語彙・表現アクティビティ結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■復習が必要な箇所:\n" + mistakes.map(m => `・${m.q} -> 正解: ${m.correct}`).join("\n")
+        : "\n\nパーフェクト！すべての設問をヒントなし、または最小限のヒントで一発正解しました！";
+        
+    const body = encodeURIComponent(`Tamaki先生へ\n\n英検準1級「Liberty Ships」の語彙・文法アクティビティ（${quizList.length}問）を完了しました。\n\n【結果】\n${quizList.length}問中 ${firstTryCorrectCount} 問を一発正解しました。${mistakeText}\n\n最初は日本語を隠し、文脈だけで推測するアプローチでトレーニングしました！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = () => { loadQuestion(); };
+</script>
+</body>
+</html>
