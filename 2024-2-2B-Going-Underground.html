@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Eiken Pre-1: "Going Underground" Vocabulary Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --primary-navy: #2c3e50;
+            --accent-orange: #e67e22;
+            --text-dark: #34495e;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 700px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .word-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-navy);
+            margin: 10px 0 30px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--bg-color);
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 18px 10px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ffebee;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Eiken Pre-1: "Going Underground" Vocabulary Quiz</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 48</div>
+    <div class="word-display" id="word-text">Loading...</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 48問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<script>
+// 英検準1級 「Going Underground」語彙リスト
+const vocabList = [
+    {w:"street congestion", a:"道路の混雑", c:["街の灯り", "道路の建設", "地下鉄の計画"]},
+    {w:"concept", a:"概念", c:["計画", "規則", "実績"]},
+    {w:"underground railway", a:"地下鉄道", c:["高架鉄道", "蒸気機関車", "路面電車"]},
+    {w:"appeal to", a:"〜の心に訴える・魅力的である", c:["〜を拒絶する", "〜を無視する", "〜に抗議する"]},
+    {w:"despite", a:"〜にもかかわらず", c:["〜のために", "〜のせいで", "〜と同様に"]},
+    {w:"years of debate", a:"長年の議論", c:["数ヶ月の交渉", "突然の決定", "最終的な合意"]},
+    {w:"construction", a:"建設", c:["解体", "設計", "運営"]},
+    {w:"approved", a:"承認された", c:["拒絶された", "延期された", "議論された"]},
+    {w:"historical terms", a:"歴史的な観点", c:["経済的な条件", "科学的な根拠", "政治的な妥協"]},
+    {w:"metropolitan", a:"大都市の", c:["地方の", "国際的な", "郊外の"]},
+    {w:"once", a:"いったん〜すると", c:["決して〜ない", "かつて", "同時に"]},
+    {w:"underground railway line", a:"地下鉄路線", c:["地上路線", "貨物専用線", "廃線"]},
+    {w:"ferry", a:"〜を輸送する", c:["〜を沈める", "〜を建造する", "〜を放置する"]},
+    {w:"kickstart", a:"〜を始動させる", c:["〜を中止する", "〜を維持する", "〜を批判する"]},
+    {w:"subway system", a:"地下鉄網", c:["航空網", "高速道路網", "運河網"]},
+    {w:"nevertheless", a:"それにもかかわらず", c:["その結果", "同様に", "さらに"]},
+    {w:"cost-saving", a:"費用を削減する", c:["費用がかかる", "予算を無視した", "利益を生む"]},
+    {w:"distract", a:"〜の気を散らす", c:["〜を引きつける", "〜を納得させる", "〜を保護する"]},
+    {w:"revolutionary", a:"画期的な", c:["伝統的な", "時代遅れの", "保守的な"]},
+    {w:"underfunded", a:"資金不足の", c:["資金が豊富な", "承認された", "営利目的の"]},
+    {w:"obstacles", a:"障害", c:["促進要因", "計画", "援助"]},
+    {w:"ensure", a:"〜を確実にする", c:["〜を無視する", "〜を不確かにする", "〜を延期する"]},
+    {w:"branch lines", a:"支線", c:["本線", "地下道", "境界線"]},
+    {w:"arches", a:"アーチ", c:["平坦な道", "柱", "壁"]},
+    {w:"maintenance access points", a:"点検口・保守用通路", c:["改札口", "非常出口", "切符売り場"]},
+    {w:"precisely", a:"正確に", c:["大雑把に", "偶然に", "迅速に"]},
+    {w:"devices", a:"装置", c:["労働者", "組織", "材料"]},
+    {w:"firm", a:"企業・会社", c:["労働組合", "政府機関", "委員会"]},
+    {w:"possess", a:"〜を所有する", c:["〜を失う", "〜を探す", "〜を放棄する"]},
+    {w:"collapse", a:"崩落する", c:["完成する", "頑丈になる", "拡張する"]},
+    {w:"uppermost", a:"最も重要な・最優先の", c:["最も低い", "無関係の", "時代遅れの"]},
+    {w:"indicate", a:"〜を示す", c:["〜を隠す", "〜を否定する", "〜を誤解する"]},
+    {w:"fatalities", a:"死者数", c:["生存者", "負傷者", "奇跡"]},
+    {w:"burst", a:"破裂する", c:["固まる", "縮む", "詰まる"]},
+    {w:"observer", a:"観測者・観察者", c:["参加者", "創設者", "労働者"]},
+    {w:"proceed", a:"進行する", c:["後退する", "停止する", "中止する"]},
+    {w:"disruption", a:"混乱", c:["秩序", "協力", "進歩"]},
+    {w:"consequently", a:"その結果", c:["しかしながら", "同様に", "さらに"]},
+    {w:"in contrast", a:"対照的に", c:["同様に", "その結果", "さらに"]},
+    {w:"likewise", a:"同様に", c:["対照的に", "したがって", "それにもかかわらず"]},
+    {w:"on top of that", a:"その上", c:["それにもかかわらず", "しかしながら", "つまり"]},
+    {w:"sophisticated", a:"洗練された・高度な", c:["単純な", "原始的な", "旧式の"]},
+    {w:"dug", a:"掘られた", c:["埋められた", "舗装された", "設計された"]},
+    {w:"facilitate", a:"〜を容易にする", c:["〜を妨げる", "〜を複雑にする", "〜を禁止する"]},
+    {w:"Parliament", a:"国会・議会", c:["裁判所", "地方自治体", "企業連合"]},
+    {w:"grant", a:"〜を授与する・与える", c:["〜を没収する", "〜を拒絶する", "〜を要求する"]},
+    {w:"slum areas", a:"スラム街", c:["高級住宅街", "ビジネス街", "工業地帯"]},
+    {w:"displace", a:"〜を立ち退かせる", c:["〜を歓迎する", "〜を定住させる", "〜を雇用する"]}
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+// 問題の読み込み
+function loadQuestion() {
+    if (currentIndex >= vocabList.length) {
+        showResult();
+        return;
+    }
+    const current = vocabList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${vocabList.length}`;
+    document.getElementById('word-text').textContent = current.w;
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    // 正解と誤答の選択肢をシャッフル
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+}
+
+// 解答チェック
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({w: vocabList[currentIndex].w, a: vocabList[currentIndex].a});
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+// 結果表示
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.w}</strong>
+                <span>${m.a}</span>
+            </div>
+        `).join('');
+    }
+}
+
+// Tamaki先生へのメール送信
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【英検準1級】Going Underground 語彙復習結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習リスト:\n" + mistakes.map(m => `・${m.w} (${m.a})`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n読解問題「Going Underground」の語彙復習（${vocabList.length}問）を完了しました。\n\n結果: ${vocabList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して定着させます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = loadQuestion;
+</script>
+
+</body>
+</html>

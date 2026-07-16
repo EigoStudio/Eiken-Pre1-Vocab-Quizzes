@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Eiken Pre-1: "Going Underground" Grammar & Vocabulary Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f5f7fa;
+            --primary-navy: #1a2a6c;
+            --accent-blue: #00a8ff;
+            --text-dark: #2c3e50;
+            --gray-light: #f1f2f6;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --choice-bg: #ffffff;
+            --choice-border: #cbd5e1;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 20px 0;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: left;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+        }
+
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--accent-blue);
+            padding-left: 10px;
+        }
+
+        .sentence-display {
+            background-color: var(--gray-light);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            word-break: break-word;
+        }
+
+        .audio-btn-inline {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .hint-container {
+            margin-bottom: 15px;
+        }
+
+        .hint-btn {
+            background-color: #f1f2f6;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hint-btn:hover {
+            background-color: #e2e8f0;
+            color: var(--primary-navy);
+        }
+
+        .hint-box {
+            display: none;
+            background-color: #fffef0;
+            border: 1px dashed #f1c40f;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-top: 8px;
+            color: #7f8c8d;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        .choice-btn {
+            background: var(--choice-bg);
+            border: 2px solid var(--choice-border);
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--base-font);
+            color: var(--text-dark);
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            background-color: #f8fafc;
+            border-color: var(--accent-blue);
+        }
+
+        .choice-btn.correct {
+            background-color: #e8f5e9;
+            border-color: var(--success-green);
+            color: var(--success-green);
+        }
+
+        .choice-btn.wrong {
+            background-color: #ffebee;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback-success {
+            background-color: #e8f5e9;
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
+        }
+
+        .feedback-error {
+            background-color: #ffebee;
+            color: var(--error-red);
+            border: 1px solid var(--error-red);
+        }
+
+        .nav-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            font-family: var(--base-font);
+            display: none;
+        }
+
+        #result-screen { display: none; text-align: center; }
+        .score-num { font-size: 3.5rem; color: var(--accent-blue); font-weight: bold; }
+        .mistake-list { text-align: left; background: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; max-height: 350px; overflow-y: auto; border: 1px solid #ddd; }
+        .mistake-item { padding: 12px 0; border-bottom: 1px solid #eee; line-height: 1.5; }
+        .mistake-item:last-child { border-bottom: none; }
+        .action-btn { background-color: var(--accent-blue); color: white; border: none; padding: 15px 40px; border-radius: 40px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; font-family: var(--base-font); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-2 2B - Going Underground Grammar Quiz</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 11</div>
+    
+    <div class="question-block">
+        <div class="question-title" id="question-text">Loading...</div>
+        <div class="sentence-display" id="sentence-area" style="display:none;"></div>
+        
+        <div class="hint-container">
+            <button class="hint-btn" id="hint-toggle-btn" onclick="toggleHint()">💡 日本語ヒントを見る</button>
+            <div class="hint-box" id="hint-box"></div>
+        </div>
+
+        <div class="choices-grid" id="choices-container"></div>
+    </div>
+
+    <div class="feedback-box" id="feedback-area"></div>
+    <button class="nav-btn" id="next-btn" onclick="nextQuestion()">次の問題へ ▶</button>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>Activity Completed!</h2>
+    <div style="font-size:1.2rem; margin: 20px 0;">1回目で正解できた数：<span class="score-num" id="final-score">0</span> / <span id="total-score-count">11</span>問</div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px; text-align:left;">復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+    
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #7f8c8d;" onclick="location.reload()">最初からやり直す</button>
+</div>
+
+<script>
+const quizList = [
+    {
+        type: "grammar",
+        q: "【接続詞の用法】空欄に入る適切な接続詞を選んでください。<br>主語と動詞が省略されている点に注意しましょう。",
+        sentence: "( &nbsp; &nbsp; &nbsp; &nbsp; ) completed, the Metropolitan Railway became the world's first underground railway line.",
+        audioText: "Once completed, the Metropolitan Railway became the world's first underground railway line.",
+        hint: "「いったん完成すると（完成するやいなや）、世界初の地下鉄道路線となった」という意味にします。直後に過去分詞が来ています。",
+        correct: "Once",
+        choices: ["Once", "Until", "While", "Though"],
+        explanation: "<b>Once</b>は接続詞で「いったん〜すると、〜するとすぐに」という意味を持ちます。<br>ここでは <i>Once it was completed</i> の <b>it was</b> が省略され、<b>Once completed</b>（いったん完成すると）という形になっています。主節の主語と同じであるため、このような省略が頻繁に起こります。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う最も適切なつなぎ言葉（副詞）を選んでください。",
+        sentence: "The early steam engines produced massive amounts of choking smoke inside the tunnels. ( &nbsp; &nbsp; &nbsp; &nbsp; ), millions of passengers still chose to use the new service.",
+        audioText: "The early steam engines produced massive amounts of choking smoke inside the tunnels. Nevertheless, millions of passengers still chose to use the new service.",
+        hint: "「煙が充満して息苦しかった。それにもかかわらず、何百万もの乗客がそのサービスを利用した」という逆接・譲歩の関係になります。",
+        correct: "Nevertheless",
+        choices: ["Nevertheless", "Consequently", "In contrast", "On top of that"],
+        explanation: "<b>Nevertheless</b>は「それにもかかわらず（＝However, Nonetheless）」という意味の副詞です。<br>「不快な煙が充満するトンネル」という大きなデメリット（前の文）に対して、「それでも大量の乗客が利用した」という対比の事実を繋ぐのに最適です。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う最も適切なつなぎ言葉（接続詞）を選んでください。",
+        sentence: "( &nbsp; &nbsp; &nbsp; &nbsp; ) skilled, the nineteenth-century engineers lacked the advanced technological devices that firms possess today.",
+        audioText: "Though skilled, the nineteenth-century engineers lacked the advanced technological devices that firms possess today.",
+        hint: "「技術は高かったが（＝熟練していたけれども）、現代の企業が持つような先進的な装置が不足していた」という意味になります。後ろには形容詞が続いています。",
+        correct: "Though",
+        choices: ["Though", "Despite", "Likewise", "In reality"],
+        explanation: "<b>Though</b>は接続詞で「〜だけれども」という意味です。<br>ここでは <i>Though they were skilled</i> の <b>they were</b> が省略され、<b>Though skilled</b> と形容詞が直接繋がっています。前置詞である <i>Despite</i> は、後ろに名詞・代名詞（または動名詞）を必要とするため、ここでは文法的に使えません。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う最も適切なつなぎ言葉を選んでください。",
+        sentence: "Modern subway tunnels are built deep underground with minimal disruption to the public. ( &nbsp; &nbsp; &nbsp; &nbsp; ), early subway construction required digging up entire roadways, completely paralyzing street traffic and ruining local business trade for months.",
+        audioText: "Modern subway tunnels are built deep underground with minimal disruption to the public. In contrast, early subway construction required digging up entire roadways, completely paralyzing street traffic and ruining local business trade for months.",
+        hint: "「現代の地下鉄は地上にほとんど迷惑をかけず深く掘り進められる。それとは対照的に、初期の建設は道路全体を掘り返す必要があり、何ヶ月も道路交通を完全に麻痺させ、地元のお店の営業を台無しにした」という、2つの時代の対比を明確にする表現です。",
+        correct: "In contrast",
+        choices: ["In contrast", "Likewise", "Consequently", "On top of that"],
+        explanation: "<b>In contrast</b>（または By contrast）は「対照的に、それとは対照的に」という意味です。<br>「現代の深層シールド工法（市民への影響が最小限）」と「19世紀の地表を掘り返して交通や商業に大打撃を与えた開削工法（カット・アンド・カバー工法）」という、正反対の状況・影響を対比させています。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う最も適切なつなぎ言葉を選んでください。",
+        sentence: "Nineteenth-century London was paralyzed by severe street congestion. ( &nbsp; &nbsp; &nbsp; &nbsp; ), political leaders were forced to consider radical underground solutions.",
+        audioText: "Nineteenth-century London was paralyzed by severe street congestion. Consequently, political leaders were forced to consider radical underground solutions.",
+        hint: "「地上道路が激しく混雑して麻痺していた。その結果、政治指導者たちは地下での根本的な解決策を検討せざるを得なくなった」という、原因と結果を繋ぐ言葉です。",
+        correct: "Consequently",
+        choices: ["Consequently", "Nevertheless", "Likewise", "In contrast"],
+        explanation: "<b>Consequently</b>は「その結果として、従って（＝Therefore, As a result）」という意味の副詞です。<br>「地上の交通混雑（原因）」を受けて、「地下鉄計画の推進（結果）」に繋がる論理的な因果関係を表します。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う最も適切なつなぎ言葉を選んでください。",
+        sentence: "Modern subway tunnels are built deep underground with minimal disruption to the public. ( &nbsp; &nbsp; &nbsp; &nbsp; ), early subway construction required digging up entire roadways.",
+        audioText: "Modern subway tunnels are built deep underground with minimal disruption to the public. In contrast, early subway construction required digging up entire roadways.",
+        hint: "「現代の地下鉄は地上にほとんど迷惑をかけず深く掘り進められる。それとは対照的に、初期の建設は道路全体を掘り返す必要があった」という、2つの時代の違いを比べる表現です。",
+        correct: "In contrast",
+        choices: ["In contrast", "Likewise", "Consequently", "On top of that"],
+        explanation: "<b>In contrast</b>（または By contrast）は「対照的に、それとは対照的に」という意味です。<br>「現代の深層シールド工法」と「19世紀の地表を掘り返す開削工法（カット・アンド・カバー工法）」という、全く正反対の工事状況を比較・対比させています。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う最も適切なつなぎ言葉を選んでください。",
+        sentence: "London's pioneering underground railway proved to be a major success. ( &nbsp; &nbsp; &nbsp; &nbsp; ), cities like Budapest and Boston soon began planning their own subway systems.",
+        audioText: "London's pioneering underground railway proved to be a major success. Likewise, cities like Budapest and Boston soon began planning their own subway systems.",
+        hint: "「ロンドンの先駆的な地下鉄は大成功を収めた。同様に、ブダペストやボストンといった都市もすぐに独自の地下鉄網を計画し始めた」という、似た傾向の例を並べる表現です。",
+        correct: "Likewise",
+        choices: ["Likewise", "Nevertheless", "In reality", "Though"],
+        explanation: "<b>Likewise</b>は「同様に（＝Similarly）」という意味です。<br>ロンドンの成功例を受けて、他の世界都市も「同じように」地下鉄の建設へと動いたという、同様の事象・行動を追加する際に使用します。"
+    },
+    {
+        type: "dm",
+        q: "【論理マーカー】文脈に合う最も適切なつなぎ言葉を選んでください。",
+        sentence: "Subway construction displaced thousands of poor residents from slum areas. ( &nbsp; &nbsp; &nbsp; &nbsp; ), early train travel was uncomfortable due to soot and heat.",
+        audioText: "Subway construction displaced thousands of poor residents from slum areas. On top of that, early train travel was uncomfortable due to soot and heat.",
+        hint: "「数千人の貧困層がスラムから立ち退かされた。その上、初期の電車の旅は煤（すす）や熱気で不快なものだった」という、マイナス要素をさらに追加する表現です。",
+        correct: "On top of that",
+        choices: ["On top of that", "In contrast", "In reality", "Consequently"],
+        explanation: "<b>On top of that</b>は「その上、さらに（＝In addition, Furthermore）」という口語的で強力な追加表現です。<br>建設時に生じた「社会的被害（住民の強制立ち退き）」に重ねて、「開通後の実用的な不満（不快な乗車環境）」という、別のマイナス要素を付け加えています。"
+    },
+    {
+        type: "grammar",
+        q: "【現在分詞の後置修飾・分詞構文】空欄に入る適切な形の動詞を選んでください。",
+        sentence: "A boiler exploded during the construction process, ( &nbsp; &nbsp; &nbsp; &nbsp; ) several fatalities and delaying the work.",
+        audioText: "A boiler exploded during the construction process, causing several fatalities and delaying the work.",
+        hint: "「ボイラーが爆発し、その結果いくつかの死亡事故を引き起こし、工事を遅らせた」という意味になります。後ろにある and delaying と並列（同じ形）であることにも注目してください。",
+        correct: "causing",
+        choices: ["causing", "caused", "cause", "to cause"],
+        explanation: "<b>causing</b>（現在分詞）が正解です。<br>これはカンマの後に続く分詞構文（付帯状況や結果）で、「ボイラーが爆発し、そして〜を引き起こした」という流れを作ります。また、等位接続詞 <b>and</b> の直後に <b>delaying</b>（現在分詞）が来ているため、並列構造（A and B）のルールから見ても、空欄には同じ現在分詞の <b>causing</b> が入ります。"
+    },
+    {
+        type: "grammar",
+        q: "【名詞と前置詞のコロケーション】disruption（混乱・支障）と最も相性の良い前置詞を選んでください。",
+        sentence: "Today, subway projects often proceed deep underground with minimal disruption ( &nbsp; &nbsp; &nbsp; &nbsp; ) people's daily lives.",
+        audioText: "Today, subway projects often proceed deep underground with minimal disruption to people's daily lives.",
+        hint: "「人々の日常生活への影響（混乱）を最小限に抑えて」という意味です。「〜に対する影響・支障」を表すお決まりの前置詞があります。",
+        correct: "to",
+        choices: ["to", "for", "with", "on"],
+        explanation: "名詞 <b>disruption</b>（混乱、妨害、支障）が「〜に対する」と影響を与える対象を表す場合、前置詞は <b>to</b> が使われます（<b>disruption to 〜</b>）。<br><i>damage to 〜</i>（〜への損害）や <i>harm to 〜</i>（〜への害）などと同様に、力が一方的に及ぶ対象を示す <b>to</b> のイメージです。"
+    },
+    {
+        type: "grammar",
+        q: "【関係代名詞の選定】文法的に正しい関係代名詞を選んでください。",
+        sentence: "Some observers criticized the project because of the negative effect ( &nbsp; &nbsp; &nbsp; &nbsp; ) the construction had on the local population.",
+        audioText: "Some observers criticized the project because of the negative effect that the construction had on the local population.",
+        hint: "先行詞は negative effect（悪い影響）です。後ろの文は have an effect on 〜（〜に影響を与える）の have の目的語が抜けている「不完全な文」です。この隙間を埋める関係詞を選びます。",
+        correct: "that",
+        choices: ["that", "what", "where", "although"],
+        explanation: "先行詞 <b>the negative effect</b> を修飾する関係代名詞の <b>that</b> が正解です。<br><br><b>💡 なぜ that になるの？解説：</b><br>元々は「<b>have an effect on 〜</b>（〜に影響を与える）」という熟語です。この文では <i>the construction had <b>[空欄]</b> on the local population</i> となっており、本来 had の後ろにあるべき目的語（effect）が前に飛び出して先行詞になっています。<br>この「目的語の欠け（不完全文）」を補う役割として、目的格の関係代名詞 <b>that</b>（または <b>which</b>）が必要になります。<br>※ <i>what</i> は先行詞を内部に含まなければならないので（＝the thing which）直前に effect がある場合は使えません。<i>where</i> は後ろが完全な文のときに使う「関係副詞」なので不可です。"
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function speakText() {
+    const qData = quizList[currentIndex];
+    if (!qData.audioText) return;
+    speechSynthesis.cancel();
+    const uttr = new SpeechSynthesisUtterance(qData.audioText);
+    uttr.lang = 'en-US';
+    uttr.rate = 0.95; 
+    speechSynthesis.speak(uttr);
+}
+
+function toggleHint() {
+    const hintBox = document.getElementById('hint-box');
+    const hintBtn = document.getElementById('hint-toggle-btn');
+    
+    if (hintBox.style.display === 'none' || hintBox.style.display === '') {
+        hintBox.style.display = 'block';
+        hintBtn.textContent = '🙈 ヒントを隠す';
+    } else {
+        hintBox.style.display = 'none';
+        hintBtn.textContent = '💡 日本語ヒントを見る';
+    }
+}
+
+function loadQuestion() {
+    const current = quizList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('question-text').innerHTML = current.q;
+    
+    const sentenceArea = document.getElementById('sentence-area');
+    if (current.sentence) {
+        sentenceArea.innerHTML = current.sentence + ` <button class="audio-btn-inline" onclick="speakText()" title="Listen to text">🔊</button>`;
+        sentenceArea.style.display = 'block';
+    } else {
+        sentenceArea.style.display = 'none';
+    }
+
+    const hintBox = document.getElementById('hint-box');
+    const hintBtn = document.getElementById('hint-toggle-btn');
+    hintBox.innerHTML = current.hint || "ヒントはありません。";
+    hintBox.style.display = 'none';
+    hintBtn.textContent = '💡 日本語ヒントを見る';
+    
+    const feedbackArea = document.getElementById('feedback-area');
+    feedbackArea.style.display = 'none';
+    feedbackArea.className = 'feedback-box';
+    
+    document.getElementById('next-btn').style.display = 'none';
+    isFirstTry = true;
+    
+    let choices = [...current.choices];
+    // すべての問題タイプで選択肢をランダムにシャッフルするように修正
+    choices.sort(() => Math.random() - 0.5); 
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = choice;
+        btn.onclick = () => checkAnswer(choice, current.correct, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    const current = quizList[currentIndex];
+    const feedbackArea = document.getElementById('feedback-area');
+    
+    if (feedbackArea.style.display === 'block' && feedbackArea.classList.contains('feedback-success')) return;
+    
+    if (selected.trim() === correct.trim()) {
+        btn.classList.add('correct');
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            feedbackArea.className = 'feedback-box feedback-success';
+            feedbackArea.innerHTML = `✨ 正解！<br><span style="font-weight:normal; font-size:0.95rem;">${current.explanation}</span>`;
+        } else {
+            feedbackArea.className = 'feedback-box feedback-success';
+            feedbackArea.innerHTML = `👍 正解です！<br><span style="font-weight:normal; font-size:0.95rem;">${current.explanation}</span>`;
+        }
+        feedbackArea.style.display = 'block';
+        document.getElementById('next-btn').style.display = 'block';
+        
+        const buttons = document.querySelectorAll('.choice-btn');
+        buttons.forEach(b => { if (b !== btn) b.style.opacity = '0.6'; });
+    } else {
+        if (isFirstTry) {
+            let cleanQTitle = current.q.split('<br>')[0];
+            mistakes.push({q: cleanQTitle, sentence: current.sentence, correct: current.correct});
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        feedbackArea.className = 'feedback-box feedback-error';
+        feedbackArea.innerHTML = `❌ もう一度考えてみましょう！`;
+        feedbackArea.style.display = 'block';
+    }
+}
+
+function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < quizList.length) { 
+        loadQuestion(); 
+    } else { 
+        showResult(); 
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+    document.getElementById('total-score-count').textContent = quizList.length;
+    
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.q}</strong><br>
+                <span style="color:#666; font-size:0.9rem;">対象の英文：${m.sentence}</span><br>
+                <span style="color:var(--success-green); font-weight:bold;">正解：${m.correct}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【英検準1級】Going Underground 語彙・文法クイズ結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■復習が必要な箇所:\n" + mistakes.map(m => `・${m.q} -> 正解: ${m.correct}`).join("\n")
+        : "\n\n素晴らしい！すべての設問をヒントなし、または最小限のヒントで一発正解しました！";
+        
+    const body = encodeURIComponent(`Tamaki先生へ\n\n英検準1級「Going Underground」の語彙・文法アクティビティ（${quizList.length}問）を完了しました。\n\n【結果】\n${quizList.length}問中 ${firstTryCorrectCount} 問を一発正解しました。${mistakeText}\n\nディスコースマーカーの使い分けや、thatの関係詞用法、分詞構文などを体系的に理解するトレーニングを行いました！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = () => { loadQuestion(); };
+</script>
+</body>
+</html>
