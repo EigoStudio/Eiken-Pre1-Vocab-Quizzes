@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2024-2 2B - Going Underground Grammar Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --primary-navy: #2c3e50;
+            --accent-orange: #e67e22;
+            --text-dark: #34495e;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .instruction {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .sentence-display {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin: 10px 0 25px 0;
+            padding: 18px;
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--primary-navy);
+            border-radius: 5px;
+            text-align: left;
+            white-space: pre-line; /* 改行を有効化 */
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 15px 10px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ffebee;
+            font-size: 0.95rem;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-2 2B - Going Underground Grammar Quiz</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 15</div>
+    <div class="instruction" id="instruction-text">指示文</div>
+    <div class="sentence-display" id="sentence-text">問題文がここに表示されます</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 15問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<script>
+const quizList = [
+    {
+        id: 1,
+        instruction: "文中の『commonly』と最も意味が近い語を選びなさい。",
+        sentence: "Intelligence quotient, commonly known as IQ, claims to be a numerical representation of a person's cognitive ability or intelligence.",
+        a: "generally",
+        c: ["rarely", "precisely", "initially"]
+    },
+    {
+        id: 2,
+        instruction: "文中の『identify』と最も意味が近い語を選びなさい。",
+        sentence: "Binet was asked by the French government to create a test that could be used to identify children who needed educational support.",
+        a: "recognize",
+        c: ["ignore", "evaluate", "protect"]
+    },
+    {
+        id: 3,
+        instruction: "文全体の「本動詞（Main Verb）」を選びなさい。",
+        sentence: "The Binet-Simon test that was created as a result provided the foundation for all IQ tests that have been produced since.",
+        a: "provided",
+        c: ["was created", "have been produced", "test"]
+    },
+    {
+        id: 4,
+        instruction: "空欄に入る最も適切な語形を選びなさい。",
+        sentence: "Because they were a quick and easy way to categorize people, IQ tests soon became a popular tool in educational and employment settings [  ?  ] student performance and assess potential new recruits.",
+        a: "to measure",
+        c: ["measuring", "measured", "measure"]
+    },
+    {
+        id: 5,
+        instruction: "前後の文脈に合う最も適切なディスコースマーカー（接続詞）を選びなさい。",
+        sentence: "[  ?  ] IQ tests are now widely used, there is ongoing debate regarding their validity. One issue raised by critics relates to the nature of intelligence.",
+        a: "Although",
+        c: ["Because", "Since", "Despite"]
+    },
+    {
+        id: 6,
+        instruction: "空欄に入る最も適切な語形を選びなさい。",
+        sentence: "One issue [  ?  ] by critics relates to the nature of intelligence.",
+        a: "raised",
+        c: ["raising", "raise", "was raised"]
+    },
+    {
+        id: 7,
+        instruction: "文全体の「本動詞（Main Verb）」を選びなさい。",
+        sentence: "However, a large-scale study carried out in Canada suggests that this model of intelligence is too simple.",
+        a: "suggests",
+        c: ["carried out", "is", "model"]
+    },
+    {
+        id: 8,
+        instruction: "文全体の「主語（Main Subject）」を選びなさい。",
+        sentence: "In the study, which included over 100,000 participants, researchers asked subjects to answer questions that targeted a range of cognitive skills.",
+        a: "researchers",
+        c: ["study", "participants", "questions"]
+    },
+    {
+        id: 9,
+        instruction: "前後の文脈に合う最も適切な表現を選びなさい。",
+        sentence: "In the study, researchers asked subjects to answer questions that targeted a range of cognitive skills.\n\n[  ?  ], some participants were better at answering the questions than others, but the researchers believed this could only be explained by considering three different aspects...",
+        a: "As expected",
+        c: ["Unexpectedly", "In contrast", "In fact"]
+    },
+    {
+        id: 10,
+        instruction: "前後の文脈に合う最も適切なディスコースマーカー（接続詞）を選びなさい。",
+        sentence: "...the researchers believed this could only be explained by considering three different aspects—short-term memory, reasoning, and verbal skills.\n\n[  ?  ], MRI scans taken while a small group of the participants were answering questions indicated that each of these abilities was controlled by a different region in the brain.",
+        a: "Furthermore",
+        c: ["However", "Therefore", "Otherwise"]
+    },
+    {
+        id: 11,
+        instruction: "前後の文脈に合う最も適切なディスコースマーカーを選びなさい。",
+        sentence: "...indicated that each of these abilities was controlled by a different region in the brain.\n\n[  ?  ] this criticism, proponents of IQ tests believe they can be beneficial if used appropriately.",
+        a: "Despite",
+        c: ["Although", "Because of", "Instead of"]
+    },
+    {
+        id: 12,
+        instruction: "前後の文脈に合う最も適切なディスコースマーカー（接続詞）を選びなさい。",
+        sentence: "Studies have shown that the academic performance and behavior of students are influenced by their teachers' attitudes...\n\n[  ?  ] the majority of teachers in US schools are White, students from ethnic minorities tend to have less chance of being selected for such programs.",
+        a: "Since",
+        c: ["Although", "Unless", "While"]
+    },
+    {
+        id: 13,
+        instruction: "文全体の「本動詞（Main Verb）」を選びなさい。",
+        sentence: "However, in US school districts where IQ tests have been used in the selection process, more students from ethnic minorities have been able to enter the programs.",
+        a: "have been able",
+        c: ["have been used", "enter", "process"]
+    },
+    {
+        id: 14,
+        instruction: "『supporters（支持者・賛成者）』の類語を選びなさい。",
+        sentence: "", // 文章は表示せず四択へ
+        a: "proponents",
+        c: ["critics", "subjects", "candidates"]
+    },
+    {
+        id: 15,
+        instruction: "『objective（客観的な）』の対義語（反対の意味）を選びなさい。",
+        sentence: "", // 文章は表示せず四択へ
+        a: "subjective",
+        c: ["fair", "numerical", "valid"]
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+// 問題の読み込み
+function loadQuestion() {
+    if (currentIndex >= quizList.length) {
+        showResult();
+        return;
+    }
+    const current = quizList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('instruction-text').textContent = current.instruction;
+    
+    const sentenceBox = document.getElementById('sentence-text');
+    if (current.sentence === "") {
+        sentenceBox.style.display = 'none'; // 文章がない場合は枠ごと非表示
+    } else {
+        sentenceBox.style.display = 'block';
+        sentenceBox.textContent = current.sentence;
+    }
+
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    // 正解と誤答の選択肢をシャッフル
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+}
+
+// 解答チェック
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({
+                num: currentIndex + 1,
+                instruction: quizList[currentIndex].instruction,
+                correct: quizList[currentIndex].a
+            });
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+// 結果表示
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>問${m.num}: ${m.instruction}</strong><br>
+                正解: <span style="color:var(--success-green); font-weight:bold;">${m.correct}</span>
+            </div>
+        `).join('');
+    }
+}
+
+// Tamaki先生へのメール送信
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【2024-2 2B】Going Underground 文法・構文クイズ結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習問題:\n" + mistakes.map(m => `・問${m.num} (${m.instruction}) → 正解: ${m.correct}`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n文法・構文クイズ「2024-2 2B - Going Underground Grammar Quiz」（${quizList.length}問）を完了しました。\n\n結果: ${quizList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して文法力・構文把握力を高めます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
