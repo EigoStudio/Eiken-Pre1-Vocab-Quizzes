@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>2024-2 2B - Going Underground Grammar Quiz</title>
+    <title>2024-2 3A - Measuring Intelligence Quiz</title>
     <style>
         :root {
             --bg-color: #f4f7f6;
@@ -165,7 +165,7 @@
 <body>
 
 <header>
-    <h1>2024-2 2B - Going Underground Grammar Quiz</h1>
+    <h1>2024-2 3A - Measuring Intelligence Grammar Quiz</h1>
 </header>
 
 <div class="container" id="quiz-screen">
@@ -390,13 +390,13 @@ function showResult() {
 // Tamaki先生へのメール送信
 function sendEmail() {
     const teacherEmail = "tamaki@eigostudio-stepforward.com";
-    const subject = encodeURIComponent("【2024-2 2B】Going Underground 文法・構文クイズ結果");
+    const subject = encodeURIComponent("【2024-2 3A】Measuring Intelligence 文法・構文クイズ結果");
     
     let mistakeText = mistakes.length > 0 
         ? "\n\n■要復習問題:\n" + mistakes.map(m => `・問${m.num} (${m.instruction}) → 正解: ${m.correct}`).join("\n")
         : "\n\n全問一度で正解できました！";
 
-    const body = encodeURIComponent(`Tamaki先生へ\n\n文法・構文クイズ「2024-2 2B - Going Underground Grammar Quiz」（${quizList.length}問）を完了しました。\n\n結果: ${quizList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して文法力・構文把握力を高めます！`);
+    const body = encodeURIComponent(`Tamaki先生へ\n\n文法・構文クイズ「2024-2 3A - Measuring Intelligence Grammar Quiz」（${quizList.length}問）を完了しました。\n\n結果: ${quizList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して文法力・構文把握力を高めます！`);
     
     window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
 }
