@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2024-2 3B "Age and Innovation" Vocabulary Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --primary-navy: #1a2a6c;
+            --accent-orange: #f39c12;
+            --text-dark: #2c3e50;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 700px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .word-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-navy);
+            margin: 10px 0 30px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--bg-color);
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 18px 10px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ffebee;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-2 3B "Age and Innovation" Vocabulary Quiz</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 32</div>
+    <div class="word-display" id="word-text">Loading...</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 32問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<script>
+// バランスを調整した全32語データ
+const vocabData = [
+    // --- 名詞（単語・1訳） ---
+    {
+        w: "benchmark", 
+        a: "基準", 
+        c: ["限界", "目的", "背景"]
+    },
+    {
+        w: "transistor", 
+        a: "トランジスタ", 
+        c: ["発電機", "変圧器", "蓄電池"]
+    },
+    {
+        w: "prediction", 
+        a: "予測", 
+        c: ["決断", "証明", "記録"]
+    },
+    {
+        w: "constant", 
+        a: "一定不変のもの", 
+        c: ["一時的なもの", "例外的なもの", "不確定なもの"]
+    },
+    {
+        w: "obstacle", 
+        a: "障害", 
+        c: ["利点", "機会", "手段"]
+    },
+
+    // --- 名詞（単語・2訳） ---
+    {
+        w: "theory", 
+        a: "理論・学説", 
+        c: ["事実・成果", "規則・法律", "実験・調査"]
+    },
+    {
+        w: "tendency", 
+        a: "傾向・癖", 
+        c: ["能力・適性", "決意・野心", "伝統・風習"]
+    },
+    {
+        w: "burden", 
+        a: "負担・重荷", 
+        c: ["報酬・手当", "許可・承認", "希望・期待"]
+    },
+
+    // --- 名詞フレーズ・複合名詞 ---
+    {
+        w: "driving force", 
+        a: "推進力", 
+        c: ["抵抗力", "支配権", "解決策"]
+    },
+    {
+        w: "rapid progress", 
+        a: "急速な進歩", 
+        c: ["段階的な減少", "一時的な停滞", "根本的な変化"]
+    },
+    {
+        w: "aging workforce", 
+        a: "高齢化する労働力", 
+        c: ["不測の労働災害", "熟練した管理者", "過剰な雇用人員"]
+    },
+
+    // --- 動詞（単語・1訳） ---
+    {
+        w: "intend", 
+        a: "意図する", 
+        c: ["後悔する", "辞退する", "保証する"]
+    },
+    {
+        w: "imply", 
+        a: "暗に示す", 
+        c: ["明確に断言する", "全面的に拒否する", "公に発表する"]
+    },
+    {
+        w: "accrue", 
+        a: "蓄積する", 
+        c: ["消費する", "分裂する", "消滅する"]
+    },
+    {
+        w: "cite", 
+        a: "引用する", 
+        c: ["否定する", "翻訳する", "隠蔽する"]
+    },
+
+    // --- 動詞（単語・2訳） ---
+    {
+        w: "adopt", 
+        a: "採用する・取り入れる", 
+        c: ["拒絶する・排除する", "延期する・見送る", "分析する・調査する"]
+    },
+
+    // --- 動詞フレーズ・構文（A/B付き） ---
+    {
+        w: "plan A around B", 
+        a: "Bに基づいてAを計画する", 
+        c: ["Bの代わりにAを選択する", "Bを理由にAを非難する", "BからAを分離する"]
+    },
+    {
+        w: "devote A to B", 
+        a: "AをBに捧げる・充てる", 
+        c: ["AをBから保護する・守る", "AをBと比較する・比べる", "AをBに変換する・変える"]
+    },
+
+    // --- 動詞フレーズ（2訳） ---
+    {
+        w: "put forward", 
+        a: "〜を提出する・提唱する", 
+        c: ["〜を却下する・取り下げる", "〜を承認する・許可する", "〜を批判する・攻撃する"]
+    },
+    {
+        w: "hold back", 
+        a: "〜の足かせとなる・妨げる", 
+        c: ["〜を促進する・押し進める", "〜を保護する・擁護する", "〜を無視する・見落とす"]
+    },
+    {
+        w: "pass on", 
+        a: "〜を伝える・引き継ぐ", 
+        c: ["〜を回収する・取り戻す", "〜を破棄する・処分する", "〜を独占する・隠す"]
+    },
+    {
+        w: "counterbalance", 
+        a: "〜の釣合いをとる・相殺する", 
+        c: ["〜を急増させる・強める", "〜を混乱させる・乱す", "〜を中断する・停止する"]
+    },
+
+    // --- 形容詞（単語・1訳） ---
+    {
+        w: "essential", 
+        a: "不可欠な", 
+        c: ["不必要な", "一時的な", "表面的な"]
+    },
+    {
+        w: "exponential", 
+        a: "指数関数的な", 
+        c: ["緩やかな", "不規則な", "平均的な"]
+    },
+    {
+        w: "staggering", 
+        a: "圧倒的な", 
+        c: ["控えめな", "退屈な", "平凡な"]
+    },
+    {
+        w: "groundbreaking", 
+        a: "画期的な", 
+        c: ["伝統的な", "失敗に終わった", "一般的な"]
+    },
+
+    // --- 形容詞 / 状態を表すフレーズ ---
+    {
+        w: "responsible for", 
+        a: "〜の原因である", 
+        c: ["〜の無関係である", "〜の反対である", "〜の例外である"]
+    },
+    {
+        w: "hold true", 
+        a: "当てはまる", 
+        c: ["矛盾する", "変化する", "消滅する"]
+    },
+
+    // --- 副詞 / 副詞的表現 ---
+    {
+        w: "every two years", 
+        a: "2年ごとに", 
+        c: ["2年以内に", "2年後に", "2年間ずっと"]
+    },
+    {
+        w: "regarding", 
+        a: "〜に関して", 
+        c: ["〜に反して", "〜を除いて", "〜に先立って"]
+    },
+    {
+        w: "less frequently", 
+        a: "より低い頻度で", 
+        c: ["より高い頻度で", "短期間で", "同時に"]
+    },
+    {
+        w: "inevitably", 
+        a: "必然的に", 
+        c: ["偶然に", "一時的に", "意図的に"]
+    }
+];
+
+// 出題順をランダムにシャッフル
+let vocabList = [...vocabData];
+vocabList.sort(() => Math.random() - 0.5);
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+const totalQuestions = vocabList.length;
+
+function loadQuestion() {
+    if (currentIndex >= totalQuestions) {
+        showResult();
+        return;
+    }
+    const current = vocabList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${totalQuestions}`;
+    document.getElementById('word-text').textContent = current.w;
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    // 正解とダミー3つを混ぜてシャッフル
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({w: vocabList[currentIndex].w, a: vocabList[currentIndex].a});
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+    
+    document.querySelector('#result-screen div').innerHTML = `一度で正解：<span class="score-num" id="final-score">${firstTryCorrectCount}</span> / ${totalQuestions}問`;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.w}</strong>
+                <span>${m.a}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【英検準1級】Age and Innovation 語彙復習結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習リスト:\n" + mistakes.map(m => `・${m.w} (${m.a})`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n読解問題「Age and Innovation」の語彙復習（${totalQuestions}問）を完了しました。\n\n結果: ${totalQuestions}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して定着させます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
