@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>2024-2 3A - Measuring Intelligence Quiz</title>
+    <title>2024-2 3A - Measuring Intelligence Grammar Quiz</title>
     <style>
         :root {
             --bg-color: #f4f7f6;
@@ -39,6 +39,26 @@
         header h1 {
             margin: 0;
             font-size: 1.5rem;
+        }
+
+        .print-trigger-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .print-trigger-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
         }
 
         .container {
@@ -160,12 +180,121 @@
         }
 
         .action-btn:hover { opacity: 0.9; }
+
+        /* 画面表示時は印刷用ワークシートを非表示 */
+        @media screen {
+            #print-worksheet {
+                display: none !important;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm 12mm;
+            }
+
+            html, body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-family: "Hiragino Mincho ProN", "Yu Mincho", "Georgia", serif !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important; /* flexを解除して全問の複数ページ出力を許可 */
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                width: 100% !important;
+            }
+
+            /* オンライン用画面要素は印刷時に非表示 */
+            header, .container, #quiz-screen, #result-screen, .print-trigger-btn {
+                display: none !important;
+            }
+
+            /* 印刷専用ワークシートを表示 */
+            #print-worksheet {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .print-header {
+                text-align: center;
+                border-bottom: 2px solid #000000;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+
+            .print-header h2 {
+                margin: 0 0 6px 0;
+                font-size: 1.2rem;
+                color: #000000;
+            }
+
+            .print-meta {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.85rem;
+                font-weight: bold;
+            }
+
+            .print-q-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+                border-bottom: 1px dashed #cccccc;
+            }
+
+            .print-q-num {
+                font-weight: bold;
+                font-size: 0.9rem;
+                color: #000000;
+                margin-bottom: 3px;
+            }
+
+            .print-sentence {
+                border-left: 3px solid #000000;
+                padding: 3px 8px;
+                margin: 3px 0 5px 0;
+                background: #ffffff !important;
+                font-size: 0.82rem;
+                line-height: 1.35;
+                white-space: pre-line;
+                color: #000000;
+            }
+
+            .print-choices {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3px 12px;
+            }
+
+            .print-choice-item {
+                font-size: 0.82rem;
+                color: #000000;
+            }
+
+            .print-choice-label {
+                font-weight: bold;
+            }
+
+            * {
+                -webkit-print-color-adjust: economy !important;
+                color-adjust: economy !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+        }
     </style>
 </head>
 <body>
 
 <header>
     <h1>2024-2 3A - Measuring Intelligence Grammar Quiz</h1>
+    <button class="print-trigger-btn" onclick="window.print()">🖨️ 全15問をPDF保存 / 印刷</button>
 </header>
 
 <div class="container" id="quiz-screen">
@@ -188,8 +317,12 @@
     </div>
 
     <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #27ae60;" onclick="window.print()">🖨️ 全15問をPDF保存 / 印刷</button>
     <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
 </div>
+
+<!-- 印刷・PDF保存専用コンテナ（Cmd + P 実行時のみ表示） -->
+<div id="print-worksheet"></div>
 
 <script>
 const quizList = [
@@ -287,14 +420,14 @@ const quizList = [
     {
         id: 14,
         instruction: "『supporters（支持者・賛成者）』の類語を選びなさい。",
-        sentence: "", // 文章は表示せず四択へ
+        sentence: "",
         a: "proponents",
         c: ["critics", "subjects", "candidates"]
     },
     {
         id: 15,
         instruction: "『objective（客観的な）』の対義語（反対の意味）を選びなさい。",
-        sentence: "", // 文章は表示せず四択へ
+        sentence: "",
         a: "subjective",
         c: ["fair", "numerical", "valid"]
     }
@@ -317,7 +450,7 @@ function loadQuestion() {
     
     const sentenceBox = document.getElementById('sentence-text');
     if (current.sentence === "") {
-        sentenceBox.style.display = 'none'; // 文章がない場合は枠ごと非表示
+        sentenceBox.style.display = 'none';
     } else {
         sentenceBox.style.display = 'block';
         sentenceBox.textContent = current.sentence;
@@ -390,7 +523,7 @@ function showResult() {
 // Tamaki先生へのメール送信
 function sendEmail() {
     const teacherEmail = "tamaki@eigostudio-stepforward.com";
-    const subject = encodeURIComponent("【2024-2 3A】Measuring Intelligence 文法・構文クイズ結果");
+    const subject = encodeURIComponent("【2024-2 3A】Measuring Intelligence文法・構文クイズ結果");
     
     let mistakeText = mistakes.length > 0 
         ? "\n\n■要復習問題:\n" + mistakes.map(m => `・問${m.num} (${m.instruction}) → 正解: ${m.correct}`).join("\n")
@@ -401,7 +534,52 @@ function sendEmail() {
     window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
 }
 
-window.onload = loadQuestion;
+// 印刷・PDF用の全問題プリントレイアウトを動的生成
+function setupPrintWorksheet() {
+    const printContainer = document.getElementById('print-worksheet');
+    if (!printContainer) return;
+
+    let html = `
+        <div class="print-header">
+            <h2>2024-2 3A - Measuring Intelligence Grammar Quiz</h2>
+            <div class="print-meta">
+                <span>Name: ______________________</span>
+                <span>Date: ____________</span>
+                <span>Score: ______ / ${quizList.length}</span>
+            </div>
+        </div>
+    `;
+
+    quizList.forEach((q, index) => {
+        const choices = [q.a, ...q.c];
+        
+        // 決定論的な順序入れ替え（シャッフル）
+        const shuffledChoices = [...choices].sort((a, b) => {
+            return ((a.length + index) % 3) - ((b.length + index) % 3);
+        });
+
+        html += `
+            <div class="print-q-block">
+                <div class="print-q-num">Q${index + 1}. ${q.instruction}</div>
+                ${q.sentence ? `<div class="print-sentence">${q.sentence}</div>` : ''}
+                <div class="print-choices">
+                    ${shuffledChoices.map((choice, i) => `
+                        <div class="print-choice-item">
+                            <span class="print-choice-label">(${String.fromCharCode(65 + i)})</span> ${choice}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    });
+
+    printContainer.innerHTML = html;
+}
+
+window.onload = () => {
+    loadQuestion();
+    setupPrintWorksheet();
+};
 </script>
 
 </body>
