@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2024-3 2B - Roman Concrete Vocabulary & Grammar Quiz</title>
+<script src="auth.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --primary-navy: #2c3e50;
+            --accent-orange: #e67e22;
+            --text-dark: #34495e;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .print-trigger-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .print-trigger-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .instruction {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .sentence-display {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin: 10px 0 25px 0;
+            padding: 18px;
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--primary-navy);
+            border-radius: 5px;
+            text-align: left;
+            white-space: pre-line;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 15px 10px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ffebee;
+            font-size: 0.95rem;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+
+        @media screen {
+            #print-worksheet {
+                display: none !important;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm 12mm;
+            }
+
+            html, body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-family: "Hiragino Mincho ProN", "Yu Mincho", "Georgia", serif !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                width: 100% !important;
+            }
+
+            header, .container, #quiz-screen, #result-screen, .print-trigger-btn {
+                display: none !important;
+            }
+
+            #print-worksheet {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .print-header {
+                text-align: center;
+                border-bottom: 2px solid #000000;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+
+            .print-header h2 {
+                margin: 0 0 6px 0;
+                font-size: 1.2rem;
+                color: #000000;
+            }
+
+            .print-meta {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.85rem;
+                font-weight: bold;
+            }
+
+            .print-q-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+                border-bottom: 1px dashed #cccccc;
+            }
+
+            .print-q-num {
+                font-weight: bold;
+                font-size: 0.9rem;
+                color: #000000;
+                margin-bottom: 3px;
+            }
+
+            .print-sentence {
+                border-left: 3px solid #000000;
+                padding: 3px 8px;
+                margin: 3px 0 5px 0;
+                background: #ffffff !important;
+                font-size: 0.82rem;
+                line-height: 1.35;
+                white-space: pre-line;
+                color: #000000;
+            }
+
+            .print-choices {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3px 12px;
+            }
+
+            .print-choice-item {
+                font-size: 0.82rem;
+                color: #000000;
+            }
+
+            .print-choice-label {
+                font-weight: bold;
+            }
+
+            * {
+                -webkit-print-color-adjust: economy !important;
+                color-adjust: economy !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-3 2B - Roman Concrete Vocabulary & Grammar Quiz</h1>
+    <button class="print-trigger-btn" onclick="window.print()">🖨️ 全40問をPDF保存 / 印刷</button>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 40</div>
+    <div class="instruction" id="instruction-text">指示文</div>
+    <div class="sentence-display" id="sentence-text">問題文がここに表示されます</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 40問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #27ae60;" onclick="window.print()">🖨️ 全40問をPDF保存 / 印刷</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<div id="print-worksheet"></div>
+
+<script>
+const quizList = [
+    {
+        id: 1,
+        instruction: "文中の「ancient Romans」の和訳として最も適切なものを選びなさい。",
+        sentence: "The ancient Romans were known as talented architects and builders who built amphitheaters, temples, bridges, and reservoirs.",
+        a: "古代ローマ人",
+        c: ["現代ローマ市民", "中世イタリア商人", "古代ギリシャ哲学者"]
+    },
+    {
+        id: 2,
+        instruction: "空欄に入る最も適切な前置詞を選びなさい。",
+        sentence: "The ancient Romans were known [  ?  ] talented architects and builders.",
+        a: "as",
+        c: ["for", "with", "by"]
+    },
+    {
+        id: 3,
+        instruction: "文中の「incorrectly classified」の意味として最も適切なものを選びなさい。",
+        sentence: "Early studies often overlooked these white fragments, assuming they were simply raw materials that had been incorrectly classified.",
+        a: "誤って分類された",
+        c: ["正しく特定された", "意図的に隠された", "効率よく回収された"]
+    },
+    {
+        id: 4,
+        instruction: "文中の「The designs are rarely similar.」の和訳として最も適切なものを選びなさい。",
+        sentence: "Roman structures vary greatly across different regions, so the designs are rarely similar from one monument to another.",
+        a: "デザインが類似していることはめったにない。",
+        c: ["デザインは常に酷似している。", "デザインは意図的に模倣されている。", "デザインはめったに変更されない。"]
+    },
+    {
+        id: 5,
+        instruction: "文中の「materials」の和訳として最も適切なものを選びなさい。",
+        sentence: "...and another material called lime in the concrete used to help build them.",
+        a: "材料・素材",
+        c: ["機械・道具", "目的・理由", "費用・予算"]
+    },
+    {
+        id: 6,
+        instruction: "文中の「has fascinated researchers」の和訳として最も適切なものを選びなさい。",
+        sentence: "...and the reason why has fascinated researchers.",
+        a: "研究者を魅了してきた",
+        c: ["研究者を悩ませてきた", "研究者を失望させてきた", "研究者を誘導してきた"]
+    },
+    {
+        id: 7,
+        instruction: "文中の「structures' durability」の意味として最も適切なものを選びなさい。",
+        sentence: "The structures' durability has generally been attributed to the unique mix of volcanic ash and another material called lime...",
+        a: "建造物の耐久性",
+        c: ["建造物の外観デザイン", "建造物の歴史的背景", "建造物の解体費用"]
+    },
+    {
+        id: 8,
+        instruction: "空欄に入る最も適切な動詞を選びなさい。",
+        sentence: "The structures' durability has generally been [  ?  ] to the unique mix of volcanic ash and another material called lime in the concrete...",
+        a: "attributed",
+        c: ["compared", "submitted", "restricted"]
+    },
+    {
+        id: 9,
+        instruction: "文中の「volcanic ash」の和訳として最も適切なものを選びなさい。",
+        sentence: "...to the unique mix of volcanic ash and another material called lime in the concrete used to help build them.",
+        a: "火山灰",
+        c: ["鉱物粉末", "石灰岩", "天然砂利"]
+    },
+    {
+        id: 10,
+        instruction: "文中の「lime」の（建築材料としての）和訳を選びなさい。",
+        sentence: "...and another material called lime in the concrete used to help build them.",
+        a: "消石灰",
+        c: ["果物のライム", "粘土質土壌", "液体樹脂"]
+    },
+    {
+        id: 11,
+        instruction: "文中の「used」という分詞が、文法上修飾している語句を選びなさい。",
+        sentence: "The structures' durability has generally been attributed to the unique mix of volcanic ash and another material called lime in the concrete used to help build them.",
+        a: "the concrete",
+        c: ["the unique mix", "volcanic ash", "lime"]
+    },
+    {
+        id: 12,
+        instruction: "文中の「analysis」の和訳として最も適切なものを選びなさい。",
+        sentence: "However, analysis of the concrete revealed it contained chunks of lime...",
+        a: "分析・解析",
+        c: ["合成・結合", "推測・仮説", "保存・維持"]
+    },
+    {
+        id: 13,
+        instruction: "文中の「chunks of lime」の意味として最も適切なものを選びなさい。",
+        sentence: "...analysis of the concrete revealed it contained chunks of lime...",
+        a: "石灰の塊",
+        c: ["石灰の粉末", "石灰の水溶液", "石灰の結晶表面"]
+    },
+    {
+        id: 14,
+        instruction: "文中の「indicated」の言い換えとして最も適切な表現を選びなさい。",
+        sentence: "...which indicated the concrete may not have been mixed as well as it should have been.",
+        a: "suggested that",
+        c: ["concealed that", "denied that", "forgot that"]
+    },
+    {
+        id: 15,
+        instruction: "文中の「puzzling」の言い換えとして最も適切な表現を選びなさい。",
+        sentence: "This was puzzling as the Romans had a reputation for high-quality work and craftsmanship.",
+        a: "confusing",
+        c: ["obvious", "predictable", "satisfying"]
+    },
+    {
+        id: 16,
+        instruction: "文中の「craftsmanship」の和訳として最も適切なものを選びなさい。",
+        sentence: "This was puzzling as the Romans had a reputation for high-quality work and craftsmanship.",
+        a: "職人技・技術力",
+        c: ["資金力・経済力", "政治力・統率力", "思考力・判断力"]
+    },
+    {
+        id: 17,
+        instruction: "文中の「dug deeper」の意味として最も適切な表現を選びなさい。",
+        sentence: "A team of researchers recently dug deeper.",
+        a: "investigated more thoroughly",
+        c: ["excavated lower ground", "abandoned further research", "created new obstacles"]
+    },
+    {
+        id: 18,
+        instruction: "文中の「suspected」の和訳として最も適切なものを選びなさい。",
+        sentence: "Rather than treating the white specks as poor workmanship, one researcher suspected that they served a vital functional role.",
+        a: "〜ではないかと疑った",
+        c: ["〜であることを完全に否定した", "〜を実験で証明した", "〜を無視することにした"]
+    },
+    {
+        id: 19,
+        instruction: "文中の「structural problems」の和訳として最も適切なものを選びなさい。",
+        sentence: "Engineers had long assumed that unmixed material inside concrete would inevitably lead to serious structural problems.",
+        a: "構造上の不具合",
+        c: ["デザイン上の不満", "予算の超過問題", "法律上の問題"]
+    },
+    {
+        id: 20,
+        instruction: "文中の「intentionally created」の和訳として最も適切なものを選びなさい。",
+        sentence: "High-resolution imaging confirmed that these microscopic mineral features were intentionally created during the hot-mixing stage.",
+        a: "意図的に作られた",
+        c: ["偶然発生した", "自然に劣化した", "誤って混入した"]
+    },
+    {
+        id: 21,
+        instruction: "文中の「remain a mystery」の和訳として最も適切なものを選びなさい。",
+        sentence: "Why such sophisticated engineering practices vanished after the empire fallen continues to remain a mystery.",
+        a: "謎のままである",
+        c: ["完全に解明されている", "議論の対象外である", "間違っていたと判明した"]
+    },
+    {
+        id: 22,
+        instruction: "文中の「likely resulted from」の意味として最も適切なものを選びなさい。",
+        sentence: "...showed that the lime chunks likely resulted from a special high-temperature process called hot mixing.",
+        a: "〜から生じた可能性が高い",
+        c: ["〜を完全に防いだ模様だ", "〜を引き起こす恐れがある", "〜と無関係であることが判明した"]
+    },
+    {
+        id: 23,
+        instruction: "文中の「convinced the researchers」の意味として最も適切なものを選びなさい。",
+        sentence: "This convinced the researchers that the chunks were not the result of a mixing error.",
+        a: "研究者たちを納得させた",
+        c: ["研究者たちを困惑させた", "研究者たちを失望させた", "研究者たちを誘導した"]
+    },
+    {
+        id: 24,
+        instruction: "文中の「mixing error」の和訳として最も適切なものを選びなさい。",
+        sentence: "This convinced the researchers that the chunks were not the result of a mixing error.",
+        a: "調合ミス",
+        c: ["設計ミス", "計算ミス", "測定ミス"]
+    },
+    {
+        id: 25,
+        instruction: "文中の「chemical properties」の和訳として最も適切なものを選びなさい。",
+        sentence: "Hot mixing gives concrete chemical properties that make it stronger than regular concrete.",
+        a: "化学的特性",
+        c: ["物理的重量", "電気伝導性", "地理的性質"]
+    },
+    {
+        id: 26,
+        instruction: "文中の「it is quicker to set」の意味として最も適切なものを選びなさい。",
+        sentence: "Moreover, it is quicker to set, which enables structures to be built more quickly.",
+        a: "より早く固まる",
+        c: ["より早く乾く", "より早く崩れる", "より早く冷える"]
+    },
+    {
+        id: 27,
+        instruction: "文中の「remarkable qualities」の意味として最も適切なものを選びなさい。",
+        sentence: "The remarkable qualities of Roman concrete do not end there.",
+        a: "優れた特性",
+        c: ["不確実な性質", "危険な副作用", "高価な成分"]
+    },
+    {
+        id: 28,
+        instruction: "文中の「self-healing properties」の意味として最も適切なものを選びなさい。",
+        sentence: "The researchers found that it also has self-healing properties.",
+        a: "自己修復機能",
+        c: ["自己乾燥機能", "防水コーティング", "自動膨張機能"]
+    },
+    {
+        id: 29,
+        instruction: "文中の「cracks」の和訳として最も適切なものを選びなさい。",
+        sentence: "When cracks form in regular concrete, they often spread.",
+        a: "ひび割れ・亀裂",
+        c: ["気泡・空洞", "不純物・ゴミ", "表面の凹凸"]
+    },
+    {
+        id: 30,
+        instruction: "文中の「form」の品詞を選びなさい。",
+        sentence: "When cracks form in regular concrete, they often spread.",
+        a: "動詞",
+        c: ["名詞", "形容詞", "副詞"]
+    },
+    {
+        id: 31,
+        instruction: "文中の「react with the water」の和訳として最も適切なものを選びなさい。",
+        sentence: "In Roman concrete, however, when water enters a crack, the lime chunks react with the water to crystallize as calcium carbonate.",
+        a: "水と反応する",
+        c: ["水を弾く", "水に溶け切る", "水を吸収して腐敗する"]
+    },
+    {
+        id: 32,
+        instruction: "文中の「crystallize as calcium carbonate」の意味として最も適切なものを選びなさい。",
+        sentence: "...the lime chunks react with the water to crystallize as calcium carbonate.",
+        a: "炭酸カルシウムとして結晶化する",
+        c: ["炭酸カルシウムとして蒸発する", "炭酸カルシウムとして液化する", "炭酸カルシウムとして沈殿分離する"]
+    },
+    {
+        id: 33,
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "Hot mixing gives Roman concrete extraordinary strength. [  ?  ], it speeds up setting time, allowing projects to be completed faster.",
+        a: "Moreover",
+        c: ["Likewise", "Consequently", "On the contrary"]
+    },
+    {
+        id: 34,
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "Many Roman buildings remain standing to this day. [  ?  ], several ancient stone bridges still handle daily vehicle traffic.",
+        a: "Likewise",
+        c: ["Consequently", "Nonetheless", "On the contrary"]
+    },
+    {
+        id: 35,
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "Water seeped into the crack and triggered a reaction with the reactive lime. [  ?  ], recrystallized minerals filled the gap and stopped further damage.",
+        a: "Consequently",
+        c: ["Nonetheless", "On the contrary", "Likewise"]
+    },
+    {
+        id: 36,
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "The presence of unmixed lime fragments appeared to be a sign of poor quality control. [  ?  ], it was a sophisticated technique masterminded by Roman builders.",
+        a: "Nonetheless",
+        c: ["Likewise", "Consequently", "Moreover"]
+    },
+    {
+        id: 37,
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "Many scientists initially assumed Roman concrete was mixed poorly. [  ?  ], ancient builders possessed an advanced understanding of material chemistry.",
+        a: "On the contrary",
+        c: ["Consequently", "Likewise", "Moreover"]
+    },
+    {
+        id: 38,
+        instruction: "文中の「fills the crack」の意味として最も適切なものを選びなさい。",
+        sentence: "...this fills the crack and prevents it from spreading.",
+        a: "ひび割れを塞ぐ",
+        c: ["ひび割れを広げる", "ひび割れを隠す", "ひび割れを作る"]
+    },
+    {
+        id: 39,
+        instruction: "文中の「remained intact」の意味として最も適切なものを選びなさい。",
+        sentence: "This may help explain why Roman structures have remained intact for so long despite being exposed to water.",
+        a: "損傷なく残ってきた",
+        c: ["完全に崩壊してきた", "何度も修復されてきた", "埋もれたままになっている"]
+    },
+    {
+        id: 40,
+        instruction: "空欄に入る最も適切な前置詞・接続詞を選びなさい。",
+        sentence: "Roman structures have remained intact for so long [  ?  ] being exposed to water.",
+        a: "despite",
+        c: ["however", "whereas", "nonetheless"]
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function loadQuestion() {
+    if (currentIndex >= quizList.length) {
+        showResult();
+        return;
+    }
+    const current = quizList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('instruction-text').textContent = current.instruction;
+    
+    const sentenceBox = document.getElementById('sentence-text');
+    if (current.sentence === "") {
+        sentenceBox.style.display = 'none';
+    } else {
+        sentenceBox.style.display = 'block';
+        sentenceBox.textContent = current.sentence;
+    }
+
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({
+                num: currentIndex + 1,
+                instruction: quizList[currentIndex].instruction,
+                correct: quizList[currentIndex].a
+            });
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>問${m.num}: ${m.instruction}</strong><br>
+                正解: <span style="color:var(--success-green); font-weight:bold;">${m.correct}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【2024-3 2B】Roman Concrete語彙・文法クイズ結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習問題:\n" + mistakes.map(m => `・問${m.num} (${m.instruction}) → 正解: ${m.correct}`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n語彙・文法クイズ「2024-3 2B - Roman Concrete Vocabulary & Grammar Quiz」（${quizList.length}問）を完了しました。\n\n結果: ${quizList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して語彙力・読解構文力を高めます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+function setupPrintWorksheet() {
+    const printContainer = document.getElementById('print-worksheet');
+    if (!printContainer) return;
+
+    let html = `
+        <div class="print-header">
+            <h2>2024-3 2B - Roman Concrete Vocabulary & Grammar Quiz</h2>
+            <div class="print-meta">
+                <span>Name: ______________________</span>
+                <span>Date: ____________</span>
+                <span>Score: ______ / ${quizList.length}</span>
+            </div>
+        </div>
+    `;
+
+    quizList.forEach((q, index) => {
+        const choices = [q.a, ...q.c];
+        
+        const shuffledChoices = [...choices].sort((a, b) => {
+            return ((a.length + index) % 3) - ((b.length + index) % 3);
+        });
+
+        html += `
+            <div class="print-q-block">
+                <div class="print-q-num">Q${index + 1}. ${q.instruction}</div>
+                ${q.sentence ? `<div class="print-sentence">${q.sentence}</div>` : ''}
+                <div class="print-choices">
+                    ${shuffledChoices.map((choice, i) => `
+                        <div class="print-choice-item">
+                            <span class="print-choice-label">(${String.fromCharCode(65 + i)})</span> ${choice}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    });
+
+    printContainer.innerHTML = html;
+}
+
+window.onload = () => {
+    loadQuestion();
+    setupPrintWorksheet();
+};
+</script>
+
+</body>
+</html>
