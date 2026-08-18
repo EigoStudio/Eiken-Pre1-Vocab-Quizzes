@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2024-3 3B - Bretton Woods - Vocabulary & Grammar Quiz</title>
+<script src="auth.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --primary-navy: #2c3e50;
+            --accent-orange: #e67e22;
+            --text-dark: #34495e;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .print-trigger-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .print-trigger-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .instruction {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .sentence-display {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin: 10px 0 25px 0;
+            padding: 18px;
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--primary-navy);
+            border-radius: 5px;
+            text-align: left;
+            white-space: pre-line;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 15px 10px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ffebee;
+            font-size: 0.95rem;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+
+        @media screen {
+            #print-worksheet {
+                display: none !important;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm 12mm;
+            }
+
+            html, body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-family: "Hiragino Mincho ProN", "Yu Mincho", "Georgia", serif !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                width: 100% !important;
+            }
+
+            header, .container, #quiz-screen, #result-screen, .print-trigger-btn {
+                display: none !important;
+            }
+
+            #print-worksheet {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .print-header {
+                text-align: center;
+                border-bottom: 2px solid #000000;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+
+            .print-header h2 {
+                margin: 0 0 6px 0;
+                font-size: 1.2rem;
+                color: #000000;
+            }
+
+            .print-meta {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.85rem;
+                font-weight: bold;
+            }
+
+            .print-q-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+                border-bottom: 1px dashed #cccccc;
+            }
+
+            .print-q-num {
+                font-weight: bold;
+                font-size: 0.9rem;
+                color: #000000;
+                margin-bottom: 3px;
+            }
+
+            .print-sentence {
+                border-left: 3px solid #000000;
+                padding: 3px 8px;
+                margin: 3px 0 5px 0;
+                background: #ffffff !important;
+                font-size: 0.82rem;
+                line-height: 1.35;
+                white-space: pre-line;
+                color: #000000;
+            }
+
+            .print-choices {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3px 12px;
+            }
+
+            .print-choice-item {
+                font-size: 0.82rem;
+                color: #000000;
+            }
+
+            .print-choice-label {
+                font-weight: bold;
+            }
+
+            * {
+                -webkit-print-color-adjust: economy !important;
+                color-adjust: economy !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-3 3B - Bretton Woods - Vocabulary & Grammar Quiz</h1>
+    <button class="print-trigger-btn" onclick="window.print()">🖨️ 全60問をPDF保存 / 印刷</button>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 60</div>
+    <div class="instruction" id="instruction-text">指示文</div>
+    <div class="sentence-display" id="sentence-text">問題文がここに表示されます</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 60問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #27ae60;" onclick="window.print()">🖨️ 全60問をPDF保存 / 印刷</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<div id="print-worksheet"></div>
+
+<script>
+const quizList = [
+    {
+        id: 1,
+        instruction: "文中の「Allied countries」の意味として最も適切なものを選びなさい。",
+        sentence: "In 1944, at Bretton Woods in the US state of New Hampshire, a conference of Allied countries was convened...",
+        a: "連合国",
+        c: ["軸心国", "中立国", "発展国"]
+    },
+    {
+        id: 2,
+        instruction: "文中の「convene」の意味として最も適切なものを選びなさい。",
+        sentence: "In 1944, at Bretton Woods in the US state of New Hampshire, a conference of Allied countries was convened to create a stable international monetary and financial order.",
+        a: "（会議などを）招集する",
+        c: ["（会議などを）延期する", "（会議などを）解散する", "（会議などを）禁止する"]
+    },
+    {
+        id: 3,
+        instruction: "文中の「a stable international monetary and financial order」の意味として最も適切なものを選びなさい。",
+        sentence: "...to create a stable international monetary and financial order.",
+        a: "安定した国際通貨金融秩序",
+        c: ["自由な国際貿易取引制度", "厳格な軍事同盟維持規定", "共通の国際課税管理制度"]
+    },
+    {
+        id: 4,
+        instruction: "以下の文の述語動詞（main verb）を選びなさい。",
+        sentence: "In 1944, at Bretton Woods in the US state of New Hampshire, a conference of Allied countries was convened to create a stable international monetary and financial order.",
+        a: "was convened",
+        c: ["Allied", "order", "to create"]
+    },
+    {
+        id: 5,
+        instruction: "文中の「turmoil」の意味として最も適切なものを選びなさい。",
+        sentence: "The period since World War I had been one of turmoil that witnessed protectionist trade policies...",
+        a: "混乱（激動）",
+        c: ["繁栄（成長）", "調和（安定）", "停滞（不況）"]
+    },
+    {
+        id: 6,
+        instruction: "文中の「witnessed」の意味として最も適切なものを選びなさい。",
+        sentence: "The period since World War I had been one of turmoil that witnessed protectionist trade policies...",
+        a: "目撃した（経験した）",
+        c: ["無視した（黙認した）", "引き起こした（誘発した）", "回避した（免れた）"]
+    },
+    {
+        id: 7,
+        instruction: "文中の「protectionist trade policies」の意味として最も適切なものを選びなさい。",
+        sentence: "...that witnessed protectionist trade policies, hyperinflation, the Great Depression...",
+        a: "保護主義的な貿易政策",
+        c: ["自由主義的な貿易政策", "多角主義的な為替政策", "軍備優先的な財政政策"]
+    },
+    {
+        id: 8,
+        instruction: "文中の「the Great Depression」の意味として最も適切なものを選びなさい。",
+        sentence: "...hyperinflation, the Great Depression, and, ultimately, World War II.",
+        a: "世界大恐慌",
+        c: ["太平洋戦争", "産業大革命", "東西冷戦期"]
+    },
+    {
+        id: 9,
+        instruction: "文中の「ultimately」の意味として最も適切なものを選びなさい。",
+        sentence: "...and, ultimately, World War II.",
+        a: "最終的には（果ては）",
+        c: ["突如的には（急に）", "幸いにも（運良く）", "部分的に（一部は）"]
+    },
+    {
+        id: 10,
+        instruction: "以下の文の述語動詞（main verb）を選びなさい。",
+        sentence: "The period since World War I had been one of turmoil that witnessed protectionist trade policies, hyperinflation, the Great Depression, and, ultimately, World War II.",
+        a: "had been",
+        c: ["witnessed", "trade", "been"]
+    },
+    {
+        id: 11,
+        instruction: "文中の「weighed on delegates' shoulders」の意味として最も適切なものを選びなさい。",
+        sentence: "Such events weighed on delegates' shoulders but also underpinned their belief that reform was urgent.",
+        a: "代表者たちの肩に重くのしかかった（重荷となった）",
+        c: ["代表者たちの肩を大いに軽くした（励みとなった）", "代表者たちの責任を完全に免除した（無罪となった）", "代表者たちの団結を強く固めた（結束となった）"]
+    },
+    {
+        id: 12,
+        instruction: "文中の「underpinned their belief」の意味として最も適切なものを選びなさい。",
+        sentence: "...but also underpinned their belief that reform was urgent.",
+        a: "彼らの信念を支えた（強固にした）",
+        c: ["彼らの信念を揺るがした（弱くした）", "彼らの信念を打ち消した（否定した）", "彼らの信念を誤らせた（混乱させた）"]
+    },
+    {
+        id: 13,
+        instruction: "文中の「reform」の意味として最も適切なものを選びなさい。",
+        sentence: "...underpinned their belief that reform was urgent.",
+        a: "改革",
+        c: ["復興", "維持", "拡大"]
+    },
+    {
+        id: 14,
+        instruction: "文中の「urgent」の意味として最も適切なものを選びなさい。",
+        sentence: "...that reform was urgent.",
+        a: "緊急の（急務である）",
+        c: ["長期の（緩やかである）", "不要の（無用である）", "好適の（望ましい）"]
+    },
+    {
+        id: 15,
+        instruction: "文中の「continued to rage」の意味として最も適切なものを選びなさい。",
+        sentence: "Although World War II continued to rage, the pendulum was swinging strongly in the Allies' favor.",
+        a: "猛威を振るい続けていた",
+        c: ["終結に向かい始めていた", "急速に拡大し始めていた", "膠着状態に陥っていた"]
+    },
+    {
+        id: 16,
+        instruction: "文中の「the pendulum was swinging strongly in the Allies' favor」の意味として最も適切なものを選びなさい。",
+        sentence: "...the pendulum was swinging strongly in the Allies' favor.",
+        a: "情勢が連合国側に大きく傾いていた",
+        c: ["世論が連合国に批判的になっていた", "戦況が両軍間で二転三転していた", "連合国の主導権が弱まりつつあった"]
+    },
+    {
+        id: 17,
+        instruction: "空欄に入る最も適切な接続副詞（ディスコースマーカー）を選びなさい。\n和訳: それにもかかわらず、代表者たちは懸念を抱いていた。",
+        sentence: "The pendulum was swinging strongly in the Allies' favor. [  ?  ], delegates had concerns.",
+        a: "Nevertheless",
+        c: ["Therefore", "Furthermore", "Otherwise"]
+    },
+    {
+        id: 18,
+        instruction: "文中の「As one US delegate put it」の意味として最も適切なものを選びなさい。",
+        sentence: "As one US delegate put it, \"We fight together on sodden battlefields...\"",
+        a: "あるアメリカ代表が表現したように（語ったように）",
+        c: ["あるアメリカ代表が提案を提出した時に（述べたように）", "あるアメリカ代表が反論を展開したように（主張したように）", "あるアメリカ代表が不満を漏らしたように（批判したように）"]
+    },
+    {
+        id: 19,
+        instruction: "文中の「sodden battlefields」の意味として最も適切なものを選びなさい。",
+        sentence: "We fight together on sodden battlefields.",
+        a: "水浸しの戦場（ぬかるんだ戦場）",
+        c: ["荒廃した都市（破壊された街）", "遠く離れた異郷（見知らぬ地）", "極寒の雪原（凍てついた地）"]
+    },
+    {
+        id: 20,
+        instruction: "文中の「The test of this conference」の意味として最も適切なものを選びなさい。",
+        sentence: "The test of this conference is whether we can walk together...",
+        a: "この会議の試練（真価）",
+        c: ["この会議の採決（決議）", "この会議の議題（テーマ）", "この会議の成果（報告）"]
+    },
+    {
+        id: 21,
+        instruction: "文中の「whether we can walk together, solve our economic problems, down the road to peace」の意味として最も適切なものを選びなさい。",
+        sentence: "The test of this conference is whether we can walk together, solve our economic problems, down the road to peace as we today march to victory.",
+        a: "私たちが共に歩み、経済問題を解決しながら平和への道を進むことができるかどうか",
+        c: ["私たちが平和への道を歩むために、経済問題を一時的に棚上げにできるかどうか", "私たちが経済問題の解決と平和への道のどちらを優先して進めるべきかどうか", "私たちが勝利に向かって行進しながら、軍事的な同盟関係を維持できるかどうか"]
+    },
+    {
+        id: 22,
+        instruction: "文中の「the US Treasury」の意味として最も適切なものを選びなさい。",
+        sentence: "The conference delegates included Harry Dexter White of the US Treasury...",
+        a: "米国財務省",
+        c: ["米国中央銀行", "米国通商代表部", "米国国務省"]
+    },
+    {
+        id: 23,
+        instruction: "空欄に入る最も適切な形を選びなさい。\n和訳: 米国は最も強力な経済国となり、ヨーロッパの植民地強国を追い抜いた。",
+        sentence: "The United States had become the world's most powerful economy, [  ?  ] the colonial European powers, and the agreement that emerged reinforced its dominant position.",
+        a: "overtaking",
+        c: ["overtook", "overtaken", "to overtake"]
+    },
+    {
+        id: 24,
+        instruction: "文中の「overtake」の意味として最も適切なものを選びなさい。",
+        sentence: "...overtaking the colonial European powers...",
+        a: "〜を追い抜く（上回る）",
+        c: ["〜を支援する（助ける）", "〜を併合する（組み込む）", "〜と協調する（歩調を合わせる）"]
+    },
+    {
+        id: 25,
+        instruction: "文中の「colonial European powers」の意味として最も適切なものを選びなさい。",
+        sentence: "...overtaking the colonial European powers...",
+        a: "植民地を持つ欧州列強国",
+        c: ["新興の欧州経済諸国", "敗戦した欧州加盟諸国", "旧体制の欧州君主諸国"]
+    },
+    {
+        id: 26,
+        instruction: "文中の「emerged」の意味として最も適切なものを選びなさい。",
+        sentence: "...and the agreement that emerged reinforced its dominant position.",
+        a: "生じた（誕生した）",
+        c: ["崩壊した（破綻した）", "延期された（後回しになった）", "修正された（改訂された）"]
+    },
+    {
+        id: 27,
+        instruction: "文中の「reinforced its dominant position」の意味として最も適切なものを選びなさい。",
+        sentence: "...reinforced its dominant position.",
+        a: "その支配的な地位を強化した",
+        c: ["その絶対的な権力を放棄した", "その国際的な信用を傷つけた", "その優位性を徐々に低下させた"]
+    },
+    {
+        id: 28,
+        instruction: "文中の「hinged on an arrangement」の意味として最も適切なものを選びなさい。",
+        sentence: "The Bretton Woods system hinged on an arrangement that directly linked the value of the US dollar to gold.",
+        a: "〜という取り決め（仕組み）にかかっていた（に基づいていた）",
+        c: ["〜という取り決め（仕組み）によって否定された（崩壊した）", "〜という取り決め（仕組み）を拒絶していた（排除していた）", "〜という取り決め（仕組み）から独立していた（離れていた）"]
+    },
+    {
+        id: 29,
+        instruction: "文中の「directly linked the value of the US dollar to gold」の意味として最も適切なものを選びなさい。",
+        sentence: "...an arrangement that directly linked the value of the US dollar to gold.",
+        a: "米ドルの価値を金と直接結び付けた",
+        c: ["米ドルと金の自由な取引を直接禁止した", "金の価格を米ドルの価値から直接独立させた", "米ドルを金保有量と同額まで直接制限した"]
+    },
+    {
+        id: 30,
+        instruction: "文中の「US Federal Reserve」の意味として最も適切なものを選びなさい。",
+        sentence: "At the time, the US Federal Reserve possessed the world's largest reserves of gold...",
+        a: "米連邦準備制度（中央銀行）",
+        c: ["米連邦議会（上院・下院）", "米財務省金庫（国庫）", "米最高裁判所（司法府）"]
+    },
+    {
+        id: 31,
+        instruction: "文中の「possessed the world's largest reserves of gold」の意味として最も適切なものを選びなさい。",
+        sentence: "...the US Federal Reserve possessed the world's largest reserves of gold...",
+        a: "世界最大の金の保有量を誇っていた（所有していた）",
+        c: ["世界中の金を大量に買い占めようとしていた（計画していた）", "世界最大の金鉱山を直営で所有していた（採掘していた）", "金の保有量を急速に市場へ放出していた（減少させていた）"]
+    },
+    {
+        id: 32,
+        instruction: "文中の「the world's primary reserve currency」の意味として最も適切なものを選びなさい。",
+        sentence: "The knowledge that the US dollar was backed by gold helped establish it as the world's primary reserve currency...",
+        a: "世界の主要な準備通貨（基軸通貨）",
+        c: ["世界で最も流通量の少ない地域通貨", "世界共通のデジタル決済通貨", "世界の緊急支援用国際通貨"]
+    },
+    {
+        id: 33,
+        instruction: "文中の「signees」の意味として最も適切なものを選びなさい。",
+        sentence: "...and the other signees agreed to tie the value of their currencies to the US dollar.",
+        a: "署名国（調印国）",
+        c: ["加盟候補国（観察国）", "反対国（非加盟国）", "起草国（提案国）"]
+    },
+    {
+        id: 34,
+        instruction: "文中の「agreed to tie the value of their currencies to the US dollar」の意味として最も適切なものを選びなさい。",
+        sentence: "...agreed to tie the value of their currencies to the US dollar.",
+        a: "自国通貨の価値を米ドルに固定（連動）させることに同意した",
+        c: ["自国通貨を米ドルと直接交換することを拒否した", "自国通貨を全廃して米ドルへ一本化することに同意した", "米ドルの価値変動を自国通貨で補償することに賛同した"]
+    },
+    {
+        id: 35,
+        instruction: "文中の「put forth」の意味として最も適切なものを選びなさい。",
+        sentence: "What was one reason put forth by Harry Dexter White to justify the structure of the Bretton Woods agreement?",
+        a: "提示された（主張された）",
+        c: ["撤回された（取り消された）", "批判された（攻撃された）", "隠蔽された（伏せられた）"]
+    },
+    {
+        id: 36,
+        instruction: "文中の「justify」の意味として最も適切なものを選びなさい。",
+        sentence: "...to justify the structure of the Bretton Woods agreement?",
+        a: "正当化する（妥当性を示す）",
+        c: ["変更する（見直しを行う）", "非難する（落ち度を追及する）", "評価する（採点を行う）"]
+    },
+    {
+        id: 37,
+        instruction: "文中の「Initially」の意味として最も適切なものを選びなさい。",
+        sentence: "Initially, the dollar's stability brought some success. However, cracks began to appear.",
+        a: "当初は（最初は）",
+        c: ["意外にも（驚いたことに）", "最終的に（結果として）", "必然的に（当然ながら）"]
+    },
+    {
+        id: 38,
+        instruction: "文中の「productive capabilities」の意味として最も適切なものを選びなさい。",
+        sentence: "The leading European powers, for example, whose productive capabilities had been severely damaged in the war...",
+        a: "生産能力（生産力）",
+        c: ["軍事能力（防衛力）", "購買能力（購買力）", "外交能力（交渉力）"]
+    },
+    {
+        id: 39,
+        instruction: "文中の「insufficient dollar funds」の意味として最も適切なものを選びなさい。",
+        sentence: "...but some countries had insufficient dollar funds to do this.",
+        a: "不十分な（不足している）ドル資金",
+        c: ["過剰な（余っている）ドル資金", "不正な（入手ルート不明の）ドル資金", "固定された（流動性のない）ドル資金"]
+    },
+    {
+        id: 40,
+        instruction: "文中の「the US secretary of state」の意味として最も適切なものを選びなさい。",
+        sentence: "As George C. Marshall, the US secretary of state, said at the time...",
+        a: "米国国務長官",
+        c: ["米国大統領", "米国財務長官", "米国国防長官"]
+    },
+    {
+        id: 41,
+        instruction: "文中の「her」は何を指しているか最も適切なものを選びなさい。",
+        sentence: "...Europe's requirements for food imports and essential products \"are so much greater than her present ability to pay...\"",
+        a: "Europe（ヨーロッパ）",
+        c: ["the US（アメリカ）", "ability（支払能力）", "secretary of state（国務長官）"]
+    },
+    {
+        id: 42,
+        instruction: "空欄に入る最も適切な接続詞を選びなさい。\n和訳: 欧州は実質的な支援を受けなければならず、さもなければ極めて深刻な悪化に直面する。",
+        sentence: "...she must have substantial additional help [  ?  ] face economic, social, and political deterioration of a very grave character.",
+        a: "or",
+        c: ["and", "but", "so"]
+    },
+    {
+        id: 43,
+        instruction: "文中の「political deterioration of a very grave character」の意味として最も適切なものを選びなさい。",
+        sentence: "...or face economic, social, and political deterioration of a very grave character.",
+        a: "非常に深刻な性質の政治的悪化（衰退）",
+        c: ["一時的で軽微な政治的対立（不和）", "急速な中央集権による政治的統合（強化）", "国民の支持を伴う激しい政治的改革（変革）"]
+    },
+    {
+        id: 44,
+        instruction: "文中の「Marshall Plan」とはどのようなプランか、最も適切なものを選びなさい。",
+        sentence: "To address these and other concerns, the Marshall Plan was approved to provide billions of dollars in aid.",
+        a: "欧州復興のために巨額の資金援助を提供する計画",
+        c: ["欧州からの輸入を制限するため高関税を課す計画", "欧州諸国に軍事基地の提供を義務付ける計画", "米ドルの価値を金保有量から分離させる計画"]
+    },
+    {
+        id: 45,
+        instruction: "文中の「raise capital」の意味として最も適切なものを選びなさい。",
+        sentence: "...the European powers decided to try to raise capital by forcing other countries...",
+        a: "資本（資金）を調達する",
+        c: ["資本（資金）を消費する", "物価（価格）を引き上げる", "税金（関税）を廃止する"]
+    },
+    {
+        id: 46,
+        instruction: "文中の「European decline」の意味として最も適切なものを選びなさい。",
+        sentence: "...George C. Marshall's comments about European decline were not made public.",
+        a: "ヨーロッパの衰退（落日）",
+        c: ["ヨーロッパの拒絶（辞退）", "ヨーロッパの団結（統合）", "ヨーロッパの発展（飛躍）"]
+    },
+    {
+        id: 47,
+        instruction: "文中の「taking advantage of its leniency」の意味として最も適切なものを選びなさい。",
+        sentence: "...it had become clear that European countries were taking advantage of its leniency.",
+        a: "その寛大さ（甘さ）につけ込んでいる",
+        c: ["その厳しい制約をうまく利用している", "その強い指導力を全面的に尊重している", "その複雑な規則に厳格に従っている"]
+    },
+    {
+        id: 48,
+        instruction: "空欄に入る最も適切な前置詞（ディスコースマーカー）を選びなさい。\n和訳: そのような努力にもかかわらず、さらなる経済的課題が発生した。",
+        sentence: "[  ?  ] such efforts, further economic challenges occurred.",
+        a: "Despite",
+        c: ["Because of", "In spite", "Instead of"]
+    },
+    {
+        id: 49,
+        instruction: "文中の「effectively left」の意味として最も適切なものを選びなさい。",
+        sentence: "Germany and France effectively left the Bretton Woods system...",
+        a: "事実上離脱した（実質的に抜けた）",
+        c: ["効果的に維持した（うまく引き継いだ）", "正式に加盟した（新しく加わった）", "段階的に改訂した（慎重に直した）"]
+    },
+    {
+        id: 50,
+        instruction: "文中の「valuation of, and confidence in, the dollar」の意味として最も適切なものを選びなさい。",
+        sentence: "Such factors affected the valuation of, and confidence in, the dollar.",
+        a: "ドルの価値評価と信用",
+        c: ["ドルの価値評価と流動性", "ドルの発行総量と金利", "ドルの市場需要と供給"]
+    },
+    {
+        id: 51,
+        instruction: "文中の「suspended」の意味として最も適切なものを選びなさい。",
+        sentence: "In 1971, the United States suspended the dollar's convertibility to gold...",
+        a: "停止した（一時中断した）",
+        c: ["強化した（より固めた）", "承認した（正式に認めた）", "公表した（広く知らせた）"]
+    },
+    {
+        id: 52,
+        instruction: "文中の「dollar's convertibility to gold」の意味として最も適切なものを選びなさい。",
+        sentence: "...suspended the dollar's convertibility to gold...",
+        a: "ドルの金への可換性（金と交換できること）",
+        c: ["ドルの金に対する公定価値の引き上げ", "ドルと他国通貨の固定換算レート", "金担保によるドル建て融資枠の拡大"]
+    },
+    {
+        id: 53,
+        instruction: "文中の「effectively ending the Bretton Woods system」の意味として最も適切なものを選びなさい。",
+        sentence: "...suspended the dollar's convertibility to gold, effectively ending the Bretton Woods system.",
+        a: "事実上ブレトンウッズ体制を終わらせた",
+        c: ["ブレトンウッズ体制をより効率的に復活させた", "ブレトンウッズ体制の制度的欠陥を是正した", "ブレトンウッズ体制を新たな名称へと変更した"]
+    },
+    {
+        id: 54,
+        instruction: "空欄に入る最も適切な接続副詞（ディスコースマーカー）を選びなさい。\n和訳: それにもかかわらず、その遺産は今日まで生き続けている。",
+        sentence: "Effectively ending the Bretton Woods system. [  ?  ], its legacy lives on...",
+        a: "Nevertheless",
+        c: ["Therefore", "As a result", "In addition"]
+    },
+    {
+        id: 55,
+        instruction: "文中の「legacy」の意味として最も適切なものを選びなさい。",
+        sentence: "Nevertheless, its legacy lives on in the shape of the International Monetary Fund (IMF)...",
+        a: "遺産（受け継がれた成果）",
+        c: ["負債（残された借金）", "規定（取り決められた規則）", "後悔（反省すべき過去）"]
+    },
+    {
+        id: 56,
+        instruction: "文中の「its」は何を指しているか最も適切なものを選びなさい。",
+        sentence: "Nevertheless, its legacy lives on in the shape of the International Monetary Fund (IMF)...",
+        a: "the Bretton Woods system（ブレトンウッズ体制）",
+        c: ["the United States（米国）", "gold（金）", "the dollar（ドル）"]
+    },
+    {
+        id: 57,
+        instruction: "文中の「emerged out of the system」の意味として最も適切なものを選びなさい。",
+        sentence: "...and the World Bank, which emerged out of the system.",
+        a: "その体制から誕生した（生まれた）",
+        c: ["その体制を脱却して独立した（離れた）", "その体制を完全に崩壊させた（壊した）", "その体制の枠外で設立された（置かれた）"]
+    },
+    {
+        id: 58,
+        instruction: "文中の「global monetary cooperation」の意味として最も適切なものを選びなさい。",
+        sentence: "The IMF's role as an organization that monitors and supports global monetary cooperation...",
+        a: "世界的な通貨（金融）協力",
+        c: ["世界的な貿易取引の自由化", "世界規模のインフレ抑止策", "世界統一通貨の発行手続き"]
+    },
+    {
+        id: 59,
+        instruction: "文中の「loans and grants to governments in need」の意味として最も適切なものを選びなさい。",
+        sentence: "...and the World Bank's loans and grants to governments in need...",
+        a: "困窮している政府への融資と無償援助",
+        c: ["加盟国政府に対する厳格な徴税指針", "発展途上国への軍事支援と装備貸与", "援助を求める民間企業への直接出資"]
+    },
+    {
+        id: 60,
+        instruction: "以下の文の述語動詞（main verb）を選びなさい。",
+        sentence: "The IMF's role as an organization that monitors and supports global monetary cooperation and the World Bank's loans and grants to governments in need form a core element of the modern financial order.",
+        a: "form",
+        c: ["monitors", "supports", "is"]
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+function loadQuestion() {
+    if (currentIndex >= quizList.length) {
+        showResult();
+        return;
+    }
+    const current = quizList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('instruction-text').textContent = current.instruction;
+    
+    const sentenceBox = document.getElementById('sentence-text');
+    if (current.sentence === "") {
+        sentenceBox.style.display = 'none';
+    } else {
+        sentenceBox.style.display = 'block';
+        sentenceBox.textContent = current.sentence;
+    }
+
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({
+                num: currentIndex + 1,
+                instruction: quizList[currentIndex].instruction,
+                correct: quizList[currentIndex].a
+            });
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>問${m.num}: ${m.instruction}</strong><br>
+                正解: <span style="color:var(--success-green); font-weight:bold;">${m.correct}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【2024-3 3B】Bretton Woods 語彙・文法クイズ結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習問題:\n" + mistakes.map(m => `・問${m.num} (${m.instruction}) → 正解: ${m.correct}`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n語彙・文法クイズ「2024-3 3B - Bretton Woods - Vocabulary & Grammar Quiz」（${quizList.length}問）を完了しました。\n\n結果: ${quizList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して語彙力・読解構文力を高めます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+function setupPrintWorksheet() {
+    const printContainer = document.getElementById('print-worksheet');
+    if (!printContainer) return;
+
+    let html = `
+        <div class="print-header">
+            <h2>2024-3 3B - Bretton Woods - Vocabulary & Grammar Quiz</h2>
+            <div class="print-meta">
+                <span>Name: ______________________</span>
+                <span>Date: ____________</span>
+                <span>Score: ______ / ${quizList.length}</span>
+            </div>
+        </div>
+    `;
+
+    quizList.forEach((q, index) => {
+        const choices = [q.a, ...q.c];
+        
+        const shuffledChoices = [...choices].sort((a, b) => {
+            return ((a.length + index) % 3) - ((b.length + index) % 3);
+        });
+
+        html += `
+            <div class="print-q-block">
+                <div class="print-q-num">Q${index + 1}. ${q.instruction}</div>
+                ${q.sentence ? `<div class="print-sentence">${q.sentence}</div>` : ''}
+                <div class="print-choices">
+                    ${shuffledChoices.map((choice, i) => `
+                        <div class="print-choice-item">
+                            <span class="print-choice-label">(${String.fromCharCode(65 + i)})</span> ${choice}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    });
+
+    printContainer.innerHTML = html;
+}
+
+window.onload = () => {
+    loadQuestion();
+    setupPrintWorksheet();
+};
+</script>
+
+</body>
+</html>
