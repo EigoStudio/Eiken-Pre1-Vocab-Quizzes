@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2024-3 準1級 語彙完全制覇 84問</title>
+    <script src="auth.js"></script>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --primary-navy: #1a2a6c;
+            --accent-blue: #5da9e9;
+            --text-dark: #2c3e50;
+            --gray-light: #dcdde1;
+            --white: #ffffff;
+            --error-red: #e84118;
+            --success-green: #4cd137;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 700px;
+            width: 90%;
+            margin: 20px 0;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 0.9rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .word-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-navy);
+            margin: 10px 0 30px 0;
+            padding: 10px;
+            border-bottom: 3px solid var(--bg-color);
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid var(--accent-blue);
+            padding: 20px 10px;
+            border-radius: 15px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--base-font);
+            color: var(--primary-navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+        }
+
+        .choice-btn:hover {
+            background-color: #f0f7ff;
+            transform: translateY(-2px);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--primary-navy);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #ffebee;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            font-family: var(--base-font);
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2024-3 準1級 語彙完全制覇 84問</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 84</div>
+    <div class="word-display" id="word-text">Loading...</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.2em; font-weight: bold;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>トレーニング終了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 84問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<script>
+const vocabList = [
+    // --- PDF問題本文・設問で取り上げられた単語 (70語) ---
+    {w: "aggressively", a: "攻撃的に・積極的に", c: ["用心深く・慎重に", "控えめに・静かに", "無力に・手も足も出ず"]},
+    {w: "cautiously", a: "用心深く・慎重に", c: ["攻撃的に・積極的に", "無力に・手も足も出ず", "控えめに・静かに"]},
+    {w: "helplessly", a: "無力に・手も足も出ず", c: ["攻撃的に・積極的に", "用心深く・慎重に", "控えめに・静かに"]},
+    {w: "needlessly", a: "不必要に・無駄に", c: ["意図的に・わざと", "絶望的に・どうしようもなく", "優雅に・しとやかに"]},
+    {w: "appliance", a: "（家庭用の）器具・電化製品", c: ["（他者への）寛容さ・寛大さ", "（土地の）許可・空き地", "（構造の）複雑さ・錯綜"]},
+    {w: "generosity", a: "（他者への）寛容さ・寛大さ", c: ["（家庭用の）器具・電化製品", "（土地の）許可・空き地", "（構造の）複雑さ・錯綜"]},
+    {w: "clearance", a: "（土地の）許可・空き地", c: ["（家庭用の）器具・電化製品", "（他者への）寛容さ・寛大さ", "（構造の）複雑さ・錯綜"]},
+    {w: "complexity", a: "（構造の）複雑さ・錯綜", c: ["（家庭用の）器具・電化製品", "（他者への）寛容さ・寛大さ", "（土地の）許可・空き地"]},
+    {w: "devout", a: "（宗教的に）信心深い", c: ["（生活が）惨めな", "（態度が）真面目な", "（土地が）肥沃な"]},
+    {w: "wretched", a: "（生活が）惨めな", c: ["（宗教的に）信心深い", "（態度が）真面目な", "（土地が）肥沃な"]},
+    {w: "earnest", a: "（態度が）真面目な", c: ["（宗教的に）信心深い", "（生活が）惨めな", "（土地が）肥沃な"]},
+    {w: "fertile", a: "（土地が）肥沃な", c: ["（宗教的に）信心深い", "（生活が）惨めな", "（態度が）真面目な"]},
+    {w: "resist", a: "（欲求などに）耐える・抵抗する", c: ["（正当性を）論争する・主張する", "（国や事業が）繁栄する", "（液体などを）排出する"]},
+    {w: "dispute", a: "（正当性を）論争する・主張する", c: ["（欲求などに）耐える・抵抗する", "（国や事業が）繁栄する", "（液体などを）排出する"]},
+    {w: "flourish", a: "（国や事業が）繁栄する", c: ["（欲求などに）耐える・抵抗する", "（正当性を）論争する・主張する", "（液体などを）排出する"]},
+    {w: "drain", a: "（液体などを）排出する", c: ["（欲求などに）耐える・抵抗する", "（正当性を）論争する・主張する", "（国や事業が）繁栄する"]},
+    {w: "erupt", a: "（火山が）噴火する", c: ["（商品を）密輸する", "（君主が）統治する", "（虫などが）横行する"]},
+    {w: "smuggle", a: "（商品を）密輸する", c: ["（火山が）噴火する", "（君主が）統治する", "（虫などが）横行する"]},
+    {w: "reign", a: "（君主が）統治する", c: ["（火山が）噴火する", "（商品を）密輸する", "（虫などが）横行する"]},
+    {w: "infest", a: "（虫などが）横行する", c: ["（火山が）噴火する", "（商品を）密輸する", "（君主が）統治する"]},
+    {w: "implicit", a: "（意思が）暗黙の", c: ["（品質が）食用の・食べられる", "（精神的に）未熟な", "（二人が）切り離せない"]},
+    {w: "inedible", a: "（食品が）食用に適さない・食べられない", c: ["（意思が）暗黙の・裏にある", "（精神的に）未熟な・幼い", "（二人が）切り離せない・密接な"]},
+    {w: "immature", a: "（精神的に）未熟な", c: ["（意思が）暗黙の", "（品質が）食用の", "（二人が）切り離せない"]},
+    {w: "inseparable", a: "（二人が）切り離せない", c: ["（意思が）暗黙の", "（品質が）食用の", "（精神的に）未熟な"]},
+    {w: "tolerable", a: "（痛みが）耐えうる", c: ["（床などが）滑りやすい", "（態度が）好戦的な", "（変化が）突然の"]},
+    {w: "slippery", a: "（床などが）滑りやすい", c: ["（痛みが）耐えうる", "（態度が）好戦的な", "（変化が）突然の"]},
+    {w: "militant", a: "（態度が）好戦的な", c: ["（痛みが）耐えうる", "（床などが）滑りやすい", "（変化が）突然の"]},
+    {w: "abrupt", a: "（変化が）突然の", c: ["（痛みが）耐えうる", "（床などが）滑りやすい", "（態度が）好戦的な"]},
+    {w: "denial", a: "（事実の）否定・否認", c: ["（言動の）矛盾・反対", "（王の）威厳・壮大さ", "（先入観による）偏見"]},
+    {w: "contradiction", a: "（言動の）矛盾・反対", c: ["（事実の）否定・否認", "（王の）威厳・壮大さ", "（先入観による）偏見"]},
+    {w: "majesty", a: "（王の）威厳・壮大さ", c: ["（事実の）否定・否認", "（言動の）矛盾・反対", "（先入観による）偏見"]},
+    {w: "prejudice", a: "（先入観による）偏見", c: ["（事実の）否定・否認", "（言動の）矛盾・反対", "（王の）威厳・壮大さ"]},
+    {w: "memoirs", a: "（個人の）回想録", c: ["（ページの）余白・余地", "（君主の）君主制", "（建物の）壁画"]},
+    {w: "margins", a: "（ページの）余白・余地", c: ["（個人の）回想録", "（君主の）君主制", "（建物の）壁画"]},
+    {w: "monarchies", a: "（君主の）君主制", c: ["（個人の）回想録", "（ページの）余白・余地", "（建物の）壁画"]},
+    {w: "murals", a: "（建物の）壁画", c: ["（個人の）回想録", "（ページの）余白・余地", "（君主の）君主制"]},
+    {w: "revolve", a: "（軸を中心に）回転する", c: ["（食物を）消化する", "（資料を）編集する", "（人を）苦しめる"]},
+    {w: "digest", a: "（食物を）消化する", c: ["（軸を中心に）回転する", "（資料を）編集する", "（人を）苦しめる"]},
+    {w: "compile", a: "（資料を）編集する", c: ["（軸を中心に）回転する", "（食物を）消化する", "（人を）苦しめる"]},
+    {w: "afflict", a: "（人を）苦しめる", c: ["（軸を中心に）回転する", "（食物を）消化する", "（資料を）編集する"]},
+    {w: "flurry", a: "（風や雪の）混乱・一陣", c: ["（滝のように）流れるもの", "（渦を巻く）渦巻き", "（大衆による）暴動・騒乱"]},
+    {w: "cascade", a: "（滝のように）流れるもの", c: ["（風や雪の）混乱・一陣", "（渦を巻く）渦巻き", "（大衆による）暴動・騒乱"]},
+    {w: "swirl", a: "（渦を巻く）渦巻き", c: ["（風や雪の）混乱・一陣", "（滝のように）流れるもの", "（大衆による）暴動・騒乱"]},
+    {w: "riot", a: "（大衆による）暴動・騒乱", c: ["（風や雪の）混乱・一陣", "（滝のように）流れるもの", "（渦を巻く）渦巻き"]},
+    {w: "crucial", a: "（決定的に）重要な", c: ["（意見が）議論の余地がある", "（避けられない）不可避の", "（犠牲としての）献身的な"]},
+    {w: "debatable", a: "（意見が）議論の余地がある", c: ["（決定的に）重要な", "（避けられない）不可避の", "（犠牲としての）献身的な"]},
+    {w: "inevitable", a: "（避けられない）不可避の", c: ["（決定的に）重要な", "（意見が）議論の余地がある", "（犠牲としての）献身的な"]},
+    {w: "sacrificial", a: "（犠牲としての）献身的な", c: ["（決定的に）重要な", "（意見が）議論の余地がある", "（避けられない）不可避の"]},
+    {w: "loyally", a: "（主君に）忠実・誠実に", c: ["（意思を持って）意図・故意に", "（空間に関して）空間・位置的に", "（範囲を）広大・広範囲に"]},
+    {w: "deliberately", a: "（意思を持って）意図・故意に", c: ["（主君に）忠実・誠実に", "（空間に関して）空間・位置的に", "（範囲を）広大・広範囲に"]},
+    {w: "spatially", a: "（空間に関して）空間・位置的に", c: ["（主君に）忠実・誠実に", "（意思を持って）意図・故意に", "（範囲を）広大・広範囲に"]},
+    {w: "expansively", a: "（範囲を）広大・広範囲に", c: ["（主君に）忠実・誠実に", "（意思を持って）意図・故意に", "（空間に関して）空間・位置的に"]},
+    {w: "designate", a: "（公式に）指定・指名する", c: ["（部品を）組み立てる", "（事業を）引き受ける", "（お互いに）妥協する"]},
+    {w: "assemble", a: "（部品を）組み立てる", c: ["（公式に）指定・指名する", "（事業を）引き受ける", "（お互いに）妥協する"]},
+    {w: "undertake", a: "（事業を）引き受ける", c: ["（公式に）指定・指名する", "（部品を）組み立てる", "（お互いに）妥協する"]},
+    {w: "compromise", a: "（お互いに）妥協する", c: ["（公式に）指定・指名する", "（部品を）組み立てる", "（事業を）引き受ける"]},
+    {w: "take off", a: "（急に）立ち去る", c: ["（機会を）逃す", "（体力を）使い果たす", "（存在を）無視する"]},
+    {w: "miss out", a: "（機会を）逃す", c: ["（急に）立ち去る", "（体力を）使い果たす", "（存在を）無視する"]},
+    {w: "wore out", a: "（体力を）使い果たす", c: ["（急に）立ち去る", "（機会を）逃す", "（存在を）無視する"]},
+    {w: "pass over", a: "（存在を）無視する", c: ["（急に）立ち去る", "（機会を）逃す", "（体力を）使い果たす"]},
+    {w: "turn over", a: "（商売などを）譲り渡す", c: ["（新時代などを）迎える", "（決断を）保留する", "（雨のように）浴びせる"]},
+    {w: "ring in", a: "（新時代などを）迎える", c: ["（商売などを）譲り渡す", "（決断を）保留する", "（雨のように）浴びせる"]},
+    {w: "hold off", a: "（決断を）保留する", c: ["（商売などを）譲り渡す", "（新時代などを）迎える", "（雨のように）浴びせる"]},
+    {w: "rain down", a: "（雨のように）浴びせる", c: ["（商売などを）譲り渡す", "（新時代などを）迎える", "（決断を）保留する"]},
+    {w: "play out", a: "（状況が）展開する", c: ["（問題を）収拾する", "（素早く）目を通す", "（不要物を）片付ける"]},
+    {w: "smooth over", a: "（問題を）収拾する", c: ["（状況が）展開する", "（素早く）目を通す", "（不要物を）片付ける"]},
+    {w: "run through", a: "（素早く）目を通す", c: ["（状況が）展開する", "（問題を）収拾する", "（不要物を）片付ける"]},
+    {w: "clear out", a: "（不要物を）片付ける", c: ["（状況が）展開する", "（問題を）収拾する", "（素早く）目を通す"]},
+    {w: "catch on", a: "（世間で）流行する", c: ["（人を）惑わせる", "（機械を）修理する", "（前言を）撤回する"]},
+    {w: "throw off", a: "（人を）惑わせる", c: ["（世間で）流行する", "（機械を）修理する", "（前言を）撤回する"]},
+    {w: "fix up", a: "（機械を）修理する", c: ["（世間で）流行する", "（人を）惑わせる", "（前言を）撤回する"]},
+    {w: "back down", a: "（前言を）撤回する", c: ["（世間で）流行する", "（人を）惑わせる", "（機械を）修理する"]},
+
+    // --- 追加指定語彙 (14語) ---
+    {w: "defense", a: "（敵からの）防衛・防御", c: ["（犯行の）手口・手段", "（自国の）領土・敷地", "（市民の）義務・責務"]},
+    {w: "bright", a: "（頭脳が）利発な・賢い", c: ["（性格が）頑固な・硬い", "（態度が）傲慢な・偉い", "（行動が）無鉄砲な・荒い"]},
+    {w: "of some complexity", a: "（構造が）ある程度複雑な", c: ["（内容が）極めて単純な", "（規模が）極めて巨大な", "（価値が）ある程度高価な"]},
+    {w: "file for divorce", a: "（裁判所に）離婚申請をする", c: ["（役所に）婚姻届を出す", "（警察に）捜索願を出す", "（会社に）辞表提出をする"]},
+    {w: "insist", a: "（強く）言い張る・主張する", c: ["（素直に）認める・白状する", "（静かに）黙認する・見過ごす", "（適当に）妥協する・譲歩する"]},
+    {w: "never fail to do", a: "（毎回）必ず〜する", c: ["（たまに）稀に〜する", "（決して）〜しない", "（無理に）〜しようとする"]},
+    {w: "Ferris wheel", a: "（遊園地の）観覧車", c: ["（遊園地の）ジェットコースター", "（遊園地の）メリーゴーラウンド", "（広場の）噴水広場"]},
+    {w: "carriage", a: "（客車の）車両・客車", c: ["（線路の）線路・軌道", "（駅の）プラットフォーム", "（操縦の）運転席"]},
+    {w: "break out", a: "（暴動などが）勃発する", c: ["（騒動が）鎮圧される", "（計画が）失敗する", "（建物が）崩壊する"]},
+    {w: "prison", a: "（犯罪者の）刑務所・拘留所", c: ["（軍隊の）駐屯地・基地", "（孤児の）孤児院・施設", "（患者の）診療所・病院"]},
+    {w: "in protest", a: "（行動に）抗議して", c: ["（結果に）満足して", "（相手に）感謝して", "（成功を）期待して"]},
+    {w: "overcrowd", a: "（場所を）超満員にする", c: ["（空間を）完全封鎖する", "（環境を）衛生的に保つ", "（設備を）急速拡張する"]},
+    {w: "claim", a: "（事実を）言い張る・主張する", c: ["（過ちを）謝罪する・詫びる", "（要求を）拒絶する・断る", "（証拠を）隠蔽する・隠す"]},
+    {w: "thief", a: "（他人の物を盗む）泥棒・空き巣", c: ["（事件を追う）刑事・探偵", "（現場の）目撃者・通報者", "（法律の）専門家・弁護士"]}
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+
+const speakBtnStyle = "cursor:pointer; font-size:1.5rem; margin-left:15px; vertical-align:middle; background:none; border:none; color:var(--primary-navy);";
+
+function speakWord() {
+    const word = vocabList[currentIndex].w;
+    const uttr = new SpeechSynthesisUtterance(word);
+    uttr.lang = "en-US";
+    speechSynthesis.speak(uttr);
+}
+
+function loadQuestion() {
+    const current = vocabList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${vocabList.length}`;
+    document.getElementById('word-text').innerHTML = `
+        ${current.w} 
+        <button onclick="speakWord()" style="${speakBtnStyle}" title="Listen">🔊</button>
+    `;
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Excellent!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            if (currentIndex < vocabList.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({w: vocabList[currentIndex].w, a: vocabList[currentIndex].a});
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.w}</strong>
+                <span>${m.a}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("2024-3 【英検準1級】語彙トレーニング結果報告");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習リスト（間違えた単語）:\n" + mistakes.map(m => `・${m.w} (${m.a})`).join("\n")
+        : "\n\n完璧です！間違えた単語はありませんでした。";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n84問の語彙トレーニングを完了しました。\n\n結果: 84問中 ${firstTryCorrectCount} 問を一度で正解しました。${mistakeText}\n\n次回は全問一度で正解できるよう頑張ります！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
