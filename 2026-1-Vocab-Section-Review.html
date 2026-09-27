@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2026-1 Eiken Pre-1 Vocab Master 72</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --primary-navy: #1a2a6c;
+            --accent-blue: #5da9e9;
+            --text-dark: #2c3e50;
+            --gray-light: #dcdde1;
+            --white: #ffffff;
+            --error-red: #e84118;
+            --success-green: #4cd137;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 700px;
+            width: 90%;
+            margin: 20px 0;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 0.9rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .word-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-navy);
+            margin: 10px 0 30px 0;
+            padding: 10px;
+            border-bottom: 3px solid var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid var(--accent-blue);
+            padding: 20px 10px;
+            border-radius: 15px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--base-font);
+            color: var(--primary-navy);
+        }
+
+        .choice-btn:hover {
+            background-color: #f0f7ff;
+            transform: translateY(-2px);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--primary-navy);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #ffebee;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            font-family: var(--base-font);
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+
+        @media (max-width: 500px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2026-1 準1級 語彙完全制覇 72問</h1>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 72</div>
+    <div class="word-display" id="word-text">Loading...</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.2em; font-weight: bold;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>トレーニング終了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 72問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<script>
+// 2026年度第1回 英検準1級 大問1の全72単語・フレーズ（品詞タグ付き・動詞は原形化）
+const vocabData = [
+    // (1)
+    {w: "cemetery", a: "墓地・霊園", pos: "noun"},
+    {w: "diagram", a: "図表・図解", pos: "noun"},
+    {w: "equation", a: "方程式・等式", pos: "noun"},
+    {w: "forecast", a: "予測・天気予報", pos: "noun"},
+    // (2)
+    {w: "possessive", a: "独占欲の強い・所有の", pos: "adj"},
+    {w: "horizontal", a: "水平な・横の", pos: "adj"},
+    {w: "redundant", a: "余計な・冗長な", pos: "adj"},
+    {w: "drastic", a: "思い切った・過激な", pos: "adj"},
+    // (3)
+    {w: "haul", a: "（重いものを）引っ張る・運ぶ", pos: "verb"},
+    {w: "envy", a: "うらやむ・ねたむ", pos: "verb"},
+    {w: "subtract", a: "控除する・引く", pos: "verb"},
+    {w: "censor", a: "検閲する", pos: "verb"},
+    // (4)
+    {w: "referral", a: "紹介・推薦", pos: "noun"},
+    {w: "recipient", a: "受取人・受領者", pos: "noun"},
+    {w: "bouncer", a: "（店の）用心棒", pos: "noun"},
+    {w: "successor", a: "後継者・後任", pos: "noun"},
+    // (5)
+    {w: "trigger", a: "引き起こす・誘発する", pos: "verb"},
+    {w: "fabricate", a: "捏造する・でっちあげる", pos: "verb"},
+    {w: "conserve", a: "保存する・保護する", pos: "verb"},
+    {w: "renounce", a: "放棄する・断念する", pos: "verb"},
+    // (6)
+    {w: "ransom", a: "身代金", pos: "noun"},
+    {w: "specimen", a: "標本・サンプル", pos: "noun"},
+    {w: "cavity", a: "（歯の）虫歯の穴・空洞", pos: "noun"},
+    {w: "citation", a: "違反切符・引用", pos: "noun"},
+    // (7)
+    {w: "distortion", a: "ゆがみ・わい曲", pos: "noun"},
+    {w: "generosity", a: "気前良さ・寛大さ", pos: "noun"},
+    {w: "turbulence", a: "乱気流・動乱", pos: "noun"},
+    {w: "conjecture", a: "推測・憶測", pos: "noun"},
+    // (8)
+    {w: "nutritious", a: "栄養のある", pos: "adj"},
+    {w: "diverse", a: "多様な・さまざまな", pos: "adj"},
+    {w: "barren", a: "不毛の・荒れ果てた", pos: "adj"},
+    {w: "coincidental", a: "偶然の一致の", pos: "adj"},
+    // (9)
+    {w: "slack", a: "たるんだ・緩んだ", pos: "adj"},
+    {w: "sparse", a: "まばらな・少ない", pos: "adj"},
+    {w: "vast", a: "広大な・膨大な", pos: "adj"},
+    {w: "vital", a: "不可欠な・生命に関する", pos: "adj"},
+    // (10)
+    {w: "descendant", a: "子孫・末裔", pos: "noun"},
+    {w: "triumph", a: "大勝利・大成功", pos: "noun"},
+    {w: "emission", a: "排出・放射", pos: "noun"},
+    {w: "deficiency", a: "不足・欠乏", pos: "noun"},
+    // (11)
+    {w: "flourish", a: "栄える・繁栄する", pos: "verb"},
+    {w: "pledge", a: "誓約する・約束する", pos: "verb"},
+    {w: "scatter", a: "まき散らす・分散させる", pos: "verb"},
+    {w: "droop", a: "うなだれる・しおれる", pos: "verb"},
+    // (12)
+    {w: "reptile", a: "爬虫類", pos: "noun"},
+    {w: "glacier", a: "氷河", pos: "noun"},
+    {w: "blockade", a: "封鎖・閉鎖", pos: "noun"},
+    {w: "portfolio", a: "作品集・ポートフォリオ", pos: "noun"},
+    // (13)
+    {w: "abbreviate", a: "省略する・短縮する", pos: "verb"},
+    {w: "attest", a: "証明する・証言する", pos: "verb"},
+    {w: "carve", a: "彫る・刻む", pos: "verb"},
+    {w: "yield", a: "産出する・屈服する", pos: "verb"},
+    // (14)
+    {w: "radiate", a: "放つ・放射する", pos: "verb"},
+    {w: "magnify", a: "拡大する・誇張する", pos: "verb"},
+    {w: "extract", a: "抜き取る・抽出する", pos: "verb"},
+    {w: "impart", a: "（知識等を）伝える・与える", pos: "verb"},
+    // (15)
+    {w: "sink in", a: "（事実などが）じわじわ理解される", pos: "phrase"},
+    {w: "let out", a: "（声を）あげる・外に出す", pos: "phrase"},
+    {w: "go under", a: "倒産する・破産する", pos: "phrase"},
+    {w: "live off", a: "〜に依存して暮らす", pos: "phrase"},
+    // (16)
+    {w: "add up", a: "計算が合う・辻褄が合う", pos: "phrase"},
+    {w: "read into", a: "（深読みして）〜の意味を読み取る", pos: "phrase"},
+    {w: "take off", a: "離陸する・脱ぐ・軌道に乗る", pos: "phrase"},
+    {w: "fall out", a: "喧嘩する・脱落する", pos: "phrase"},
+    // (17)
+    {w: "slip away", a: "こっそり抜け出す・消え去る", pos: "phrase"},
+    {w: "tear up", a: "破り捨てる・かきむしる", pos: "phrase"},
+    {w: "drop out", a: "中退する・脱落する", pos: "phrase"},
+    {w: "follow up", a: "追跡調査する・フォローする", pos: "phrase"},
+    // (18)
+    {w: "feed off", a: "〜を糧にする・〜を利用する", pos: "phrase"},
+    {w: "burn out", a: "燃え尽きる・使い果たす", pos: "phrase"},
+    {w: "fall through", a: "（計画などが）失敗する・流れる", pos: "phrase"},
+    {w: "eat up", a: "（時間・お金などを）消費する", pos: "phrase"}
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+let vocabList = [];
+
+const speakBtnStyle = "cursor:pointer; font-size:1.5rem; margin-left:12px; vertical-align:middle; background:none; border:none; color:var(--primary-navy);";
+
+function initQuiz() {
+    // 品詞ごとにグループ化してダミー選択肢を同じ品詞から抽出する
+    const answersByPos = {
+        noun: vocabData.filter(d => d.pos === "noun").map(d => d.a),
+        verb: vocabData.filter(d => d.pos === "verb").map(d => d.a),
+        adj: vocabData.filter(d => d.pos === "adj").map(d => d.a),
+        phrase: vocabData.filter(d => d.pos === "phrase").map(d => d.a)
+    };
+    
+    vocabList = vocabData.map(item => {
+        // 同じ品詞の選択肢群から自分以外の正解を取得
+        const samePosAnswers = answersByPos[item.pos].filter(a => a !== item.a);
+        const shuffled = samePosAnswers.sort(() => 0.5 - Math.random());
+        const dummyChoices = shuffled.slice(0, 3);
+        
+        return {
+            w: item.w,
+            a: item.a,
+            c: dummyChoices
+        };
+    });
+
+    loadQuestion();
+}
+
+function speakWord() {
+    const word = vocabList[currentIndex].w;
+    const uttr = new SpeechSynthesisUtterance(word);
+    uttr.lang = "en-US";
+    speechSynthesis.speak(uttr);
+}
+
+function loadQuestion() {
+    const current = vocabList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${vocabList.length}`;
+    
+    document.getElementById('word-text').innerHTML = `
+        ${current.w} 
+        <button onclick="speakWord()" style="${speakBtnStyle}" title="Listen">🔊</button>
+    `;
+    
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+
+    // 正解とダミーをシャッフル
+    const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice, current.a, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Excellent!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            if (currentIndex < vocabList.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({w: vocabList[currentIndex].w, a: vocabList[currentIndex].a});
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>${m.w}</strong>
+                <span>${m.a}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("2026-1 【英検準1級】語彙トレーニング結果報告");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習リスト（間違えた単語）:\n" + mistakes.map(m => `・${m.w} (${m.a})`).join("\n")
+        : "\n\n完璧です！間違えた単語はありませんでした。";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n72問の語彙トレーニングを完了しました。\n\n結果: 72問中 ${firstTryCorrectCount} 問を一度で正解しました。${mistakeText}\n\n次回は全問一度で正解できるよう頑張ります！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+window.onload = initQuiz;
+</script>
+
+</body>
+</html>
