@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2026-1 2B - Digital Nations Vocabulary & Grammar Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --primary-navy: #2c3e50;
+            --accent-orange: #e67e22;
+            --text-dark: #34495e;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .print-trigger-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .print-trigger-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .instruction {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .sentence-display {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin: 10px 0 25px 0;
+            padding: 18px;
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--primary-navy);
+            border-radius: 5px;
+            text-align: left;
+            white-space: pre-line;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 15px 10px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        .typing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .typing-input {
+            width: 80%;
+            max-width: 450px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            text-align: center;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .typing-input:focus {
+            border-color: var(--primary-navy);
+        }
+
+        .submit-btn {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ffebee;
+            font-size: 0.95rem;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+
+        @media screen {
+            #print-worksheet {
+                display: none !important;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm 12mm;
+            }
+
+            html, body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-family: "Hiragino Mincho ProN", "Yu Mincho", "Georgia", serif !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                width: 100% !important;
+            }
+
+            header, .container, #quiz-screen, #result-screen, .print-trigger-btn {
+                display: none !important;
+            }
+
+            #print-worksheet {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .print-header {
+                text-align: center;
+                border-bottom: 2px solid #000000;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+
+            .print-header h2 {
+                margin: 0 0 6px 0;
+                font-size: 1.2rem;
+                color: #000000;
+            }
+
+            .print-meta {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.85rem;
+                font-weight: bold;
+            }
+
+            .print-q-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+                border-bottom: 1px dashed #cccccc;
+            }
+
+            .print-q-num {
+                font-weight: bold;
+                font-size: 0.9rem;
+                color: #000000;
+                margin-bottom: 3px;
+            }
+
+            .print-sentence {
+                border-left: 3px solid #000000;
+                padding: 3px 8px;
+                margin: 3px 0 5px 0;
+                background: #ffffff !important;
+                font-size: 0.82rem;
+                line-height: 1.35;
+                white-space: pre-line;
+                color: #000000;
+            }
+
+            .print-choices {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3px 12px;
+            }
+
+            .print-choice-item {
+                font-size: 0.82rem;
+                color: #000000;
+            }
+
+            .print-choice-label {
+                font-weight: bold;
+            }
+
+            * {
+                -webkit-print-color-adjust: economy !important;
+                color-adjust: economy !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2026-1 2B - Digital Nations Vocabulary & Grammar Quiz</h1>
+    <button class="print-trigger-btn" onclick="window.print()">🖨️ 全19問をPDF保存 / 印刷</button>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 19</div>
+    <div class="instruction" id="instruction-text">指示文</div>
+    <div class="sentence-display" id="sentence-text">問題文がここに表示されます</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 19問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #27ae60;" onclick="window.print()">🖨️ 全19問をPDF保存 / 印刷</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<div id="print-worksheet"></div>
+
+<script>
+const quizList = [
+    {
+        id: 1,
+        type: "choice",
+        instruction: "第1パラグラフ3行目の「When that happens」の「that」が指す内容として最も適切なものを選びなさい。",
+        sentence: "Tuvalu may eventually become completely uninhabitable due to rising sea levels. When that happens, its citizens will be forced to relocate.",
+        a: "ツバルが上昇する海水面によって完全に居住不可能になること",
+        c: ["ツバルの住民が近隣の島々へ移住を完了させること", "オーストラリア政府との交渉が破談に終わること", "ツバル全土が大規模な防波堤で囲まれること"]
+    },
+    {
+        id: 2,
+        type: "choice",
+        instruction: "文中の「preparations are already in place」の意味として最も適切なものを選びなさい。",
+        sentence: "Although this tragic scenario is still years away, preparations are already in place for the eventual evacuation of the population.",
+        a: "準備がすでに整っている",
+        c: ["計画が大幅に遅れている", "避難命令が解除された", "資金不足で中断されている"]
+    },
+    {
+        id: 3,
+        type: "choice",
+        instruction: "Tuvaluはオーストラリア政府とどのような合意を交渉しましたか。",
+        sentence: "Tuvalu's government negotiated a landmark agreement with Australia, which will allow a specified number of Tuvaluans to move to Australia each year.",
+        a: "毎年一定数のツバル国民がオーストラリアへ移住することを認める合意",
+        c: ["ツバルの全領土をオーストラリアの管理下に置く合意", "防波堤の建設費用をすべてオーストラリアが負担する合意", "ツバルのデジタル国家化プロジェクトを完全共同運営する合意"]
+    },
+    {
+        id: 4,
+        type: "choice",
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "Some believed Tuvalu would delay taking action. [  ?  ], the government acted quickly by negotiating evacuation plans.",
+        a: "On the contrary",
+        c: ["In fact", "Similarly", "Despite this"]
+    },
+    {
+        id: 5,
+        type: "choice",
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "The loss of physical land seems unavoidable. [  ?  ], leaders are determined to preserve their national identity.",
+        a: "Despite this",
+        c: ["Similarly", "On the contrary", "In fact"]
+    },
+    {
+        id: 6,
+        type: "choice",
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "Tuvalu is creating a digital version of its islands. [  ?  ], other low-lying Pacific nations are exploring virtual preservation.",
+        a: "Similarly",
+        c: ["On the contrary", "Despite this", "In fact"]
+    },
+    {
+        id: 7,
+        type: "choice",
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "Many people think climate change affects only future generations. [  ?  ], low-lying island nations are losing land today.",
+        a: "In fact",
+        c: ["On the contrary", "Despite this", "Similarly"]
+    },
+    {
+        id: 8,
+        type: "choice",
+        instruction: "文中の「sea barriers」の和訳として最も適切なものを選びなさい。",
+        sentence: "Engineers are building sea barriers around the capital to protect land from ocean waves.",
+        a: "防波堤",
+        c: ["海底ケーブル", "人工サンゴ礁", "海上滑走路"]
+    },
+    {
+        id: 9,
+        type: "choice",
+        instruction: "文中の「work is underway」の意味として最も適切なものを選びなさい。",
+        sentence: "Land reclamation work is underway to raise parts of the island above predicted sea levels.",
+        a: "作業が進行中である",
+        c: ["工事が延期された", "事業が承認された", "調査が完了した"]
+    },
+    {
+        id: 10,
+        type: "choice",
+        instruction: "文中の「raised land」の和訳として最も適切なものを選びなさい。",
+        sentence: "Creating raised land is one physical measure to buy time for the islanders.",
+        a: "かさ上げされた土地（盛土による土地）",
+        c: ["買い取られた土地（所有権の移転）", "隆起した土地（天然の地殻変動）", "開墾された土地（農地への転用）"]
+    },
+    {
+        id: 11,
+        type: "choice",
+        instruction: "第2パラグラフ3行目の「these measures」とは、具体的にどのような対策を指していますか。",
+        sentence: "However, these measures—such as building sea barriers and creating raised land—can only buy time against the rising ocean.",
+        a: "防波堤の建設やかさ上げ地の造成といった物理的な水害防止策",
+        c: ["他国への大規模な市民移住計画および就労ビザの発行手続き", "ツバルの歴史や伝統文化をメタバース上に保存するデジタル構築作業", "国際連合への緊急支援要請および地球温暖化防止条約の締結"]
+    },
+    {
+        id: 12,
+        type: "choice",
+        instruction: "空欄に入る最も適切な熟語表現を選びなさい。",
+        sentence: "As physical protections become insufficient, Tuvalu has had to [  ?  ] innovative digital solutions.",
+        a: "turn to",
+        c: ["give up on", "look down on", "put up with"]
+    },
+    {
+        id: 13,
+        type: "choice",
+        instruction: "文中の「construct stronger defenses」の意味として最も適切なものを選びなさい。",
+        sentence: "The government realized that trying to construct stronger defenses would not fully solve the long-term threat.",
+        a: "より強力な防御策を構築する（防壁など）",
+        c: ["軍事力を急速に強化する（軍備拡張など）", "法的な規制を厳格化する（条例制定など）", "外交的交渉を優位に進める（条約締結など）"]
+    },
+    {
+        id: 14,
+        type: "typing",
+        instruction: "第2パラグラフから「a virtual reconstruction of the nation」と同等の意味を持つ表現を探し、空欄に入る単語を入力しなさい。（半角英字で正確に入力）",
+        sentence: "a digital record of Tuvalu's people and (  ?  )",
+        a: "customs"
+    },
+    {
+        id: 15,
+        type: "choice",
+        instruction: "文中の「sovereign」の和訳として最も適切なものを選びなさい。",
+        sentence: "Under international law, a sovereign nation traditionally requires a defined physical territory.",
+        a: "主権を有する",
+        c: ["発展途上の", "臨時的な", "従属的な"]
+    },
+    {
+        id: 16,
+        type: "choice",
+        instruction: "国際法によれば、伝統的に主権国家（sovereign nation）として認められるための必須条件は何ですか。",
+        sentence: "According to international treaties, a sovereign state must possess a permanent population and a defined physical territory.",
+        a: "永久的な人口と明確に定義された物理的領土",
+        c: ["独自の通貨の発行と憲法の制定", "他国との外交関係および自衛のための軍隊", "デジタル上での国家記録および文化遺産の保存"]
+    },
+    {
+        id: 17,
+        type: "choice",
+        instruction: "文中の「Tuvalu's government hopes...」において、ツバル政府は何を願っていますか。",
+        sentence: "Tuvalu's government hopes that international recognition of its statehood will continue even if its land disappears.",
+        a: "国土が水没・消失した後も、国際社会から国家としての承認が維持されること",
+        c: ["オーストラリア政府が全住民に無償で住居と雇用を提供すること", "国連の援助を受けて国土の沈下を物理的に完全に停止させること", "全国民がデジタル世界に完全移住し、現実の国籍を放棄すること"]
+    },
+    {
+        id: 18,
+        type: "typing",
+        instruction: "第3パラグラフから「sovereignty（主権・国家地位）」の同義語・類語となる名詞を探し、入力しなさい。（半角英字で入力）",
+        sentence: "",
+        a: "statehood"
+    },
+    {
+        id: 19,
+        type: "choice",
+        instruction: "第3パラグラフ最後の「similar threats」とは、具体的にどのような脅威を指していますか。",
+        sentence: "Tuvalu's pioneering efforts may serve as a model for other low-lying island nations facing similar threats in the future.",
+        a: "気候変動による海面上昇によって国土が水没・消失する脅威",
+        c: ["デジタル空間でのサイバー攻撃や国家データの改ざんリスク", "少子高齢化に伴う急激な人口減少と経済の停滞", "他国からの軍事侵略や不当な領土主張の圧力"]
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+let typingAttempts = 0;
+
+function loadQuestion() {
+    if (currentIndex >= quizList.length) {
+        showResult();
+        return;
+    }
+    const current = quizList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('instruction-text').textContent = current.instruction;
+    
+    const sentenceBox = document.getElementById('sentence-text');
+    if (!current.sentence || current.sentence === "") {
+        sentenceBox.style.display = 'none';
+    } else {
+        sentenceBox.style.display = 'block';
+        sentenceBox.textContent = current.sentence;
+    }
+
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+    typingAttempts = 0;
+
+    if (current.type === "typing") {
+        container.className = "";
+        const wrap = document.createElement('div');
+        wrap.className = 'typing-container';
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'typing-input';
+        input.id = 'typing-answer';
+        input.placeholder = 'ここに入力';
+        input.autocomplete = 'off';
+        
+        const btn = document.createElement('button');
+        btn.className = 'submit-btn';
+        btn.textContent = '回答する';
+        btn.onclick = () => checkTypingAnswer(current);
+        
+        input.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkTypingAnswer(current);
+            }
+        });
+
+        wrap.appendChild(input);
+        wrap.appendChild(btn);
+        container.appendChild(wrap);
+        setTimeout(() => input.focus(), 100);
+    } else {
+        container.className = "choices-grid";
+        const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+        choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.textContent = choice;
+            btn.onclick = () => checkAnswer(choice, current.a, btn);
+            container.appendChild(btn);
+        });
+    }
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({
+                num: currentIndex + 1,
+                instruction: quizList[currentIndex].instruction,
+                correct: quizList[currentIndex].a
+            });
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function checkTypingAnswer(current) {
+    const input = document.getElementById('typing-answer');
+    const userAns = input.value.trim().toLowerCase();
+    const correctAns = current.a.toLowerCase();
+
+    if (userAns === correctAns) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        typingAttempts++;
+        if (isFirstTry) {
+            mistakes.push({
+                num: currentIndex + 1,
+                instruction: current.instruction,
+                correct: current.a
+            });
+            isFirstTry = false;
+        }
+
+        if (typingAttempts >= 3) {
+            document.getElementById('feedback').style.color = "var(--error-red)";
+            document.getElementById('feedback').textContent = `正解は 「${current.a}」 です。`;
+            input.disabled = true;
+            setTimeout(() => {
+                currentIndex++;
+                loadQuestion();
+            }, 2000);
+        } else {
+            document.getElementById('feedback').style.color = "var(--error-red)";
+            document.getElementById('feedback').textContent = `Try again! (あと${3 - typingAttempts}回)`;
+            input.value = '';
+            input.focus();
+        }
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>問${m.num}: ${m.instruction}</strong><br>
+                正解: <span style="color:var(--success-green); font-weight:bold;">${m.correct}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【2026-1 2B】Digital Nations語彙・文法クイズ結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習問題:\n" + mistakes.map(m => `・問${m.num} (${m.instruction}) → 正解: ${m.correct}`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n語彙・文法クイズ「2026-1 2B - Digital Nations Vocabulary & Grammar Quiz」（${quizList.length}問）を完了しました。\n\n結果: ${quizList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して語彙力・読解構文力を高めます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+function setupPrintWorksheet() {
+    const printContainer = document.getElementById('print-worksheet');
+    if (!printContainer) return;
+
+    let html = `
+        <div class="print-header">
+            <h2>2026-1 2B - Digital Nations Vocabulary & Grammar Quiz</h2>
+            <div class="print-meta">
+                <span>Name: ______________________</span>
+                <span>Date: ____________</span>
+                <span>Score: ______ / ${quizList.length}</span>
+            </div>
+        </div>
+    `;
+
+    quizList.forEach((q, index) => {
+        if (q.type === "typing") {
+            html += `
+                <div class="print-q-block">
+                    <div class="print-q-num">Q${index + 1}. ${q.instruction}</div>
+                    ${q.sentence ? `<div class="print-sentence">${q.sentence}</div>` : ''}
+                    <div style="margin-top:5px; font-size:0.85rem;">Answer: ______________________</div>
+                </div>
+            `;
+        } else {
+            const choices = [q.a, ...q.c];
+            const shuffledChoices = [...choices].sort((a, b) => {
+                return ((a.length + index) % 3) - ((b.length + index) % 3);
+            });
+
+            html += `
+                <div class="print-q-block">
+                    <div class="print-q-num">Q${index + 1}. ${q.instruction}</div>
+                    ${q.sentence ? `<div class="print-sentence">${q.sentence}</div>` : ''}
+                    <div class="print-choices">
+                        ${shuffledChoices.map((choice, i) => `
+                            <div class="print-choice-item">
+                                <span class="print-choice-label">(${String.fromCharCode(65 + i)})</span>${choice}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    printContainer.innerHTML = html;
+}
+
+window.onload = () => {
+    loadQuestion();
+    setupPrintWorksheet();
+};
+</script>
+
+</body>
+</html>
