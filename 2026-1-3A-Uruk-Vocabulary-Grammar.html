@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2026-1 3A - Uruk Vocabulary & Grammar Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --primary-navy: #2c3e50;
+            --accent-orange: #e67e22;
+            --text-dark: #34495e;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .print-trigger-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .print-trigger-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .instruction {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .sentence-display {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin: 10px 0 25px 0;
+            padding: 18px;
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--primary-navy);
+            border-radius: 5px;
+            text-align: left;
+            white-space: pre-line;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 15px 10px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        .typing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .typing-input {
+            width: 80%;
+            max-width: 450px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            text-align: center;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .typing-input:focus {
+            border-color: var(--primary-navy);
+        }
+
+        .submit-btn {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ffebee;
+            font-size: 0.95rem;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+
+        @media screen {
+            #print-worksheet {
+                display: none !important;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm 12mm;
+            }
+
+            html, body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-family: "Hiragino Mincho ProN", "Yu Mincho", "Georgia", serif !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                width: 100% !important;
+            }
+
+            header, .container, #quiz-screen, #result-screen, .print-trigger-btn {
+                display: none !important;
+            }
+
+            #print-worksheet {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .print-header {
+                text-align: center;
+                border-bottom: 2px solid #000000;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+
+            .print-header h2 {
+                margin: 0 0 6px 0;
+                font-size: 1.2rem;
+                color: #000000;
+            }
+
+            .print-meta {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.85rem;
+                font-weight: bold;
+            }
+
+            .print-q-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+                border-bottom: 1px dashed #cccccc;
+            }
+
+            .print-q-num {
+                font-weight: bold;
+                font-size: 0.9rem;
+                color: #000000;
+                margin-bottom: 3px;
+            }
+
+            .print-sentence {
+                border-left: 3px solid #000000;
+                padding: 3px 8px;
+                margin: 3px 0 5px 0;
+                background: #ffffff !important;
+                font-size: 0.82rem;
+                line-height: 1.35;
+                white-space: pre-line;
+                color: #000000;
+            }
+
+            .print-choices {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3px 12px;
+            }
+
+            .print-choice-item {
+                font-size: 0.82rem;
+                color: #000000;
+            }
+
+            .print-choice-label {
+                font-weight: bold;
+            }
+
+            * {
+                -webkit-print-color-adjust: economy !important;
+                color-adjust: economy !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2026-1 3A - Uruk Vocabulary & Grammar Quiz</h1>
+    <button class="print-trigger-btn" onclick="window.print()">🖨️ 全52問をPDF保存 / 印刷</button>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 52</div>
+    <div class="instruction" id="instruction-text">指示文</div>
+    <div class="sentence-display" id="sentence-text">問題文がここに表示されます</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 52問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #27ae60;" onclick="window.print()">🖨️ 全52問をPDF保存 / 印刷</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<div id="print-worksheet"></div>
+
+<script>
+const quizList = [
+    // --- 1. 語彙・熟語セクション（Q1〜Q39） ---
+    {
+        id: 1,
+        type: "choice",
+        instruction: "文中の「ancient settlement」の和訳として最も適切なものを選びなさい。",
+        sentence: "The ancient settlement of Uruk was located in a fertile delta.",
+        a: "古代の集落",
+        c: ["現代の都市", "臨時陣地", "宗教的聖地"]
+    },
+    {
+        id: 2,
+        type: "choice",
+        instruction: "文中の「fertile」の和訳として最も適切なものを選びなさい。",
+        sentence: "Uruk was located in a fertile delta between the Tigris and Euphrates rivers.",
+        a: "肥沃な",
+        c: ["荒廃した", "乾燥した", "高峻な"]
+    },
+    {
+        id: 3,
+        type: "choice",
+        instruction: "文中の「delta」の和訳として最も適切なものを選びなさい。",
+        sentence: "The city developed in a fertile delta formed by two rivers.",
+        a: "三角州",
+        c: ["盆地", "砂漠", "峡谷"]
+    },
+    {
+        id: 4,
+        type: "choice",
+        instruction: "文中の「fourth millennium BC」の意味として最も適切なものを選びなさい。",
+        sentence: "Toward the end of the fourth millennium BC, Uruk had developed into a large city.",
+        a: "紀元前4千年紀",
+        c: ["紀元後4世紀", "紀元前400年頃", "紀元前40年頃"]
+    },
+    {
+        id: 5,
+        type: "choice",
+        instruction: "文中の「agricultural efficiency」の和訳として最も適切なものを選びなさい。",
+        sentence: "Technological advancements increased agricultural efficiency.",
+        a: "農業効率",
+        c: ["工業技術", "商業流通", "建築規模"]
+    },
+    {
+        id: 6,
+        type: "choice",
+        instruction: "文中の「canal」の和訳として最も適切なものを選びなさい。",
+        sentence: "They built irrigation canals to funnel water to fields.",
+        a: "用水路",
+        c: ["防波堤", "貯水ダム", "地下道"]
+    },
+    {
+        id: 7,
+        type: "choice",
+        instruction: "文中の「surplus」の和訳として最も適切なものを選びなさい。",
+        sentence: "These advances allowed Uruk to support a growing population and create a surplus.",
+        a: "余剰生産物",
+        c: ["食料不足", "借金", "不作"]
+    },
+    {
+        id: 8,
+        type: "choice",
+        instruction: "文中の「thrive」の和訳として最も適切なものを選びなさい。",
+        sentence: "By the third millennium BC, Uruk was thriving as a cultural center.",
+        a: "繁栄する",
+        c: ["衰退する", "孤立する", "降伏する"]
+    },
+    {
+        id: 9,
+        type: "choice",
+        instruction: "文中の「hub」の和訳として最も適切なものを選びなさい。",
+        sentence: "Uruk served as the hub of a vast trade network.",
+        a: "中心地",
+        c: ["境界線", "障害物", "避難所"]
+    },
+    {
+        id: 10,
+        type: "choice",
+        instruction: "文中の「lose out on」の意味として最も適切なものを選びなさい。",
+        sentence: "The city did not lose out on profitable trade deals.",
+        a: "の機会を逃す",
+        c: ["を独占する", "を拡大する", "を拒否する"]
+    },
+    {
+        id: 11,
+        type: "choice",
+        instruction: "文中の「harvest」の和訳として最も適切なものを選びなさい。",
+        sentence: "Farmers collected a rich crop harvest every autumn.",
+        a: "収穫",
+        c: ["種まき", "開墾", "肥料"]
+    },
+    {
+        id: 12,
+        type: "choice",
+        instruction: "文中の「sophisticated」の和訳として最も適切なものを選びなさい。",
+        sentence: "Uruk evolved into a sophisticated city with complex systems.",
+        a: "洗練された（高度な）",
+        c: ["原始的な（単純な）", "閉鎖的な（狭い）", "混乱した（無秩序な）"]
+    },
+    {
+        id: 13,
+        type: "choice",
+        instruction: "文中の「cuneiform script」の和訳として最も適切なものを選びなさい。",
+        sentence: "One key development was the early use of cuneiform script.",
+        a: "楔形文字",
+        c: ["象形文字", "アルファベット", "絵文字"]
+    },
+    {
+        id: 14,
+        type: "choice",
+        instruction: "文中の「clay tablet」の和訳として最も適切なものを選びなさい。",
+        sentence: "The script was mainly written on clay tablets.",
+        a: "粘土板",
+        c: ["石碑", "羊皮紙", "木簡"]
+    },
+    {
+        id: 15,
+        type: "choice",
+        instruction: "文中の「rudimentary」の和訳として最も適切なものを選びなさい。",
+        sentence: "In its early form, the writing system allowed for rudimentary recordkeeping.",
+        a: "初期段階の（基本的な）",
+        c: ["完成された（完ぺきな）", "不可解な（複雑な）", "世界共通の（標準的な）"]
+    },
+    {
+        id: 16,
+        type: "choice",
+        instruction: "文中の「recordkeeping」の和訳として最も適切なものを選びなさい。",
+        sentence: "The script was useful for administrative recordkeeping.",
+        a: "記録管理",
+        c: ["金銭貸与", "口頭伝承", "暗号解読"]
+    },
+    {
+        id: 17,
+        type: "choice",
+        instruction: "文中の「bureaucratic」の和訳として最も適切なものを選びなさい。",
+        sentence: "The writing system was adopted for bureaucratic tasks in government.",
+        a: "官僚的な（行政上の）",
+        c: ["個人的な（私的な）", "軍事的な（戦闘の）", "宗教的な（神聖な）"]
+    },
+    {
+        id: 18,
+        type: "choice",
+        instruction: "文中の「administrative matters」の和訳として最も適切なものを選びなさい。",
+        sentence: "The writing was used for accounting and general administrative matters.",
+        a: "行政業務",
+        c: ["外交問題", "個人的な趣味", "軍事作戦"]
+    },
+    {
+        id: 19,
+        type: "choice",
+        instruction: "文中の「facilitate」の和訳として最も適切なものを選びなさい。",
+        sentence: "These records helped facilitate the governance of the complex city.",
+        a: "を促進する",
+        c: ["を妨害する", "を禁止する", "を延期する"]
+    },
+    {
+        id: 20,
+        type: "choice",
+        instruction: "文中の「governance」の和訳として最も適切なものを選びなさい。",
+        sentence: "A written script made the governance of Uruk much smoother.",
+        a: "統治",
+        c: ["貿易", "反乱", "建築"]
+    },
+    {
+        id: 21,
+        type: "choice",
+        instruction: "文中の「commerce」の和訳として最も適切なものを選びなさい。",
+        sentence: "The script was later used in economics, politics, and commerce.",
+        a: "商業",
+        c: ["農業", "彫刻", "発掘"]
+    },
+    {
+        id: 22,
+        type: "choice",
+        instruction: "文中の「over time」の意味として最も適切なものを選びなさい。",
+        sentence: "Over time, the writing system expanded to various fields.",
+        a: "時間をかけて",
+        c: ["一瞬で", "予定を過ぎて", "特定の時間だけ"]
+    },
+    {
+        id: 23,
+        type: "choice",
+        instruction: "文中の「dominant」の和訳として最も適切なものを選びなさい。",
+        sentence: "Uruk maintained a dominant position among Sumerian cities.",
+        a: "支配的な",
+        c: ["従属的な", "中立の", "一時的な"]
+    },
+    {
+        id: 24,
+        type: "choice",
+        instruction: "文中の「vulnerable」の和訳として最も適切なものを選びなさい。",
+        sentence: "Constant competition left the cities vulnerable to outside invaders.",
+        a: "脆弱な",
+        c: ["難攻不落の", "孤立した", "裕福な"]
+    },
+    {
+        id: 25,
+        type: "choice",
+        instruction: "文中の「latter half」の意味として最も適切なものを選びなさい。",
+        sentence: "In the latter half of the third millennium BC, invaders entered the region.",
+        a: "後半",
+        c: ["前半", "初期", "中央"]
+    },
+    {
+        id: 26,
+        type: "choice",
+        instruction: "文中の「conquer」の和訳として最も適切なものを選びなさい。",
+        sentence: "The Akkadians conquered much of the Sumer region.",
+        a: "を征服する",
+        c: ["と同盟を結ぶ", "に降伏する", "を保護する"]
+    },
+    {
+        id: 27,
+        type: "choice",
+        instruction: "文中の「conquest」の和訳として最も適切なものを選びなさい。",
+        sentence: "Despite this conquest, the culture of Uruk survived.",
+        a: "征服",
+        c: ["独立", "同盟", "交易"]
+    },
+    {
+        id: 28,
+        type: "choice",
+        instruction: "文中の「defeat」の和訳として最も適切なものを選びなさい。",
+        sentence: "Even after its political defeat, Uruk remained an important center.",
+        a: "敗北",
+        c: ["勝利", "協定", "繁栄"]
+    },
+    {
+        id: 29,
+        type: "choice",
+        instruction: "文中の「religious district」の和訳として最も適切なものを選びなさい。",
+        sentence: "Uruk's religious districts were respected by the conquerors.",
+        a: "宗教区域",
+        c: ["商業地区", "軍事基地", "居住地域"]
+    },
+    {
+        id: 30,
+        type: "choice",
+        instruction: "文中の「heritage」の和訳として最も適切なものを選びなさい。",
+        sentence: "The rich religious heritage of Uruk was carefully preserved.",
+        a: "遺産",
+        c: ["人口", "特権", "税金"]
+    },
+    {
+        id: 31,
+        type: "choice",
+        instruction: "文中の「renaissance」の和訳として最も適切なものを選びなさい。",
+        sentence: "After Akkadian rule ended, a renaissance of Sumerian culture occurred.",
+        a: "復興",
+        c: ["衰退", "分断", "消滅"]
+    },
+    {
+        id: 32,
+        type: "choice",
+        instruction: "文中の「conflict」の和訳として最も適切なものを選びなさい。",
+        sentence: "Later conflicts and invasions prevented Uruk from returning to its former heights.",
+        a: "衝突",
+        c: ["平和協定", "経済成長", "文化交流"]
+    },
+    {
+        id: 33,
+        type: "choice",
+        instruction: "文中の「invasion」の和訳として最も適切なものを選びなさい。",
+        sentence: "The city suffered from repeated foreign invasions.",
+        a: "侵略",
+        c: ["貿易", "移民", "同盟"]
+    },
+    {
+        id: 34,
+        type: "choice",
+        instruction: "文中の「excavation」の和訳として最も適切なものを選びなさい。",
+        sentence: "Archaeological excavations have revealed the grand scale of the ancient city.",
+        a: "発掘",
+        c: ["建設", "破壊", "保存"]
+    },
+    {
+        id: 35,
+        type: "choice",
+        instruction: "文中の「immense」の和訳として最も適切なものを選びなさい。",
+        sentence: "Archaeologists uncovered an immense city wall surrounding Uruk.",
+        a: "巨大な",
+        c: ["小さな", "隠された", "壊れやすい"]
+    },
+    {
+        id: 36,
+        type: "choice",
+        instruction: "文中の「sculpture」の和訳として最も適切なものを選びなさい。",
+        sentence: "The site contained beautiful artworks and stone sculptures.",
+        a: "彫刻",
+        c: ["絵画", "織物", "陶器"]
+    },
+    {
+        id: 37,
+        type: "choice",
+        instruction: "文中の「significance」の和訳として最も適切なものを選びなさい。",
+        sentence: "These artifacts point to the historical significance of Uruk.",
+        a: "重要性",
+        c: ["危険性", "曖昧さ", "偶然性"]
+    },
+    {
+        id: 38,
+        type: "choice",
+        instruction: "文中の「attribute A to B」の意味として最も適切なものを選びなさい。",
+        sentence: "Historians attribute Uruk's decline to constant conflict and external threats.",
+        a: "Aの原因をBに帰する",
+        c: ["AをBと比較する", "AからBを保護する", "AをBに分類する"]
+    },
+    {
+        id: 39,
+        type: "choice",
+        instruction: "文中の「alliance」の和訳として最も適切なものを選びなさい。",
+        sentence: "Some cities formed alliances to protect themselves.",
+        a: "同盟",
+        c: ["戦争", "競合", "分割"]
+    },
+
+    // --- 2. 文法・構造理解セクション（Q40〜Q42） ---
+    {
+        id: 40,
+        type: "choice",
+        instruction: "文頭の「Behind this remarkable growth were several factors, including...」の文において、述語動詞（were）に対する「主語」を選びなさい。",
+        sentence: "Behind this remarkable growth were several factors, including technological advancements that increased agricultural efficiency...",
+        a: "several factors",
+        c: ["this remarkable growth", "technological advancements", "agricultural efficiency"]
+    },
+    {
+        id: 41,
+        type: "choice",
+        instruction: "「As Uruk grew, it helped shape the political and cultural landscape...」の「it」が指している単語を選びなさい。",
+        sentence: "As Uruk grew, it helped shape the political and cultural landscape of the Sumer region...",
+        a: "Uruk",
+        c: ["the Sumer region", "landscape", "cuneiform script"]
+    },
+    {
+        id: 42,
+        type: "choice",
+        instruction: "「However, Uruk's dominant position was not to last forever.」における「was to...」の文法的意味（ニュアンス）を選びなさい。",
+        sentence: "However, Uruk's dominant position was not to last forever.",
+        a: "〜する運命（宿命）ではなかった",
+        c: ["〜することを望んでいなかった", "〜する義務を負っていなかった", "〜することが物理的に不可能だった"]
+    },
+
+    // --- 3. 本文理解セクション（Q43〜Q52） ---
+    {
+        id: 43,
+        type: "choice",
+        instruction: "Urukが世界最初の「大都市」に発展することになった主な要因は何ですか。",
+        sentence: "Behind this remarkable growth were several factors, including technological advancements that increased agricultural efficiency, such as the construction of irrigation canals...",
+        a: "灌漑用水路の建設など、農業効率を高める技術革新があったこと",
+        c: ["他国からの財宝の略奪によって財政が急激に潤ったこと", "絶対王政によって周辺の村々を力づくで統合したこと", "外敵の侵入を防ぐために高山地帯へと都市を移動させたこと"]
+    },
+    {
+        id: 44,
+        type: "choice",
+        instruction: "農業技術の進歩は、ウルクの人口増加を可能にしただけでなく、どのような直接的恩恵をもたらしましたか。",
+        sentence: "These advances not only allowed Uruk to support a growing population but also to create a surplus, which could then be traded.",
+        a: "食料の余剰を生み出し、交易に回すことが可能になった点",
+        c: ["全住民が農作業から解放され芸術に専念できた点", "周辺諸国へ食料を援助し戦争を回避できた点", "紙や印刷技術の発明が急速に進んだ点"]
+    },
+    {
+        id: 45,
+        type: "choice",
+        instruction: "貿易のおかげで、ウルクはさらにどのような都市へと成長しましたか。",
+        sentence: "...by the third millennium BC, Uruk was thriving as a Sumerian cultural and religious center, a military power, and the hub of a trade network.",
+        a: "シュメールの文化・宗教の中心地、軍事大国、そして広大な貿易網の拠点",
+        c: ["すべての宗教を統合した平和主義的な学術専門都市", "農業をやめて貿易収入のみで自給自足する商業都市", "外部との接触を断ち切った完全自給自足の要塞都市"]
+    },
+    {
+        id: 46,
+        type: "choice",
+        instruction: "文字（cuneiform script）が発展したおかげで、ウルクでは何が可能になり、都市運営に貢献しましたか。",
+        sentence: "The writing system gradually became more sophisticated and was used for accounting and general administrative matters, which helped facilitate the governance of the increasingly complex city.",
+        a: "会計や行政業務の記録管理が精密化し、複雑化する都市の統治が容易になった点",
+        c: ["市民全員が文学作品を書くようになり犯罪率が大幅に低下した点", "軍事暗号として利用され他国への情報漏洩を完全に防いだ点", "紙の輸出によって多大な利益を継続的に生み出した点"]
+    },
+    {
+        id: 47,
+        type: "typing",
+        instruction: "第2パラグラフより、初期の楔形文字が用いられた主要な目的（用途）を表す2語の表現を探し、空欄に入る単語を入力しなさい。（半角英字で入力）",
+        sentence: "rudimentary (  ?  )",
+        a: "recordkeeping"
+    },
+    {
+        id: 48,
+        type: "choice",
+        instruction: "ウルクをはじめとするシュメールの都市群が、最終的に外敵（アッカド人など）に侵略されやすくなり、終焉を迎える原因となった内部要因は何ですか。",
+        sentence: "Uruk had competed with neighboring Sumerian cities for hundreds of years, leaving them all vulnerable to forces from other regions.",
+        a: "何百年にもわたって近隣のシュメール都市同士で争い、地域全体が疲弊し脆くなったこと",
+        c: ["気候変動によって用水路が干上がり、壊滅的な飢饉が発生したこと", "文字の普及によって若い兵士が激減し、防衛力が低下したこと", "貿易相手国からの感染症の蔓延により人口の過半数が失われたこと"]
+    },
+    {
+        id: 49,
+        type: "choice",
+        instruction: "アッカド人に占領（征服）されたウルクですが、なぜすぐに完全に滅亡・終了しなかったのですか。",
+        sentence: "Despite this conquest, Uruk's religious districts were respected and protected...",
+        a: "征服者であるアッカド人によって、ウルクの宗教区域が尊重され保護されたため",
+        c: ["ウルクの軍隊がアッカド人の主力を返り討ちにしたため", "アッカド人が財宝と引き換えに撤退を約束したため", "ウルクがアッカド王に即座に多額の貢物を献上し続けたため"]
+    },
+    {
+        id: 50,
+        type: "choice",
+        instruction: "アッカド人による支配が終わった際、ウルクおよびシュメール地域で何が起きましたか。",
+        sentence: "...and after Akkadian rule came to an end, a renaissance of Sumerian culture occurred.",
+        a: "シュメール文化の復興（ルネサンス）が起こり、文化的な再興が果たされた",
+        c: ["ウルクが周辺都市を滅ぼしメソポタミア全域を完全統一した", "全住民が他地域へ移住し、ウルクは完全な無人都市となった", "新しい文字体系が開発され、楔形文字が廃止された"]
+    },
+    {
+        id: 51,
+        type: "typing",
+        instruction: "第3パラグラフより、アッカド人の支配が終わった後にシュメール文化に起きた「復興」を表す1語の単語を入力しなさい。（半角英字で入力）",
+        sentence: "a (  ?  ) of Sumerian culture",
+        a: "renaissance"
+    },
+    {
+        id: 52,
+        type: "choice",
+        instruction: "発掘調査で見つかった「ziggurat（ジッグラト）」とは、具体的にどのような建造物ですか。",
+        sentence: "...numerous pyramid-like structures called ziggurats that were topped with temples...",
+        a: "頂上に神殿が配置された、ピラミッド状の巨大建造物",
+        c: ["地下に張り巡らされた巨大な王家の墓地施設", "敵の侵入を監視するための円筒形の高層防衛塔", "穀物や余剰生産物を保管するための巨大な高床式倉庫"]
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+let typingAttempts = 0;
+
+function loadQuestion() {
+    if (currentIndex >= quizList.length) {
+        showResult();
+        return;
+    }
+    const current = quizList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('instruction-text').textContent = current.instruction;
+    
+    const sentenceBox = document.getElementById('sentence-text');
+    if (!current.sentence || current.sentence === "") {
+        sentenceBox.style.display = 'none';
+    } else {
+        sentenceBox.style.display = 'block';
+        sentenceBox.textContent = current.sentence;
+    }
+
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+    typingAttempts = 0;
+
+    if (current.type === "typing") {
+        container.className = "";
+        const wrap = document.createElement('div');
+        wrap.className = 'typing-container';
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'typing-input';
+        input.id = 'typing-answer';
+        input.placeholder = 'ここに入力';
+        input.autocomplete = 'off';
+        
+        const btn = document.createElement('button');
+        btn.className = 'submit-btn';
+        btn.textContent = '回答する';
+        btn.onclick = () => checkTypingAnswer(current);
+        
+        input.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkTypingAnswer(current);
+            }
+        });
+
+        wrap.appendChild(input);
+        wrap.appendChild(btn);
+        container.appendChild(wrap);
+        setTimeout(() => input.focus(), 100);
+    } else {
+        container.className = "choices-grid";
+        const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+        choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.textContent = choice;
+            btn.onclick = () => checkAnswer(choice, current.a, btn);
+            container.appendChild(btn);
+        });
+    }
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({
+                num: currentIndex + 1,
+                instruction: quizList[currentIndex].instruction,
+                correct: quizList[currentIndex].a
+            });
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function checkTypingAnswer(current) {
+    const input = document.getElementById('typing-answer');
+    const userAns = input.value.trim().toLowerCase();
+    const correctAns = current.a.toLowerCase();
+
+    if (userAns === correctAns) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        typingAttempts++;
+        if (isFirstTry) {
+            mistakes.push({
+                num: currentIndex + 1,
+                instruction: current.instruction,
+                correct: current.a
+            });
+            isFirstTry = false;
+        }
+
+        if (typingAttempts >= 3) {
+            document.getElementById('feedback').style.color = "var(--error-red)";
+            document.getElementById('feedback').textContent = `正解は 「${current.a}」 です。`;
+            input.disabled = true;
+            setTimeout(() => {
+                currentIndex++;
+                loadQuestion();
+            }, 2000);
+        } else {
+            document.getElementById('feedback').style.color = "var(--error-red)";
+            document.getElementById('feedback').textContent = `Try again! (あと${3 - typingAttempts}回)`;
+            input.value = '';
+            input.focus();
+        }
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>問${m.num}: ${m.instruction}</strong><br>
+                正解: <span style="color:var(--success-green); font-weight:bold;">${m.correct}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【2026-1 3A】Uruk語彙・文法クイズ結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習問題:\n" + mistakes.map(m => `・問${m.num} (${m.instruction}) → 正解: ${m.correct}`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n語彙・文法クイズ「2026-1 3A - Uruk Vocabulary & Grammar Quiz」（${quizList.length}問）を完了しました。\n\n結果: ${quizList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して語彙力・読解構文力を高めます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+function setupPrintWorksheet() {
+    const printContainer = document.getElementById('print-worksheet');
+    if (!printContainer) return;
+
+    let html = `
+        <div class="print-header">
+            <h2>2026-1 3A - Uruk Vocabulary & Grammar Quiz</h2>
+            <div class="print-meta">
+                <span>Name: ______________________</span>
+                <span>Date: ____________</span>
+                <span>Score: ______ / ${quizList.length}</span>
+            </div>
+        </div>
+    `;
+
+    quizList.forEach((q, index) => {
+        if (q.type === "typing") {
+            html += `
+                <div class="print-q-block">
+                    <div class="print-q-num">Q${index + 1}. ${q.instruction}</div>
+                    ${q.sentence ? `<div class="print-sentence">${q.sentence}</div>` : ''}
+                    <div style="margin-top:5px; font-size:0.85rem;">Answer: ______________________</div>
+                </div>
+            `;
+        } else {
+            const choices = [q.a, ...q.c];
+            const shuffledChoices = [...choices].sort((a, b) => {
+                return ((a.length + index) % 3) - ((b.length + index) % 3);
+            });
+
+            html += `
+                <div class="print-q-block">
+                    <div class="print-q-num">Q${index + 1}. ${q.instruction}</div>
+                    ${q.sentence ? `<div class="print-sentence">${q.sentence}</div>` : ''}
+                    <div class="print-choices">
+                        ${shuffledChoices.map((choice, i) => `
+                            <div class="print-choice-item">
+                                <span class="print-choice-label">(${String.fromCharCode(65 + i)})</span>${choice}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    printContainer.innerHTML = html;
+}
+
+window.onload = () => {
+    loadQuestion();
+    setupPrintWorksheet();
+};
+</script>
+
+</body>
+</html>
