@@ -393,7 +393,7 @@ const quizList = [
         instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
         sentence: "Some believed Tuvalu would delay taking action. [ ? ], the government acted quickly by negotiating evacuation plans.",
         a: "On the contrary",
-        c: ["In fact", "Similarly", "Despite this"]
+        c: ["In addition", "Similarly", "Despite this"]
     },
     {
         id: 5,
@@ -401,7 +401,7 @@ const quizList = [
         instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
         sentence: "The loss of physical land seems unavoidable. [ ? ], leaders are determined to preserve their national identity.",
         a: "Despite this",
-        c: ["On the contrary", "Similarly", "In fact"]
+        c: ["Moreover", "Similarly", "For example"]
     },
     {
         id: 6,
@@ -415,9 +415,9 @@ const quizList = [
         id: 7,
         type: "choice",
         instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
-        sentence: "Many people think climate change affects only future generations. [ ? ], low-lying island nations are losing land today.",
+        sentence: "Tuvalu is deeply concerned about rising sea levels. [ ? ], some of its lowest islands are already being submerged during high tides.",
         a: "In fact",
-        c: ["Despite this", "On the contrary", "Similarly"]
+        c: ["Despite this", "On the other hand", "Similarly"]
     },
     {
         id: 8,
@@ -710,10 +710,7 @@ function setupPrintWorksheet() {
                 </div>
             `;
         } else {
-            const choices = [q.a, ...q.c];
-            const shuffledChoices = [...choices].sort((a, b) => {
-                return ((a.length + index) % 3) - ((b.length + index) % 3);
-            });
+            const shuffledChoices = [q.a, ...q.c].sort(() => Math.random() - 0.5);
 
             html += `
                 <div class="print-q-block">
