@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2026-1 3B - Animal Uplift Vocabulary & Grammar Quiz</title>
+<script src="auth.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --primary-navy: #2c3e50;
+            --accent-orange: #e67e22;
+            --text-dark: #34495e;
+            --white: #ffffff;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+        }
+
+        body {
+            font-family: var(--base-font);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .print-trigger-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .print-trigger-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 30px 0;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-bar {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .instruction {
+            font-size: 1rem;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .sentence-display {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin: 10px 0 25px 0;
+            padding: 18px;
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--primary-navy);
+            border-radius: 5px;
+            text-align: left;
+            white-space: pre-line;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .choice-btn {
+            background: var(--white);
+            border: 2px solid #bdc3c7;
+            padding: 15px 10px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            background-color: #f1f2f6;
+            border-color: var(--primary-navy);
+        }
+
+        .choice-btn.wrong {
+            background-color: #fab1a0;
+            border-color: var(--error-red);
+            color: var(--error-red);
+            animation: shake 0.3s;
+        }
+
+        .typing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .typing-input {
+            width: 80%;
+            max-width: 450px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            text-align: center;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .typing-input:focus {
+            border-color: var(--primary-navy);
+        }
+
+        .submit-btn {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            75% {transform: translateX(5px);}
+        }
+
+        #result-screen { display: none; }
+        
+        .score-num {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .mistake-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ffcdd2;
+        }
+
+        .mistake-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ffebee;
+            font-size: 0.95rem;
+        }
+
+        .action-btn {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+
+        @media screen {
+            #print-worksheet {
+                display: none !important;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm 12mm;
+            }
+
+            html, body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-family: "Hiragino Mincho ProN", "Yu Mincho", "Georgia", serif !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                width: 100% !important;
+            }
+
+            header, .container, #quiz-screen, #result-screen, .print-trigger-btn {
+                display: none !important;
+            }
+
+            #print-worksheet {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .print-header {
+                text-align: center;
+                border-bottom: 2px solid #000000;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+
+            .print-header h2 {
+                margin: 0 0 6px 0;
+                font-size: 1.2rem;
+                color: #000000;
+            }
+
+            .print-meta {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.85rem;
+                font-weight: bold;
+            }
+
+            .print-q-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+                border-bottom: 1px dashed #cccccc;
+            }
+
+            .print-q-num {
+                font-weight: bold;
+                font-size: 0.9rem;
+                color: #000000;
+                margin-bottom: 3px;
+            }
+
+            .print-sentence {
+                border-left: 3px solid #000000;
+                padding: 3px 8px;
+                margin: 3px 0 5px 0;
+                background: #ffffff !important;
+                font-size: 0.82rem;
+                line-height: 1.35;
+                white-space: pre-line;
+                color: #000000;
+            }
+
+            .print-choices {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3px 12px;
+            }
+
+            .print-choice-item {
+                font-size: 0.82rem;
+                color: #000000;
+            }
+
+            .print-choice-label {
+                font-weight: bold;
+            }
+
+            * {
+                -webkit-print-color-adjust: economy !important;
+                color-adjust: economy !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2026-1 3B - Animal Uplift Vocabulary & Grammar Quiz</h1>
+    <button class="print-trigger-btn" onclick="window.print()">🖨️ 全28問をPDF保存 / 印刷</button>
+</header>
+
+<div class="container" id="quiz-screen">
+    <div class="progress-bar" id="progress">1 / 28</div>
+    <div class="instruction" id="instruction-text">指示文</div>
+    <div class="sentence-display" id="sentence-text">問題文がここに表示されます</div>
+    <div class="choices-grid" id="choices-container"></div>
+    <div id="feedback" style="margin-top:20px; height: 1.5em; font-weight: bold; font-size: 1.2rem;"></div>
+</div>
+
+<div class="container" id="result-screen">
+    <h2>復習完了！</h2>
+    <div>
+        一度で正解：<span class="score-num" id="final-score">0</span> / 28問
+    </div>
+    
+    <div id="mistake-container" style="display:none;">
+        <h3 style="color: var(--error-red); margin-top:25px;">要復習リスト</h3>
+        <div class="mistake-list" id="mistake-list"></div>
+    </div>
+
+    <button class="action-btn" onclick="sendEmail()">Tamaki先生に結果を送信</button>
+    <button class="action-btn" style="background-color: #27ae60;" onclick="window.print()">🖨 全28問をPDF保存 / 印刷</button>
+    <button class="action-btn" style="background-color: #95a5a6;" onclick="location.reload()">もう一度挑戦する</button>
+</div>
+
+<div id="print-worksheet"></div>
+
+<script>
+const quizList = [
+    // --- 第1パラグラフ ---
+    {
+        id: 1,
+        type: "choice",
+        instruction: "第1パラグラフの第1文における「主句の動詞（main verb）」を選びなさい。",
+        sentence: "While the concept of artificially increasing animal intelligence through technology once seemed like science fiction, recent advances suggest it may be achievable.",
+        a: "suggest",
+        c: ["seemed", "increasing", "may be"]
+    },
+    {
+        id: 2,
+        type: "choice",
+        instruction: "第1パラグラフ3行目の「doing so」が指している内容として最も適切なものを選びなさい。",
+        sentence: "One promising approach for doing so is genetic manipulation.",
+        a: "人工的に動物の知能を高めること",
+        c: ["遺伝子の解明をSFの世界から現実へ変えること", "マウスの記憶力を測定する実験を行うこと", "人間固有の言語遺伝子を発見すること"]
+    },
+    {
+        id: 3,
+        type: "choice",
+        instruction: "文中の「manipulate (manipulation)」の意味として最も適切なものを選びなさい。",
+        sentence: "One promising approach for doing so is genetic manipulation.",
+        a: "操作する（操作・改変）",
+        c: ["破壊する（破壊・消滅）", "観察する（観察・分析）", "複製する（複製・クローン）"]
+    },
+    {
+        id: 4,
+        type: "typing",
+        instruction: "第1パラグラフ5行目の「produce it」の「it」が指している内容を本文から探して入力しなさい。",
+        sentence: "When mice were genetically altered to produce it, they were able to learn a route through a maze...",
+        a: "FOXP2"
+    },
+    {
+        id: 5,
+        type: "choice",
+        instruction: "「FOXP2」とはどんな遺伝子ですか。本文の説明に基づき最も適切なものを選びなさい。",
+        sentence: "...researchers discovered that a human gene called FOXP2 was related to acquiring language skills in humans.",
+        a: "人間の言語スキル獲得に関連している遺伝子",
+        c: ["動物の寿命を劇的に延ばす役割を果たす遺伝子", "脳の消化系へのエネルギー消費を抑制する遺伝子", "手術による心理的トラウマを軽減する遺伝子"]
+    },
+    {
+        id: 6,
+        type: "choice",
+        instruction: "文中の「unmodified counterparts」が指す内容として最も適切なものを選びなさい。",
+        sentence: "...they were able to learn a route through a maze much more rapidly than their unmodified counterparts...",
+        a: "遺伝子改変を施されていないマウス",
+        c: ["迷路の実験に参加しなかった人間", "脳を小型化するように交配された魚", "言語能力を獲得する前の人間の子供"]
+    },
+    {
+        id: 7,
+        type: "choice",
+        instruction: "文中の「preliminary」の意味として最も適切なものを選びなさい。",
+        sentence: "This research is preliminary, however, and intelligence depends on a multitude of genes...",
+        a: "予備的な（初期段階の）",
+        c: ["完成された（最終的な）", "無意味な（価値のない）", "世界的な（標準的な）"]
+    },
+    {
+        id: 8,
+        type: "choice",
+        instruction: "文中の「multitude of」の意味として最も適切なものを選びなさい。",
+        sentence: "...and intelligence depends on a multitude of genes...",
+        a: "多数の",
+        c: ["少数の", "特定の", "希少な"]
+    },
+    {
+        id: 9,
+        type: "choice",
+        instruction: "「animal uplift」とはつまりどういうことですか。最も適切なものを選びなさい。",
+        sentence: "While the concept of artificially increasing animal intelligence through technology once seemed like science fiction...",
+        a: "人工的に動物の知能を高めること",
+        c: ["野生動物の生息地を拡大して個体数を増加させること", "絶滅危惧種の動物を保護施設で飼育すること", "動物の権利を擁護して実験を禁止すること"]
+    },
+
+    // --- 第2パラグラフ ---
+    {
+        id: 10,
+        type: "choice",
+        instruction: "第2パラグラフ2行目の「unintended outcomes」の和訳・意味として最も適切なものを選びなさい。",
+        sentence: "An aspect of animal uplift that needs to be considered is the possibility of unintended outcomes.",
+        a: "意図しない結果",
+        c: ["予想通りの成果", "不可避な金銭的損失", "一時的な動揺"]
+    },
+    {
+        id: 11,
+        type: "choice",
+        instruction: "第2パラグラフ2行目の文中の「were bred」の意味として最も適切なものを選びなさい。",
+        sentence: "One experiment compared fish with larger brains that were bred together to fish with smaller brains...",
+        a: "繁殖された・交配された",
+        c: ["捕獲された・飼育された", "解剖された・手術された", "観察された・測定された"]
+    },
+    {
+        id: 12,
+        type: "choice",
+        instruction: "第2パラグラフ6行目の「(this) in turn」の言い換えとして最も適切なものを選びなさい。",
+        sentence: "...smaller digestive systems, and this in turn seems to have led them to produce fewer offspring.",
+        a: "as a consequence",
+        c: ["on the other hand", "by contrast", "for instance"]
+    },
+    {
+        id: 13,
+        type: "choice",
+        instruction: "第2パラグラフの魚を使った実験でわかったことは何ですか。",
+        sentence: "As this experiment indicates, trying to boost intelligence may disrupt other physical attributes...",
+        a: "知能を高めようとすると、身体の他の属性や機能に悪影響を及ぼす可能性があること",
+        c: ["脳の大きさと認知能力の高さには全く相関関係がないということ", "消化器官を小さくすることで、効率よく脳へエネルギーを集中できること", "人工的な交配を繰り返しても、数世代で脳の大きさは元に戻ってしまうこと"]
+    },
+
+    // --- 第3パラグラフ ---
+    {
+        id: 14,
+        type: "choice",
+        instruction: "第3パラグラフ2行目の「surgical procedures」とはどういうものですか。",
+        sentence: "...opponents of animal uplift point out that the process would likely involve surgical procedures on healthy animals.",
+        a: "健康な動物に対する外科的手術",
+        c: ["迷路を用いた行動観察テスト", "無害な遺伝子組み換えフードの投与", "非侵襲的な脳波測定検査"]
+    },
+    {
+        id: 15,
+        type: "choice",
+        instruction: "文中の「be thrust into」の意味として最も適切なものを選びなさい。",
+        sentence: "...could instead be thrust into a confusing, possibly terrifying awareness...",
+        a: "〜へ急に追いやられる",
+        c: ["〜へ自然に順応する", "〜へ進んで飛び込む", "〜から徐々に解放される"]
+    },
+    {
+        id: 16,
+        type: "typing",
+        instruction: "第3パラグラフ後半より「animal uplift」の言い換え表現となる空欄に入る単語を入力しなさい。",
+        sentence: "radical (  ?  ) to an animal's biology",
+        a: "alterations"
+    },
+    {
+        id: 17,
+        type: "choice",
+        instruction: "文中の「ethical」の意味として最も適切なものを選びなさい。",
+        sentence: "...whether making such radical alterations to an animal's biology could ever be considered ethical...",
+        a: "倫理的な",
+        c: ["合理的な", "合法的な", "革命的な"]
+    },
+    {
+        id: 18,
+        type: "typing",
+        instruction: "「agree to what is going to happen」と同じ意味となるように、（ ）に入る適切な単語を入力しなさい。",
+        sentence: "give (  ?  ) beforehand",
+        a: "consent"
+    },
+    {
+        id: 19,
+        type: "choice",
+        instruction: "文中の「withhold」の意味として最も適切なものを選びなさい。",
+        sentence: "...argues that withholding animal uplift is itself unethical.",
+        a: "〜を与えない",
+        c: ["〜を支援する", "〜を普及させる", "〜を奪い取る"]
+},
+   
+
+    // --- 第4パラグラフ ---
+    {
+        id: 20,
+        type: "choice",
+        instruction: "下記のセンテンスにおける「主句の動詞（main verb）」を選びなさい。",
+        sentence: "According to Dvorsky, in light of increased awareness of animal rights and given the tremendous role that animals have played in improving human existence, withholding advances that could improve their intelligence would be just as unethical as withholding them from a group of humans who lack sufficient wealth to afford them.",
+        a: "would be",
+        c: ["could improve", "have played", "lack"]
+    },
+    {
+        id: 21,
+        type: "typing",
+        instruction: "Q20の文における「withholding them」の「them」が指している言葉を本文から探して入力しなさい。",
+        sentence: "withholding them from a group of humans",
+        a: "advances"
+    },
+    {
+        id: 22,
+        type: "choice",
+        instruction: "文中の「in light of」の言い換えとして最も適切な表現を選びなさい。",
+        sentence: "According to Dvorsky, in light of increased awareness of animal rights...",
+        a: "considering",
+        c: ["in spite of", "instead of", "regardless of"]
+    },
+    {
+        id: 23,
+        type: "typing",
+        instruction: "第4パラグラフから「倫理的な板挟みにあう」というフレーズを完成させなさい。",
+        sentence: "face an ethical (  ?  )",
+        a: "dilemma"
+    },
+
+    // --- ディスコースマーカー問題（Q24〜Q28） ---
+    {
+        id: 24,
+        type: "choice",
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "[  ?  ] the ability to uplift animals would have undeniable benefits, it is also true that we face an ethical dilemma.",
+        a: "While",
+        c: ["Furthermore", "Instead", "For instance"]
+    },
+    {
+        id: 25,
+        type: "choice",
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "Genetic manipulation is a promising approach for animal uplift. [  ?  ], in 2014, researchers altered a gene in mice to enhance learning.",
+        a: "For instance",
+        c: ["While", "However", "Furthermore"]
+    },
+    {
+        id: 26,
+        type: "choice",
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "Uplift procedures involve physical risks for animals. [  ?  ], opponents point out that surgical procedures may cause severe psychological consequences.",
+        a: "Furthermore",
+        c: ["While", "For instance", "Otherwise"]
+    },
+    {
+        id: 27,
+        type: "choice",
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "There are conflicting views regarding the ethics of animal uplift. [  ?  ], there are difficult decisions that need to be made.",
+        a: "Clearly",
+        c: ["While", "For instance", "Furthermore"]
+    },
+    {
+        id: 28,
+        type: "choice",
+        instruction: "空欄に入る最も適切なディスコースマーカーを選びなさい。",
+        sentence: "Larger brains require substantially more energy. [  ?  ], fish with larger brains developed smaller digestive systems.",
+        a: "Consequently",
+        c: ["While", "Furthermore", "Otherwise"]
+    }
+];
+
+let currentIndex = 0;
+let firstTryCorrectCount = 0;
+let isFirstTry = true;
+let mistakes = [];
+let typingAttempts = 0;
+
+function loadQuestion() {
+    if (currentIndex >= quizList.length) {
+        showResult();
+        return;
+    }
+    const current = quizList[currentIndex];
+    document.getElementById('progress').textContent = `${currentIndex + 1} / ${quizList.length}`;
+    document.getElementById('instruction-text').textContent = current.instruction;
+    
+    const sentenceBox = document.getElementById('sentence-text');
+    if (!current.sentence || current.sentence === "") {
+        sentenceBox.style.display = 'none';
+    } else {
+        sentenceBox.style.display = 'block';
+        sentenceBox.textContent = current.sentence;
+    }
+
+    document.getElementById('feedback').textContent = "";
+    
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    isFirstTry = true;
+    typingAttempts = 0;
+
+    if (current.type === "typing") {
+        container.className = "";
+        const wrap = document.createElement('div');
+        wrap.className = 'typing-container';
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'typing-input';
+        input.id = 'typing-answer';
+        input.placeholder = 'ここに入力';
+        input.autocomplete = 'off';
+        
+        const btn = document.createElement('button');
+        btn.className = 'submit-btn';
+        btn.textContent = '回答する';
+        btn.onclick = () => checkTypingAnswer(current);
+        
+        input.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkTypingAnswer(current);
+            }
+        });
+
+        wrap.appendChild(input);
+        wrap.appendChild(btn);
+        container.appendChild(wrap);
+        setTimeout(() => input.focus(), 100);
+    } else {
+        container.className = "choices-grid";
+        const choices = [current.a, ...current.c].sort(() => Math.random() - 0.5);
+        choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.textContent = choice;
+            btn.onclick = () => checkAnswer(choice, current.a, btn);
+            container.appendChild(btn);
+        });
+    }
+}
+
+function checkAnswer(selected, correct, btn) {
+    if (selected === correct) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        if (isFirstTry) {
+            mistakes.push({
+                num: currentIndex + 1,
+                instruction: quizList[currentIndex].instruction,
+                correct: quizList[currentIndex].a
+            });
+            isFirstTry = false;
+        }
+        btn.classList.add('wrong');
+        document.getElementById('feedback').style.color = "var(--error-red)";
+        document.getElementById('feedback').textContent = "Try again!";
+    }
+}
+
+function checkTypingAnswer(current) {
+    const input = document.getElementById('typing-answer');
+    const userAns = input.value.trim().toLowerCase();
+    const correctAns = current.a.toLowerCase();
+
+    if (userAns === correctAns) {
+        if (isFirstTry) {
+            firstTryCorrectCount++;
+            document.getElementById('feedback').style.color = "var(--success-green)";
+            document.getElementById('feedback').textContent = "Correct!";
+        }
+        setTimeout(() => {
+            currentIndex++;
+            loadQuestion();
+        }, 600);
+    } else {
+        typingAttempts++;
+        if (isFirstTry) {
+            mistakes.push({
+                num: currentIndex + 1,
+                instruction: current.instruction,
+                correct: current.a
+            });
+            isFirstTry = false;
+        }
+
+        if (typingAttempts >= 3) {
+            document.getElementById('feedback').style.color = "var(--error-red)";
+            document.getElementById('feedback').textContent = `正解は 「${current.a}」 です。`;
+            input.disabled = true;
+            setTimeout(() => {
+                currentIndex++;
+                loadQuestion();
+            }, 2000);
+        } else {
+            document.getElementById('feedback').style.color = "var(--error-red)";
+            document.getElementById('feedback').textContent = `Try again! (あと${3 - typingAttempts}回)`;
+            input.value = '';
+            input.focus();
+        }
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = firstTryCorrectCount;
+
+    if (mistakes.length > 0) {
+        document.getElementById('mistake-container').style.display = 'block';
+        const listDiv = document.getElementById('mistake-list');
+        listDiv.innerHTML = mistakes.map(m => `
+            <div class="mistake-item">
+                <strong>問${m.num}: ${m.instruction}</strong><br>
+                正解: <span style="color:var(--success-green); font-weight:bold;">${m.correct}</span>
+            </div>
+        `).join('');
+    }
+}
+
+function sendEmail() {
+    const teacherEmail = "tamaki@eigostudio-stepforward.com";
+    const subject = encodeURIComponent("【2026-1 3B】Animal Uplift語彙・文法クイズ結果");
+    
+    let mistakeText = mistakes.length > 0 
+        ? "\n\n■要復習リスト:\n" + mistakes.map(m => `・問${m.num} (${m.instruction}) → 正解: ${m.correct}`).join("\n")
+        : "\n\n全問一度で正解できました！";
+
+    const body = encodeURIComponent(`Tamaki先生へ\n\n語彙・文法クイズ「2026-1 3B - Animal Uplift Vocabulary & Grammar Quiz」（${quizList.length}問）を完了しました。\n\n結果: ${quizList.length}問中 ${firstTryCorrectCount}問を一度で正解しました。${mistakeText}\n\nしっかり復習して語彙力・読解構文力を高めます！`);
+    
+    window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+}
+
+function setupPrintWorksheet() {
+    const printContainer = document.getElementById('print-worksheet');
+    if (!printContainer) return;
+
+    let html = `
+        <div class="print-header">
+            <h2>2026-1 3B - Animal Uplift Vocabulary & Grammar Quiz</h2>
+            <div class="print-meta">
+                <span>Name: ______________________</span>
+                <span>Date: ____________</span>
+                <span>Score: ______ / ${quizList.length}</span>
+            </div>
+        </div>
+    `;
+
+    quizList.forEach((q, index) => {
+        if (q.type === "typing") {
+            html += `
+                <div class="print-q-block">
+                    <div class="print-q-num">Q${index + 1}. ${q.instruction}</div>
+                    ${q.sentence ? `<div class="print-sentence">${q.sentence}</div>` : ''}
+                    <div style="margin-top:5px; font-size:0.85rem;">Answer: ______________________</div>
+                </div>
+            `;
+        } else {
+            const shuffledChoices = [q.a, ...q.c].sort(() => Math.random() - 0.5);
+
+            html += `
+                <div class="print-q-block">
+                    <div class="print-q-num">Q${index + 1}. ${q.instruction}</div>
+                    ${q.sentence ? `<div class="print-sentence">${q.sentence}</div>` : ''}
+                    <div class="print-choices">
+                        ${shuffledChoices.map((choice, i) => `
+                            <div class="print-choice-item">
+                                <span class="print-choice-label">(${String.fromCharCode(65 + i)})</span>${choice}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    printContainer.innerHTML = html;
+}
+
+window.onload = () => {
+    loadQuestion();
+    setupPrintWorksheet();
+};
+</script>
+
+</body>
+</html>
